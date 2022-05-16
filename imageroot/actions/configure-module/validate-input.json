@@ -1,8 +1,8 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Configure kickstart",
-    "$id": "http://nethserver.org/json-schema/task/input/kickstart/configure",
-    "description": "Configure kickstart",
+    "title": "Configure nextsec-controller",
+    "$id": "http://nethserver.org/json-schema/task/input/nextsec-controller/configure",
+    "description": "Configure nextsec-controller",
     "examples": [],
     "type": "object"
 }
