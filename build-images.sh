@@ -9,6 +9,7 @@ images=()
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
 reponame="nextsec-controller"
+tag=${IMAGE_TAG:-latest}
 
 # Create a new empty container image
 container=$(buildah from scratch)
@@ -28,9 +29,9 @@ buildah add "${container}" ui/dist /ui
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm" \
-    --label="org.nethserver.tcp-ports-demand=1" \
-    --label="org.nethserver.rootfull=0" \
-    --label="org.nethserver.images=docker.io/jmalloc/echo-server:latest" \
+    --label="org.nethserver.tcp-ports-demand=4" \
+    --label="org.nethserver.rootfull=1" \
+    --label="org.nethserver.images=ghcr.io/nethserver/nextsec-vpn:$tag ghcr.io/nethserver/nextsec-api:$tag ghcr.io/nethserver/nextsec-ui:$tag docker.io/library/traefik:v2.6" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"

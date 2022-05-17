@@ -1,0 +1,28 @@
+[Unit]
+Description=Podman MODULE_ID-vpn.service
+BindsTo=MODULE_ID.service
+After=MODULE_ID.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=/var/lib/nethserver/MODULE_ID/state/environment
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/MODULE_ID-vpn.pid %t/MODULE_ID-vpn.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/MODULE_ID-vpn.pid \
+    --cidfile %t/MODULE_ID-vpn.ctr-id \
+    --cgroups=no-conmon \
+    --pod-id-file %t/MODULE_ID.pod-id \
+    --replace -d --name MODULE_ID-vpn \
+    -v MODULE_ID-vpn-data:/etc/openvpn/:z \
+    --env-file=/var/lib/nethserver/MODULE_ID/state/network.env \
+    --network=host --cap-add=NET_ADMIN --device /dev/net/tun \
+    ${NEXTSEC_VPN_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/MODULE_ID-vpn.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/MODULE_ID-vpn.ctr-id
+PIDFile=%t/MODULE_ID-vpn.pid
+Type=forking
+
+[Install]
+WantedBy=default.target
