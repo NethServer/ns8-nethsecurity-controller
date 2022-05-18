@@ -20,8 +20,7 @@ ExecStart=/usr/bin/podman run \
     --volumes-from=MODULE_ID-vpn \
     --network=host \
     --env-file=/var/lib/nethserver/MODULE_ID/state/network.env \
-    ${TRAEFIK_IMAGE} \
-    --providers.file.directory=/etc/openvpn/proxy/ --providers.file.watch=true --serversTransport.insecureSkipVerify=true --entryPoints.web.address=:8181 --accesslog=true
+    ${NEXTSEC_PROXY_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/MODULE_ID-proxy.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/MODULE_ID-proxy.ctr-id
 PIDFile=%t/MODULE_ID-proxy.pid
