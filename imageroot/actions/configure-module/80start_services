@@ -22,4 +22,5 @@
 
 # If the control reaches this step, the service can be enabled and started
 
-systemctl --user enable --now nextsec-controller.service
+systemctl enable ${MODULE_ID}.service
+systemctl restart ${MODULE_ID}.service
