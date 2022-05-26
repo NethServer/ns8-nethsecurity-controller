@@ -48,4 +48,7 @@ try:
 except:
     pass
 
+if "api_password" in config and config["api_password"] != "admin":
+    config["api_password"] = ""
+
 json.dump(config, fp=sys.stdout)

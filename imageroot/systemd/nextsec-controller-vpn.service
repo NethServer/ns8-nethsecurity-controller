@@ -17,6 +17,7 @@ ExecStart=/usr/bin/podman run \
     --replace -d --name MODULE_ID-vpn \
     -v MODULE_ID-vpn-data:/etc/openvpn/:z \
     --env-file=/var/lib/nethserver/MODULE_ID/state/network.env \
+    --env-file=/var/lib/nethserver/MODULE_ID/state/config.env \
     --network=host --cap-add=NET_ADMIN --device /dev/net/tun \
     ${NEXTSEC_VPN_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/MODULE_ID-vpn.ctr-id -t 10

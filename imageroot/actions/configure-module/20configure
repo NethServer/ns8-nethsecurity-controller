@@ -49,3 +49,10 @@ agent.assert_exp(response['exit_code'] == 0)
 # Save configuration to JSON for later user and backup
 with open('config.json', 'w') as config:
     config.write(json.dumps(request))
+
+with open('config.env', 'w') as env:
+    env.write(f'API_USER={request["api_user"]}\n')
+    env.write(f'API_PASSWORD={request["api_password"]}\n')
+    env.write(f'OVPN_NEWTORK={request["ovpn_network"]}\n')
+    env.write(f'OVPN_NETMASK={request["ovpn_netmask"]}\n')
+    env.write(f'OVPN_CN={request["ovpn_cn"]}\n')
