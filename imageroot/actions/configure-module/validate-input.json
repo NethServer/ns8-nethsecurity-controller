@@ -3,6 +3,54 @@
     "title": "Configure nextsec-controller",
     "$id": "http://nethserver.org/json-schema/task/input/nextsec-controller/configure",
     "description": "Configure nextsec-controller",
-    "examples": [],
-    "type": "object"
+    "examples": [
+        {
+            "api_user": "admin",
+            "api_password": "admin",
+            "host": "controller.nethserver.org",
+            "lets_encrypt": true,
+            "ovpn_network": "127.2.10.0",
+            "ovpn_netmask": "255.255.0.0",
+            "ovpn_cn": "nextsec"
+        }
+    ],
+    "type": "object",
+    "required": [ "host", "lets_encrypt" ],
+    "properties": {
+        "host": {
+            "type": "string",
+            "description": "Host name for the server",
+            "format": "idn-hostname"
+        },
+        "lets_encrypt": {
+            "type": "boolean",
+            "title": "Let's Encrypt certificate",
+            "description": "Request a valid Let's Encrypt certificate."
+        },
+        "api_user": {
+            "type": "string",
+            "description": "Name of the admin user, default is 'minioadmin'",
+            "minLength": 1
+        },
+        "api_password": {
+            "type": "string",
+            "description": "Password of the admin user, default is 'minioadmin'",
+            "minLength": 1
+        },
+        "ovpn_network": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "VPN client network, like '127.2.1.0.0'"
+        },
+        "ovpn_netmask": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "VPN client netmask, like '255.255.0.0'"
+        },
+        "ovpn_cn": {
+            "type": "string",
+            "description": "Controller name, it must be a valid CN of x509 certificate'",
+            "minLength": 2
+        }
+    }
 }

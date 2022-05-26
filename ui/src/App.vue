@@ -29,7 +29,7 @@ export default {
   created() {
     const core = window.parent.core;
     this.setCoreInStore(core);
-    const instanceName = /#\/apps\/(\w+)/.exec(window.parent.location.hash)[1];
+    const instanceName = /#\/apps\/([a-zA-Z0-9_-]+)/.exec(window.parent.location.hash)[1];
     this.setInstanceNameInStore(instanceName);
     this.getInstanceLabel();
 

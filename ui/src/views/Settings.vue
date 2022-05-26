@@ -19,14 +19,75 @@
       <cv-column>
         <cv-tile light>
           <cv-form @submit.prevent="configureModule">
-            <!-- TODO remove test field and code configuration fields -->
             <cv-text-input
-              :label="$t('settings.test_filed')"
-              v-model="testField"
-              :placeholder="$t('settings.test_filed')"
+              :label="$t('settings.host')"
+              v-model="host"
+              placeholder="controller.mydomain.org"
               :disabled="loading.getConfiguration || loading.configureModule"
-              :invalid-message="error.testField"
-              ref="testField"
+              :invalid-message="error.host"
+              ref="host"
+            ></cv-text-input>
+            <cv-toggle
+              value="letsEncrypt"
+              :label="$t('settings.lets_encrypt')"
+              v-model="lets_encrypt"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              class="mg-bottom"
+            >
+              <template slot="text-left">{{
+                $t("settings.disabled")
+              }}</template>
+              <template slot="text-right">{{
+                $t("settings.enabled")
+              }}</template>
+            </cv-toggle>
+            <cv-text-input
+              :label="$t('settings.cn')"
+              v-model="cn"
+              :placeholder="$t('settings.cn')"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              :invalid-message="error.cn"
+              ref="cn"
+            ></cv-text-input>
+            <cv-text-input
+              :label="$t('settings.user')"
+              v-model="user"
+              :placeholder="$t('settings.user')"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              :invalid-message="error.user"
+              ref="user"
+            ></cv-text-input>
+            <cv-text-input
+              :label="$t('settings.password')"
+              v-model="password"
+              :placeholder="$t('settings.password')"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              :invalid-message="error.password"
+              ref="password"
+            ></cv-text-input>
+            <cv-text-input
+              :label="$t('settings.network')"
+              v-model="network"
+              :placeholder="$t('settings.network')"
+              :disabled="
+                loading.getConfiguration ||
+                loading.configureModule ||
+                !firstConfig
+              "
+              :invalid-message="error.network"
+              ref="network"
+            ></cv-text-input>
+            <cv-text-input
+              :label="$t('settings.netmask')"
+              v-model="netmask"
+              :placeholder="$t('settings.netmask')"
+              :disabled="
+                loading.getConfiguration ||
+                loading.configureModule ||
+                !firstConfig
+              "
+              :invalid-message="error.netmask"
+              ref="netmask"
             ></cv-text-input>
             <cv-row v-if="error.configureModule">
               <cv-column>
@@ -74,7 +135,14 @@ export default {
         page: "settings",
       },
       urlCheckInterval: null,
-      testField: "", // TODO remove
+      host: "",
+      lets_encrypt: false,
+      user: "",
+      password: "",
+      network: "",
+      netmask: "",
+      cn: "",
+      firstConfig: true,
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -82,7 +150,13 @@ export default {
       error: {
         getConfiguration: "",
         configureModule: "",
-        testField: "", // TODO remove
+        host: "",
+        lets_encrypt: "",
+        user: "",
+        password: "",
+        network: "",
+        netmask: "",
+        cn: "",
       },
     };
   },
@@ -149,29 +223,62 @@ export default {
       this.loading.getConfiguration = false;
       const config = taskResult.output;
 
-      // TODO set configuration fields
-      // ...
+      this.host = config.host;
+      if (config.host == "") {
+        this.firstConfig = true;
+      } else {
+        this.firstConfig = false;
+      }
+      this.cn = config.ovpn_cn;
+      this.lets_encrypt = config.lets_encrypt;
+      this.network = config.ovpn_network;
+      this.netmask = config.ovpn_netmask;
+      this.user = config.api_user;
+      this.password = config.api_password;
 
-      // TODO remove
-      console.log("config", config);
-
-      // TODO focus first configuration field
-      this.focusElement("testField");
+      this.focusElement("host");
     },
     validateConfigureModule() {
       this.clearErrors(this);
       let isValidationOk = true;
 
-      // TODO remove testField and validate configuration fields
-      if (!this.testField) {
-        // test field cannot be empty
-        this.error.testField = this.$t("common.required");
-
-        if (isValidationOk) {
-          this.focusElement("testField");
+      for (const v of [
+        "host",
+        "cn",
+        "network",
+        "netmask",
+        "user",
+        "password",
+      ]) {
+        if (!this[v]) {
           isValidationOk = false;
+          this.error[v] = this.$t("common.required");
+          this.focusElement(v);
         }
       }
+
+      const user_re = new RegExp(/^[a-zA-Z0-9]+$/);
+      if (!user_re.test(this.user)) {
+        this.error.user = this.$t("error.invalid_user");
+        this.focusElement("user");
+        isValidationOk = false;
+      }
+      if (!user_re.test(this.cn)) {
+        this.error.cn = this.$t("error.invalid_cn");
+        this.focusElement("cn");
+        isValidationOk = false;
+      }
+
+      const fqdn_re = new RegExp(
+        /(?=^.{1,254}$)(^(?:(?!\d+\.|-)[a-zA-Z0-9_-]{1,63}(?<!-)\.?)+(?:[a-zA-Z]{2,})$)/,
+        "g"
+      );
+      if (!fqdn_re.test(this.host)) {
+        this.error.host = this.$t("error.invalid_host");
+        this.focusElement("host");
+        isValidationOk = false;
+      }
+
       return isValidationOk;
     },
     configureModuleValidationFailed(validationErrors) {
@@ -216,7 +323,13 @@ export default {
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
-            // TODO configuration fields
+            host: this.host,
+            lets_encrypt: this.lets_encrypt,
+            ovpn_network: this.network,
+            ovpn_netmask: this.netmask,
+            ovpn_cn: this.cn,
+            api_user: this.user,
+            api_password: this.password,
           },
           extra: {
             title: this.$t("settings.configure_instance", {

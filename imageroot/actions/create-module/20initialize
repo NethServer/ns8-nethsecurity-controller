@@ -29,6 +29,8 @@ ui_port=$(echo $TCP_PORTS | cut -d',' -f3)
 proxy_port=$(echo $TCP_PORTS | cut -d',' -f4)
 num=$(echo $MODULE_ID | sed 's/nextsec\-controller//')
 
+secret=$(uuidgen | sha256sum | awk '{print $1}')
+
 cat << EOF > network.env
 OVPN_UDP_PORT=$ovpn_udp_port
 OVPN_TUN=nsc$num
@@ -38,4 +40,8 @@ UI_PORT=$ui_port
 UI_BIND_IP=127.0.0.1
 PROXY_PORT=$proxy_port
 PROXY_BIND_UI=127.0.0.1
+EOF
+
+cat << EOF > secret.env
+API_SECRET=$secret
 EOF

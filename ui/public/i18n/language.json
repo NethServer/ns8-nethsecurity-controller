@@ -24,7 +24,15 @@
     "title": "Settings",
     "configure_instance": "Configure {instance}",
     "save": "Save",
-    "test_filed": "Test field"
+    "host": "Controller FQDN",
+    "cn": "Controller name",
+    "user": "Administrator user",
+    "password": "Administrator password",
+    "network": "VPN network",
+    "netmask": "VPN netmask",
+    "lets_encrypt": "Request Let's Encrypt certificate",
+    "disabled": "Disabled",
+    "enabled": "Enabled"
   },
   "about": {
     "title": "About"
@@ -52,6 +60,9 @@
     "403": "Operation not authorized",
     "404": "Resource not found",
     "cannot_retrieve_module_info": "Cannot retrieve module info",
-    "cannot_retrieve_installed_modules": "Cannot retrieve installed modules"
+    "cannot_retrieve_installed_modules": "Cannot retrieve installed modules",
+    "invalid_cn": "Invalid controller name: it must contain only letters and numbers",
+    "invalid_user": "Invalud user name:  it must contain only letters and numbers",
+    "invalid_host": "Invalid host name: it must be a valid FQDN"
   }
 }

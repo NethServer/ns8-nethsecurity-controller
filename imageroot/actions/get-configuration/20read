@@ -23,7 +23,29 @@
 import json
 import sys
 import agent
+import random
+import string
 
-config = {}
+# Prepare random values for first-configuration
+# Pick a newtork inside 172.16.0.0/12 (range 172.16.0.0-172.31.255.255)
+foctet=random.randrange(16,31)
+soctet=random.randrange(1,254)
+
+# Random password
+characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
+random.shuffle(characters)
+password = []
+for i in range(10):
+    password.append(random.choice(characters))
+random.shuffle(password)
+
+config = {'host': '', 'lets_encrypt': False, 'ovpn_network': f'172.{foctet}.{soctet}.0', 'ovpn_netmask': '255.255.255.0', 'ovpn_cn': 'nextsec', 'api_user': 'admin', 'api_password': ''.join(password)}
+
+try:
+    # Read current configuration from config file
+    with open('config.json', 'r') as cf:
+        config = json.loads(cf.read())
+except:
+    pass
 
 json.dump(config, fp=sys.stdout)

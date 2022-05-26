@@ -19,6 +19,7 @@ ExecStart=/usr/bin/podman run \
     --volumes-from=MODULE_ID-vpn \
     --network=host \
     --env-file=/var/lib/nethserver/MODULE_ID/state/network.env \
+    --env-file=/var/lib/nethserver/MODULE_ID/state/secret.env \
     ${NEXTSEC_API_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/MODULE_ID-api.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/MODULE_ID-api.ctr-id

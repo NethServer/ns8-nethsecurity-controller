@@ -36,7 +36,7 @@ response = agent.tasks.run(
     action='set-route',
     data={
         'instance': os.environ['MODULE_ID'],
-        'url':  'http://127.0.0.1:' + ports[4],
+        'url':  'http://127.0.0.1:' + ports[3],
         'http2https': True,
         'lets_encrypt': request["lets_encrypt"],
         'host': request["host"],
@@ -45,3 +45,7 @@ response = agent.tasks.run(
 
 # Check if traefik configuration has been successfull
 agent.assert_exp(response['exit_code'] == 0)
+
+# Save configuration to JSON for later user and backup
+with open('config.json', 'w') as config:
+    config.write(json.dumps(request))
