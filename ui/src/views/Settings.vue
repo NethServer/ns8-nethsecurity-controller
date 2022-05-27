@@ -60,7 +60,7 @@
             <cv-text-input
               :label="$t('settings.password')"
               v-model="password"
-              :placeholder="$t('settings.password')"
+              :placeholder="'***********'"
               :disabled="loading.getConfiguration || loading.configureModule"
               :invalid-message="error.password"
               ref="password"
@@ -241,15 +241,14 @@ export default {
     validateConfigureModule() {
       this.clearErrors(this);
       let isValidationOk = true;
+      let fields = ["host", "cn", "network", "netmask", "user"];
 
-      for (const v of [
-        "host",
-        "cn",
-        "network",
-        "netmask",
-        "user",
-        "password",
-      ]) {
+      // On first config the password must be non-empty
+      if (this.firstConfig) {
+        fields.push("password");
+      }
+
+      for (const v of fields) {
         if (!this[v]) {
           isValidationOk = false;
           this.error[v] = this.$t("common.required");
@@ -319,18 +318,21 @@ export default {
         this.configureModuleCompleted
       );
 
+      let params = {
+        host: this.host,
+        lets_encrypt: this.lets_encrypt,
+        ovpn_network: this.network,
+        ovpn_netmask: this.netmask,
+        ovpn_cn: this.cn,
+        api_user: this.user,
+      };
+      if (this.password) {
+        params.api_password = this.password;
+      }
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
-          data: {
-            host: this.host,
-            lets_encrypt: this.lets_encrypt,
-            ovpn_network: this.network,
-            ovpn_netmask: this.netmask,
-            ovpn_cn: this.cn,
-            api_user: this.user,
-            api_password: this.password,
-          },
+          data: params,
           extra: {
             title: this.$t("settings.configure_instance", {
               instance: this.instanceName,
