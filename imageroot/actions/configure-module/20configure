@@ -65,3 +65,4 @@ with open('config.env', 'w') as env:
     env.write(f'OVPN_NETWORK={request["ovpn_network"]}\n')
     env.write(f'OVPN_NETMASK={request["ovpn_netmask"]}\n')
     env.write(f'OVPN_CN={request["ovpn_cn"]}\n')
+    env.write(f'FQDN={request["host"]}\n')
