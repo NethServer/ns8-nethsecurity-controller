@@ -20,50 +20,16 @@
         <cv-tile light>
           <cv-form @submit.prevent="configureModule">
             <cv-text-input
-              :label="$t('settings.host')"
-              v-model="host"
-              placeholder="controller.mydomain.org"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              :invalid-message="error.host"
-              ref="host"
-            ></cv-text-input>
-            <cv-toggle
-              value="letsEncrypt"
-              :label="$t('settings.lets_encrypt')"
-              v-model="lets_encrypt"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              class="mg-bottom"
-            >
-              <template slot="text-left">{{
-                $t("settings.disabled")
-              }}</template>
-              <template slot="text-right">{{
-                $t("settings.enabled")
-              }}</template>
-            </cv-toggle>
-            <cv-text-input
               :label="$t('settings.cn')"
               v-model="cn"
               :placeholder="$t('settings.cn')"
-              :disabled="loading.getConfiguration || loading.configureModule"
+              :disabled="
+                loading.getConfiguration ||
+                loading.configureModule ||
+                !firstConfig
+              "
               :invalid-message="error.cn"
               ref="cn"
-            ></cv-text-input>
-            <cv-text-input
-              :label="$t('settings.user')"
-              v-model="user"
-              :placeholder="$t('settings.user')"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              :invalid-message="error.user"
-              ref="user"
-            ></cv-text-input>
-            <cv-text-input
-              :label="$t('settings.password')"
-              v-model="password"
-              :placeholder="'***********'"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              :invalid-message="error.password"
-              ref="password"
             ></cv-text-input>
             <cv-text-input
               :label="$t('settings.network')"
@@ -88,7 +54,50 @@
               "
               :invalid-message="error.netmask"
               ref="netmask"
+              class="mg-bottom-xlg"
             ></cv-text-input>
+
+            <cv-text-input
+              :label="$t('settings.user')"
+              v-model="user"
+              :placeholder="$t('settings.user')"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              :invalid-message="error.user"
+              ref="user"
+            ></cv-text-input>
+            <cv-text-input
+              :label="$t('settings.password')"
+              v-model="password"
+              :placeholder="'***********'"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              :invalid-message="error.password"
+              ref="password"
+              class="mg-bottom-xlg"
+            ></cv-text-input>
+
+            <cv-text-input
+              :label="$t('settings.host')"
+              v-model="host"
+              placeholder="controller.mydomain.org"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              :invalid-message="error.host"
+              ref="host"
+            ></cv-text-input>
+            <cv-toggle
+              value="letsEncrypt"
+              :label="$t('settings.lets_encrypt')"
+              v-model="lets_encrypt"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              class="mg-bottom"
+            >
+              <template slot="text-left">{{
+                $t("settings.disabled")
+              }}</template>
+              <template slot="text-right">{{
+                $t("settings.enabled")
+              }}</template>
+            </cv-toggle>
+
             <cv-row v-if="error.configureModule">
               <cv-column>
                 <NsInlineNotification
