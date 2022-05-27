@@ -25,6 +25,7 @@ import sys
 import agent
 import agent.tasks
 import os
+import hashlib
 
 request = json.load(sys.stdin)
 
@@ -43,6 +44,14 @@ response = agent.tasks.run(
     },
 )
 
+# Replace password if passed as parameter, otherwise read the old one
+if 'api_password' in request and request['api_password'] != '':
+    request['api_password'] = hashlib.sha256(request['api_password'].encode('utf-8')).hexdigest()
+else:
+    with open('config.json', 'r') as tmp:
+        tmp = json.load(tmp)
+        request['api_password'] = tmp['api_password']
+
 # Check if traefik configuration has been successfull
 agent.assert_exp(response['exit_code'] == 0)
 
@@ -53,6 +62,6 @@ with open('config.json', 'w') as config:
 with open('config.env', 'w') as env:
     env.write(f'API_USER={request["api_user"]}\n')
     env.write(f'API_PASSWORD={request["api_password"]}\n')
-    env.write(f'OVPN_NEWTORK={request["ovpn_network"]}\n')
+    env.write(f'OVPN_NETWORK={request["ovpn_network"]}\n')
     env.write(f'OVPN_NETMASK={request["ovpn_netmask"]}\n')
     env.write(f'OVPN_CN={request["ovpn_cn"]}\n')
