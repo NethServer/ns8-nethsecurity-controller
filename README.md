@@ -7,6 +7,9 @@ Each node can host multiple controller instances.
 **Note**
 This module is not yes present inside NS8 repository, so please install it manually following below instructions.
 
+**Note**
+This module implements the backup but not the restore procedure.
+
 ## Install
 
 Instantiate the module with:
