@@ -29,9 +29,9 @@ buildah add "${container}" ui/dist /ui
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm node:fwadm" \
-    --label="org.nethserver.tcp-ports-demand=4" \
+    --label="org.nethserver.tcp-ports-demand=5" \
     --label="org.nethserver.rootfull=1" \
-    --label="org.nethserver.images=ghcr.io/nethserver/nextsec-vpn:$tag ghcr.io/nethserver/nextsec-api:$tag ghcr.io/nethserver/nextsec-ui:$tag ghcr.io/nethserver/nextsec-proxy:$tag" \
+    --label="org.nethserver.images=ghcr.io/nethserver/nextsec-vpn:$tag ghcr.io/nethserver/nextsec-api:$tag ghcr.io/nethserver/nextsec-ui:$tag ghcr.io/nethserver/nextsec-proxy:$tag docker.io/grafana/promtail:2.7.1" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"

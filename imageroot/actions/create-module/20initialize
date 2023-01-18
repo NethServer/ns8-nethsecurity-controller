@@ -27,6 +27,7 @@ ovpn_udp_port=$(echo $TCP_PORTS | cut -d',' -f1)
 api_port=$(echo $TCP_PORTS | cut -d',' -f2)
 ui_port=$(echo $TCP_PORTS | cut -d',' -f3)
 proxy_port=$(echo $TCP_PORTS | cut -d',' -f4)
+promtail_port=$(echo $TCP_PORTS | cut -d',' -f5)
 num=$(echo $MODULE_ID | sed 's/nextsec\-controller//')
 
 secret=$(uuidgen | sha256sum | awk '{print $1}')
@@ -44,4 +45,31 @@ EOF
 
 cat << EOF > secret.env
 API_SECRET=$secret
+EOF
+
+loki_instance=$(redis-cli --raw GET cluster/default_instance/loki)
+loki_addr=$(redis-cli --raw HGET module/"$loki_instance"/environment LOKI_ADDR)
+loki_port=$(redis-cli --raw HGET module/"$loki_instance"/environment LOKI_HTTP_PORT)
+loki_bearer=$(redis-cli --raw HGET module/"$loki_instance"/environment LOKI_LOGS_INGRESS_TOKEN)
+
+cat << EOF > promtail.yml
+server:
+  disable: true
+
+clients:
+  - url: http://$loki_addr:$loki_port/loki/api/v1/push
+    bearer_token: $loki_bearer
+
+positions:
+  filename: /tmp/positions.yaml
+
+scrape_configs:
+  - job_name: syslog
+    syslog:
+      listen_address: 127.0.0.1:$promtail_port
+      labels:
+        job: "syslog"
+    relabel_configs:
+      - source_labels: ['__syslog_message_hostname']
+        target_label: 'host'
 EOF
