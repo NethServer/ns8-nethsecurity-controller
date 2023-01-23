@@ -66,3 +66,18 @@ with open('config.env', 'w') as env:
     env.write(f'OVPN_NETMASK={request["ovpn_netmask"]}\n')
     env.write(f'OVPN_CN={request["ovpn_cn"]}\n')
     env.write(f'FQDN={request["host"]}\n')
+
+with open('promtail.env', 'w') as promtail:
+    redis_client = agent.redis_connect()
+    loki_instance = redis_client.get('cluster/default_instance/loki')
+    loki_addr = redis_client.hget(f'module/{loki_instance}/environment', 'LOKI_ADDR')
+    loki_http_port = redis_client.hget(f'module/{loki_instance}/environment', 'LOKI_HTTP_PORT')
+    loki_logs_ingress_token = redis_client.hget(f'module/{loki_instance}/environment', 'LOKI_LOGS_INGRESS_TOKEN')
+    promtail_address = request["ovpn_network"].removesuffix('.0') + '.1'
+    promtail_port = ports[4]
+
+    promtail.write(f'LOKI_ADDR={loki_addr}\n')
+    promtail.write(f'LOKI_HTTP_PORT={loki_http_port}\n')
+    promtail.write(f'LOKI_LOGS_INGRESS_TOKEN={loki_logs_ingress_token}\n')
+    promtail.write(f'PROMTAIL_ADDRESS={promtail_address}\n')
+    promtail.write(f'PROMTAIL_PORT={promtail_port}\n')

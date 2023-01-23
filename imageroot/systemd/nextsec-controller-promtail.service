@@ -1,0 +1,29 @@
+[Unit]
+Description=Podman MODULE_ID-promtail.service
+BindsTo=MODULE_ID.service
+After=MODULE_ID-vpn.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=/var/lib/nethserver/MODULE_ID/state/environment
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/MODULE_ID-promtail.pid %t/MODULE_ID-promtail.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/MODULE_ID-promtail.pid \
+    --cidfile %t/MODULE_ID-promtail.ctr-id \
+    --cgroups=no-conmon \
+    --pod-id-file %t/MODULE_ID.pod-id \
+    --replace -d --name MODULE_ID-promtail \
+    --volume /var/lib/nethserver/MODULE_ID/etc/config.yml:/etc/promtail/config.yml:z \
+    --network=host \
+    --env-file=/var/lib/nethserver/MODULE_ID/state/promtail.env \
+    ${PROMTAIL_IMAGE} \
+    -config.expand-env=true -config.file=/etc/promtail/config.yml
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/MODULE_ID-promtail.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/MODULE_ID-promtail.ctr-id
+PIDFile=%t/MODULE_ID-promtail.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

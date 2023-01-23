@@ -17,11 +17,15 @@ container=$(buildah from scratch)
 # Reuse existing nodebuilder-nextsec-controller container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-nextsec-controller; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-nextsec-controller -v "${PWD}:/usr/src:Z" docker.io/library/node:lts
+    buildah from --name nodebuilder-nextsec-controller -v "${PWD}:/usr/src:Z" docker.io/library/node:18.13.0-alpine
 fi
 
 echo "Build static UI files with node..."
-buildah run nodebuilder-nextsec-controller sh -c "cd /usr/src/ui && yarn install && yarn build"
+buildah run \
+    --workingdir "/usr/src/ui" \
+    --env "NODE_OPTIONS=--openssl-legacy-provider" \
+    nodebuilder-nextsec-controller \
+    sh -c "yarn install --frozen-lockfile && yarn build"
 
 # Add imageroot directory to the container image
 buildah add "${container}" imageroot /imageroot
@@ -29,9 +33,9 @@ buildah add "${container}" ui/dist /ui
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm node:fwadm" \
-    --label="org.nethserver.tcp-ports-demand=4" \
+    --label="org.nethserver.tcp-ports-demand=5" \
     --label="org.nethserver.rootfull=1" \
-    --label="org.nethserver.images=ghcr.io/nethserver/nextsec-vpn:$tag ghcr.io/nethserver/nextsec-api:$tag ghcr.io/nethserver/nextsec-ui:$tag ghcr.io/nethserver/nextsec-proxy:$tag" \
+    --label="org.nethserver.images=ghcr.io/nethserver/nextsec-vpn:$tag ghcr.io/nethserver/nextsec-api:$tag ghcr.io/nethserver/nextsec-ui:$tag ghcr.io/nethserver/nextsec-proxy:$tag docker.io/grafana/promtail:2.7.1" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
@@ -50,7 +54,7 @@ images+=("${repobase}/${reponame}")
 #
 
 #
-# Setup CI when pushing to Github. 
+# Setup CI when pushing to Github.
 # Warning! docker::// protocol expects lowercase letters (,,)
 if [[ -n "${CI}" ]]; then
     # Set output value for Github Actions
