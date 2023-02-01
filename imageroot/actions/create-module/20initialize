@@ -46,3 +46,5 @@ EOF
 cat << EOF > secret.env
 API_SECRET=$secret
 EOF
+
+mkdir -p clients

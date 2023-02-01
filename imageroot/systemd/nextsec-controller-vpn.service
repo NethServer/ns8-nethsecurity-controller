@@ -16,6 +16,7 @@ ExecStart=/usr/bin/podman run \
     --pod-id-file %t/MODULE_ID.pod-id \
     --replace -d --name MODULE_ID-vpn \
     -v MODULE_ID-vpn-data:/etc/openvpn/:z \
+    --volume=/var/lib/nethserver/MODULE_ID/state/clients:/etc/openvpn/clients \
     --env-file=/var/lib/nethserver/MODULE_ID/state/network.env \
     --env-file=/var/lib/nethserver/MODULE_ID/state/config.env \
     --network=host --cap-add=NET_ADMIN --device /dev/net/tun \
