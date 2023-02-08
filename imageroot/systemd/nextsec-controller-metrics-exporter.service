@@ -1,0 +1,8 @@
+[Unit]
+Description=Add client as service provider for prometheus
+BindsTo=MODULE_ID.service
+After=MODULE_ID-vpn.service
+
+[Service]
+ExecStart=/usr/local/bin/runagent metrics_exporter_handler /var/lib/nethserver/MODULE_ID/state/clients
+Type=oneshot

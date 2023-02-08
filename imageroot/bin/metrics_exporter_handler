@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import os
+import sys
+
+import agent
+
+if len(sys.argv) != 1:
+    raise ValueError('Missing path to generate provider from.')
+
+data = {
+    'hosts': [],
+    'labels': { '__metrics_path__': '/api/v1/allmetrics?format=prometheus&help=no' }
+}
+
+with os.scandir(sys.argv[0]) as it:
+    redis_client = agent.redis_connect(privileged=True)
+    for entry in it:
+        if entry.is_file():
+            with open(entry, 'r', encoding='utf-8') as file:
+                host = file.readline()
+                module_id = os.environ["MODULE_ID"]
+                data['hosts'].append(f"{host}:19999")
+                redis_client.hset(
+                    f'module/{module_id}/{entry.name}/srv/http/prometheus-metrics',
+                    'config', json.dumps(data))
+                redis_client.publish(
+                    f'module/{module_id}/event/service-prometheus-metrics-updated', '{}')
