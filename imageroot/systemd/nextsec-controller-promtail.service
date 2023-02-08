@@ -18,6 +18,7 @@ ExecStart=/usr/bin/podman run \
     --volume /var/lib/nethserver/MODULE_ID/etc/config.yml:/etc/promtail/config.yml:z \
     --network=host \
     --env-file=/var/lib/nethserver/MODULE_ID/state/promtail.env \
+    --env-file=/var/lib/nethserver/MODULE_ID/state/config.env \
     ${PROMTAIL_IMAGE} \
     -config.expand-env=true -config.file=/etc/promtail/config.yml
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/MODULE_ID-promtail.ctr-id -t 10

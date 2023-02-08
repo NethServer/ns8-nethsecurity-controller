@@ -14,6 +14,7 @@ scrape_configs:
       listen_address: ${PROMTAIL_ADDRESS}:${PROMTAIL_PORT}
       labels:
         job: "syslog"
+        controller_name: ${OVPN_CN}
     relabel_configs:
       - source_labels: ['__syslog_message_hostname']
         target_label: 'host'
