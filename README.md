@@ -43,10 +43,17 @@ Example:
 The above command will:
 - start and configure the nextsec-controller instance
 - setup a route inside traefik to reach the controller
+- setup a syslog receiver
+- setup prometheus for metrics scraping
 
 Send a test HTTP request to the nextsec-controller backend service:
 
     curl https://nscontroller.nethserver.org/
+
+All logs are grouped the controller name (`ovpn_cn`). To query the logs, use:
+```
+logcli query '{controller_name="nextsec"}' --tail
+```
 
 ## Uninstall
 
@@ -54,11 +61,3 @@ To uninstall the instance:
 
     remove-module --no-preserve nextsec-controller1
 
-## Testing
-
-Test the module using the `test-module.sh` script:
-
-
-    ./test-module.sh <NODE_ADDR> ghcr.io/nethserver/nextsec-controller:latest
-
-The tests are made using [Robot Framework](https://robotframework.org/)
