@@ -1,7 +1,7 @@
 [Unit]
 Description=Podman MODULE_ID.service
-Requires=MODULE_ID-vpn.service MODULE_ID-api.service MODULE_ID-ui.service MODULE_ID-proxy.service MODULE_ID-promtail.service MODULE_ID-notifier.path
-Before=MODULE_ID-vpn.service MODULE_ID-api.service MODULE_ID-ui.service MODULE_ID-proxy.service MODULE_ID-promtail.service MODULE_ID-notifier.path
+Requires=MODULE_ID-vpn.service MODULE_ID-api.service MODULE_ID-ui.service MODULE_ID-proxy.service MODULE_ID-promtail.service MODULE_ID-metrics-exporter.path
+Before=MODULE_ID-vpn.service MODULE_ID-api.service MODULE_ID-ui.service MODULE_ID-proxy.service MODULE_ID-promtail.service MODULE_ID-metrics-exporter.path
 ConditionPathExists=/var/lib/nethserver/MODULE_ID/state/environment
 ConditionPathExists=/var/lib/nethserver/MODULE_ID/state/network.env
 
