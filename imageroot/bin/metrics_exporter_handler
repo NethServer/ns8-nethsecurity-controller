@@ -11,7 +11,7 @@ import sys
 
 import agent
 
-if len(sys.argv) != 1:
+if len(sys.argv) <= 1:
     raise ValueError('Missing path to generate provider from.')
 
 data = {
@@ -19,7 +19,7 @@ data = {
     'labels': { '__metrics_path__': '/api/v1/allmetrics?format=prometheus&help=no' }
 }
 
-with os.scandir(sys.argv[0]) as it:
+with os.scandir(sys.argv[1]) as it:
     redis_client = agent.redis_connect(privileged=True)
     for entry in it:
         if entry.is_file():
