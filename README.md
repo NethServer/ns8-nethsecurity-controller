@@ -55,9 +55,32 @@ All logs are grouped the controller name (`ovpn_cn`). To query the logs, use:
 logcli query '{controller_name="nextsec"}' --tail
 ```
 
+## Module Overview
+
+This multi-container module allows to connect the NS8 cluster to NextSecurity installations.
+
+Here are all the module features:
+
+### API Server
+
+The [api server](https://github.com/NethServer/nextsecurity-controller/tree/master/api) gives NextSecurity the ability to register itself to NS8 (through [`ns-plug`](https://nethserver.github.io/nextsecurity/packages/ns-plug/)) and gives access to the on-demand generated credentials for the VPN.
+
+The API even registers the endpoints for the [Traefik Proxy](#proxy-and-ui) that allows the interaction directly with the firewall even if it's not in the same network.
+
+### VPN
+
+The [OpenVPN container](https://github.com/NethServer/nextsecurity-controller/tree/master/vpn) tunnels connection from the NextSecurity to the NS8 through a VPN tunnel, due to [firewall configuration](https://github.com/NethServer/ns8-nextsec-controller/blob/main/imageroot/actions/configure-module/20configure#L87) in NS8, no client can be reached from other clients and only client-server communication is allowed.
+
+### Proxy and UI
+
+The [UI](https://github.com/NethServer/nextsecurity-controller/tree/master/ui) allows the browse of the interface directly off the NextSecurity installation, this is possible due to the [Traefik Proxy](https://github.com/NethServer/nextsecurity-controller/tree/master/proxy) server that redirects the urls to the correct IP inside the VPN.
+
+### Promtail and Metrics
+
+Using [`ns-plug`](https://nethserver.github.io/nextsecurity/packages/ns-plug/) the module automatically provides Prometheus and Loki endpoints so that NS8 can have all the data in the same place. You can browse the logs with [the command provided in configuration](#configure) while prometheus will most likely be already scraping off the NextSecurity data shortly after the first connection using [Service Discovery](https://github.com/NethServer/ns8-prometheus/#service-discovery).
+
 ## Uninstall
 
 To uninstall the instance:
 
     remove-module --no-preserve nextsec-controller1
-
