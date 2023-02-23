@@ -3,7 +3,9 @@
         "404": "Risorsa non trovata",
         "network_error": "Errore di rete",
         "error": "Errore",
-        "validation_error": "Errore di validazione"
+        "validation_error": "Errore di validazione",
+        "cannot_retrieve_installed_modules": "Impossibile elencare moduli installati",
+        "cannot_retrieve_module_info": "Impossibile recuperare info modulo"
     },
     "settings": {
         "title": "Impostazioni",
@@ -19,12 +21,21 @@
         "size": "Dimensione",
         "created": "Creato",
         "no_images": "Nessuna immagine",
-        "no_volumes": "Nessun volume"
+        "no_volumes": "Nessun volume",
+        "app_instance": "Istanza app",
+        "app_images": "Immagine app|Immagini app",
+        "app_volumes": "Volume app|Volumi app"
     },
     "common": {
         "required": "Obbligatorio"
     },
     "action": {
         "configure-module": "Configura modulo"
+    },
+    "about": {
+        "title": "Informazioni"
+    },
+    "task": {
+        "cannot_create_task": "Impossibile eseguire task [action]"
     }
 }
