@@ -62,7 +62,7 @@
     "cannot_retrieve_module_info": "Cannot retrieve module info",
     "cannot_retrieve_installed_modules": "Cannot retrieve installed modules",
     "invalid_cn": "Invalid controller name: it must contain only letters and numbers",
-    "invalid_user": "Invalud user name:  it must contain only letters and numbers",
+    "invalid_user": "Invalid user name: it must contain only letters and numbers",
     "invalid_host": "Invalid host name: it must be a valid FQDN"
   }
 }
