@@ -9,12 +9,22 @@
         "network_timeout": "Timeout di rete",
         "generic_error": "Qualcosa è andato storto",
         "401": "Autenticazione non valida",
-        "403": "Operazione non autorizzata"
+        "403": "Operazione non autorizzata",
+        "invalid_cn": "Nome controller non valido: deve contenere solo lettere e numeri"
     },
     "settings": {
         "title": "Impostazioni",
         "save": "Salva",
-        "configure_instance": "Configura {instance}"
+        "configure_instance": "Configura {instance}",
+        "disabled": "Disabilitato",
+        "host": "FQDN controller",
+        "cn": "Nome controller",
+        "password": "Password amministratore",
+        "netmask": "Netmask VPN",
+        "lets_encrypt": "Richiedi certificato Let's Encrypt",
+        "enabled": "Abilitato",
+        "user": "Utente amministratore",
+        "network": "Rete VPN"
     },
     "status": {
         "no_services": "Nessun servizio",
