@@ -10,7 +10,9 @@
         "generic_error": "Qualcosa è andato storto",
         "401": "Autenticazione non valida",
         "403": "Operazione non autorizzata",
-        "invalid_cn": "Nome controller non valido: deve contenere solo lettere e numeri"
+        "invalid_cn": "Nome controller non valido: deve contenere solo lettere e numeri",
+        "invalid_user": "Nome utente non valido: deve contenere solo lettere e numeri",
+        "invalid_host": "Nome host non valido: deve essere un FQDN valido"
     },
     "settings": {
         "title": "Impostazioni",
@@ -54,7 +56,7 @@
         "get-name": "Visualizza nome",
         "get-status": "Visualizza stato",
         "list-backup-repositories": "Elenca repository di backup",
-        "list-installed-modules": "Elenca moduli installati",
+        "list-installed-modules": "Elenco moduli installati",
         "list-backups": "Elenca backup"
     },
     "about": {
