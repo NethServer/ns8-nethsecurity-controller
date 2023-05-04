@@ -1,13 +1,14 @@
 {
   "name": "nextsec-controller",
   "description": {
-    "en": "My nextsec-controller module"
+    "en": "NextSecurity controller",
+    "it": "Controller NextSecurity"
   },
-  "categories": [],
+  "categories": ["security"],
   "authors": [
     {
-      "name": "Name Surname",
-      "email": "author@yourmail.org"
+      "name": "Giacomo Sanchietti",
+      "email": "giacomo.sanchietti@gmail.com"
     }
   ],
   "docs": {
