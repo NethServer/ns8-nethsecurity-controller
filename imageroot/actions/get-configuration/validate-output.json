@@ -1,8 +1,8 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Get nextsec-controller configuration",
-    "$id": "http://nethserver.org/json-schema/task/output/nextsec-controller/get-configuration",
-    "description": "Get nextsec-controller configuration",
+    "title": "Get nethsec-controller configuration",
+    "$id": "http://nethserver.org/json-schema/task/output/nethsec-controller/get-configuration",
+    "description": "Get nethsec-controller configuration",
     "examples": [
         {
             "api_user": "admin",
@@ -11,7 +11,7 @@
             "lets_encrypt": true,
             "ovpn_network": "127.2.10.0",
             "ovpn_netmask": "255.255.0.0",
-            "ovpn_cn": "nextsec"
+            "ovpn_cn": "nethsec"
         }
     ],
     "type": "object"

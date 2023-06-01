@@ -1,8 +1,8 @@
 {
-  "name": "nextsec-controller",
+  "name": "nethsec-controller",
   "description": {
-    "en": "NextSecurity controller",
-    "it": "Controller NextSecurity"
+    "en": "NethSecurity controller",
+    "it": "Controller NethSecurity"
   },
   "categories": ["security"],
   "authors": [
@@ -12,9 +12,9 @@
     }
   ],
   "docs": {
-    "documentation_url": "https://docs.nextsec-controller.com/",
+    "documentation_url": "https://docs.nethsec-controller.com/",
     "bug_url": "https://github.com/NethServer/dev",
-    "code_url": "https://github.com/author/ns8-nextsec-controller"
+    "code_url": "https://github.com/author/ns8-nethsec-controller"
   },
-  "source": "ghcr.io/nethserver/nextsec-controller"
+  "source": "ghcr.io/nethserver/nethsec-controller"
 }

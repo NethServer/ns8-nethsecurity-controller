@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    appName: "nextsec-controller", // TODO
+    appName: "nethsec-controller",
     instanceName: "",
     instanceLabel: "",
     core: null,

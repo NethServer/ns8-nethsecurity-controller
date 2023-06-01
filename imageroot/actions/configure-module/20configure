@@ -31,7 +31,7 @@ request = json.load(sys.stdin)
 
 ports = os.environ["TCP_PORTS"].split(',')
 
-# Configure Traefik to route requests to the nextsec-controller service
+# Configure Traefik to route requests to the nethsec-controller service
 response = agent.tasks.run(
     agent_id=agent.resolve_agent_id('traefik@node'),
     action='set-route',

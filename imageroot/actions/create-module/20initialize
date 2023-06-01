@@ -28,7 +28,7 @@ api_port=$(echo $TCP_PORTS | cut -d',' -f2)
 ui_port=$(echo $TCP_PORTS | cut -d',' -f3)
 proxy_port=$(echo $TCP_PORTS | cut -d',' -f4)
 promtail_port=$(echo $TCP_PORTS | cut -d',' -f5)
-num=$(echo $MODULE_ID | sed 's/nextsec\-controller//')
+num=$(echo $MODULE_ID | sed 's/nethsec\-controller//')
 
 secret=$(uuidgen | sha256sum | awk '{print $1}')
 
