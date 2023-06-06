@@ -8,23 +8,23 @@ images=()
 # The image will be pushed to GitHub container registry
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
-reponame="nethsec-controller"
+reponame="nethsecurity-controller"
 tag=${IMAGE_TAG:-latest}
 
 # Create a new empty container image
 container=$(buildah from scratch)
 
-# Reuse existing nodebuilder-nethsec-controller container, to speed up builds
-if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-nethsec-controller; then
+# Reuse existing nodebuilder-nethsecurity-controller container, to speed up builds
+if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-nethsecurity-controller; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-nethsec-controller -v "${PWD}:/usr/src:Z" docker.io/library/node:18.13.0-alpine
+    buildah from --name nodebuilder-nethsecurity-controller -v "${PWD}:/usr/src:Z" docker.io/library/node:18.13.0-alpine
 fi
 
 echo "Build static UI files with node..."
 buildah run \
     --workingdir "/usr/src/ui" \
     --env "NODE_OPTIONS=--openssl-legacy-provider" \
-    nodebuilder-nethsec-controller \
+    nodebuilder-nethsecurity-controller \
     sh -c "yarn install --frozen-lockfile && yarn build"
 
 # Add imageroot directory to the container image
@@ -35,7 +35,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm node:fwadm" \
     --label="org.nethserver.tcp-ports-demand=5" \
     --label="org.nethserver.rootfull=1" \
-    --label="org.nethserver.images=ghcr.io/nethserver/nethsec-vpn:$tag ghcr.io/nethserver/nethsec-api:$tag ghcr.io/nethserver/nethsec-ui:$tag ghcr.io/nethserver/nethsec-proxy:$tag docker.io/grafana/promtail:2.7.1" \
+    --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn:$tag ghcr.io/nethserver/nethsecurity-api:$tag ghcr.io/nethserver/nethsecurity-ui:$tag ghcr.io/nethserver/nethsecurity-proxy:$tag docker.io/grafana/promtail:2.7.1" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
