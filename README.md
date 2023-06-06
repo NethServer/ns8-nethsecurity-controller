@@ -1,4 +1,4 @@
-# ns8-nethsec-controller
+# ns8-nethsecurity-controller
 
 Setup and start an instance of [nethsecurity-controller](https://github.com/NethServer/nethsecurity-controller).
 
@@ -14,18 +14,18 @@ This module implements the backup but not the restore procedure.
 
 Instantiate the module with:
 
-    add-module ghcr.io/nethserver/nethsec-controller:latest
+    add-module ghcr.io/nethserver/nethsecurity-controller:latest
 
 The output of the command will return the instance name.
 Output example:
 
-    {"module_id": "nethsec-controller1", "image_name": "nethsec-controller", "image_url": "ghcr.io/nethserver/nethsec-controller:latest"}
+    {"module_id": "nethsecurity-controller1", "image_name": "nethsecurity-controller", "image_url": "ghcr.io/nethserver/nethsecurity-controller:latest"}
 
 ## Configure
 
 You can configure the controller directly from the UI or use the command line.
 
-Let's assume that the nethsec-controller instance is named `nethsec-controller1`.
+Let's assume that the nethsecurity-controller instance is named `nethsecurity-controller1`.
 
 Launch `configure-module`, by setting the following parameters:
 - `host`: a fully qualified domain name for the controller
@@ -38,15 +38,15 @@ Launch `configure-module`, by setting the following parameters:
 
 Example:
 
-    api-cli run  module/nethsec-controller1/configure-module --data '{"host": "nscontroller.nethserver.org", "lets_encrypt": false, "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.255.0", "ovpn_cn": "nethsec", "api_user": "admin", "api_password": "password"}'
+    api-cli run  module/nethsecurity-controller1/configure-module --data '{"host": "nscontroller.nethserver.org", "lets_encrypt": false, "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.255.0", "ovpn_cn": "nethsec", "api_user": "admin", "api_password": "password"}'
 
 The above command will:
-- start and configure the nethsec-controller instance
+- start and configure the nethsecurity-controller instance
 - setup a route inside traefik to reach the controller
 - setup a syslog receiver
 - setup prometheus for metrics scraping
 
-Send a test HTTP request to the nethsec-controller backend service:
+Send a test HTTP request to the nethsecurity-controller backend service:
 
     curl https://nscontroller.nethserver.org/
 
@@ -69,7 +69,7 @@ The API even registers the endpoints for the [Traefik Proxy](#proxy-and-ui) that
 
 ### VPN
 
-The [OpenVPN container](https://github.com/NethServer/nethsecurity-controller/tree/master/vpn) tunnels connection from the NethSecurity to the NS8 through a VPN tunnel, due to [firewall configuration](https://github.com/NethServer/ns8-nethsec-controller/blob/main/imageroot/actions/configure-module/20configure#L87) in NS8, no client can be reached from other clients and only client-server communication is allowed.
+The [OpenVPN container](https://github.com/NethServer/nethsecurity-controller/tree/master/vpn) tunnels connection from the NethSecurity to the NS8 through a VPN tunnel, due to [firewall configuration](https://github.com/NethServer/ns8-nethsecurity-controller/blob/main/imageroot/actions/configure-module/20configure#L87) in NS8, no client can be reached from other clients and only client-server communication is allowed.
 
 ### Proxy and UI
 
@@ -83,4 +83,4 @@ Using [`ns-plug`](https://nethserver.github.io/nethsecurity/packages/ns-plug/) t
 
 To uninstall the instance:
 
-    remove-module --no-preserve nethsec-controller1
+    remove-module --no-preserve nethsecurity-controller1
