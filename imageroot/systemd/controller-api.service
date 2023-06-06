@@ -1,0 +1,32 @@
+
+[Unit]
+Description=Podman MODULE_ID-api.service
+BindsTo=MODULE_ID.service
+After=MODULE_ID.service MODULE_ID-vpn.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=/var/lib/nethserver/MODULE_ID/state/environment
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/MODULE_ID-api.pid %t/MODULE_ID-api.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/MODULE_ID-api.pid \
+    --cidfile %t/MODULE_ID-api.ctr-id \
+    --cgroups=no-conmon \
+    --pod-id-file %t/MODULE_ID.pod-id \
+    --replace -d --name MODULE_ID-api \
+    --volumes-from=MODULE_ID-vpn \
+    --network=host \
+    --env-file=/var/lib/nethserver/MODULE_ID/state/network.env \
+    --env-file=/var/lib/nethserver/MODULE_ID/state/secret.env \
+    --env-file=/var/lib/nethserver/MODULE_ID/state/config.env \
+    --env-file=/var/lib/nethserver/MODULE_ID/state/promtail.env \
+    ${NETHSECURITY_API_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/MODULE_ID-api.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/MODULE_ID-api.ctr-id
+PIDFile=%t/MODULE_ID-api.pid
+Type=forking
+
+[Install]
+WantedBy=default.target
