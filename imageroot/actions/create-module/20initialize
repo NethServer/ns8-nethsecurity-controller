@@ -35,6 +35,8 @@ secret=$(uuidgen | sha256sum | awk '{print $1}')
 cat << EOF > network.env
 OVPN_UDP_PORT=$ovpn_udp_port
 OVPN_TUN=nsc$num
+API_PORT=$api_port
+API_BIND_IP=127.0.0.1
 LISTEN_ADDRESS=127.0.0.1:$api_port
 UI_PORT=$ui_port
 UI_BIND_IP=127.0.0.1
