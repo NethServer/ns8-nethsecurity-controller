@@ -7,18 +7,16 @@ After=MODULE_ID.service MODULE_ID-vpn.service
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
 EnvironmentFile=/var/lib/nethserver/MODULE_ID/state/environment
-Environment=TOKENS_DIR=%t/api-server/tokens
-Environment=CREDENTIALS_DIR=/var/lib/nethserver/api-server/secrets
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/MODULE_ID-api.pid %t/MODULE_ID-api.ctr-id
-ExecStartPre=mkdir -vp -m 0700 ${TOKENS_DIR}  ${CREDENTIALS_DIR}
 ExecStart=/usr/bin/podman run \
     --conmon-pidfile %t/MODULE_ID-api.pid \
     --cidfile %t/MODULE_ID-api.ctr-id \
     --cgroups=no-conmon \
     --pod-id-file %t/MODULE_ID.pod-id \
     --replace -d --name MODULE_ID-api \
+    -v MODULE_ID-credentials:/nethsecurity-api/credentials/:z \
     --volumes-from=MODULE_ID-vpn \
     --network=host \
     --env-file=/var/lib/nethserver/MODULE_ID/state/network.env \
