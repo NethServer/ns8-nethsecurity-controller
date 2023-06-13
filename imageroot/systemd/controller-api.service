@@ -16,6 +16,7 @@ ExecStart=/usr/bin/podman run \
     --cgroups=no-conmon \
     --pod-id-file %t/MODULE_ID.pod-id \
     --replace -d --name MODULE_ID-api \
+    --volume MODULE_ID-credentials:/nethsecurity-api/credentials/:z \
     --volumes-from=MODULE_ID-vpn \
     --network=host \
     --env-file=/var/lib/nethserver/MODULE_ID/state/network.env \

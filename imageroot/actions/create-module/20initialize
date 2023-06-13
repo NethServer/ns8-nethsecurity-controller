@@ -37,6 +37,7 @@ OVPN_UDP_PORT=$ovpn_udp_port
 OVPN_TUN=nsc$num
 API_PORT=$api_port
 API_BIND_IP=127.0.0.1
+LISTEN_ADDRESS=127.0.0.1:$api_port
 UI_PORT=$ui_port
 UI_BIND_IP=127.0.0.1
 PROXY_PORT=$proxy_port
@@ -44,7 +45,7 @@ PROXY_BIND_UI=127.0.0.1
 EOF
 
 cat << EOF > secret.env
-API_SECRET=$secret
+SECRET_JWT=$secret
 EOF
 
 mkdir -p clients
