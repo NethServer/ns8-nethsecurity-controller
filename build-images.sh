@@ -34,7 +34,6 @@ buildah add "${container}" ui/dist /ui
 buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm node:fwadm node:tunadm" \
     --label="org.nethserver.tcp-ports-demand=5" \
-    --label="org.nethserver.rootfull=1" \
     --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn:$tag ghcr.io/nethserver/nethsecurity-api:$tag ghcr.io/nethserver/nethsecurity-ui:$tag ghcr.io/nethserver/nethsecurity-proxy:$tag docker.io/grafana/promtail:2.7.1" \
     "${container}"
 # Commit the image
