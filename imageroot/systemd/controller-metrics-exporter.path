@@ -1,7 +1,0 @@
-[Unit]
-Description=Watch for vpn connections from MODULE_ID-vpn.service
-BindsTo=MODULE_ID.service
-After=MODULE_ID-vpn.service
-
-[Path]
-PathChanged=/var/lib/nethserver/MODULE_ID/state/clients

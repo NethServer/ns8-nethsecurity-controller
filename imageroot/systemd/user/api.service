@@ -1,0 +1,33 @@
+
+[Unit]
+Description=Podman api.service
+BindsTo=controller.service
+After=controller.service vpn.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/api.pid %t/api.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/api.pid \
+    --cidfile %t/api.ctr-id \
+    --cgroups=no-conmon \
+    --pod-id-file %t/controller.pod-id \
+    --replace -d --name api \
+    --volume credentials:/nethsecurity-api/credentials/:z \
+    --volumes-from=vpn \
+    --network=host \
+    --env-file=%S/state/network.env \
+    --env-file=%S/state/secret.env \
+    --env-file=%S/state/config.env \
+    --env-file=%S/state/promtail.env \
+    ${NETHSECURITY_API_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/api.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/api.ctr-id
+PIDFile=%t/api.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

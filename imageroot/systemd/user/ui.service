@@ -1,0 +1,29 @@
+
+[Unit]
+Description=Podman ui.service
+BindsTo=controller.service
+After=api.service
+Requires=api.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/.pid %t/ui.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/ui.pid \
+    --cidfile %t/ui.ctr-id \
+    --cgroups=no-conmon \
+    --pod-id-file %t/controller.pod-id \
+    --replace -d --name ui \
+    --network=host \
+    --env-file=%S/state/network.env \
+    ${NETHSECURITY_UI_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/ui.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/ui.ctr-id
+PIDFile=%t/ui.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

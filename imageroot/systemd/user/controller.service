@@ -1,0 +1,27 @@
+[Unit]
+Description=Podman controller.service
+Requires=vpn.service api.service ui.service proxy.service promtail.service metrics-exporter.path
+Before=vpn.service api.service ui.service proxy.service promtail.service metrics-exporter.path
+ConditionPathExists=%S/state/environment
+ConditionPathExists=%S/state/network.env
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/controller.pid %t/controller.pod-id
+ExecStartPre=/usr/bin/podman pod create \
+    --infra-conmon-pidfile %t/controller.pid \
+    --pod-id-file %t/controller.pod-id \
+    --name controller \
+    --network=host \
+    --replace
+ExecStart=/usr/bin/podman pod start --pod-id-file %t/controller.pod-id
+ExecStop=/usr/bin/podman pod stop --ignore --pod-id-file %t/controller.pod-id -t 10
+ExecStopPost=/usr/bin/podman pod rm --ignore -f --pod-id-file %t/controller.pod-id
+PIDFile=%t/controller.pid
+Type=forking
+
+[Install]
+WantedBy=default.target
