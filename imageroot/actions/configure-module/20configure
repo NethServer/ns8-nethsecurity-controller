@@ -95,3 +95,6 @@ rules = [
 ]
 ports = [f"{ports[4]}/tcp"] # promtail port
 agent.add_custom_zone(tun, tun, ports, rules)
+
+network = agent.read_envfile('network.env')
+agent.add_tun(network.get('OVPN_TUN'), f'{server_address}/{bits}')
