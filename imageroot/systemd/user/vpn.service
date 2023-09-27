@@ -19,7 +19,7 @@ ExecStart=/usr/bin/podman run \
     --volume=%S/state/clients:/etc/openvpn/clients:z \
     --env-file=%S/state/network.env \
     --env-file=%S/state/config.env \
-    --network=host --cap-add=NET_ADMIN --device /dev/net/tun \
+    --network=host --device /dev/net/tun \
     --security-opt label=disable \
     ${NETHSECURITY_VPN_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/vpn.ctr-id -t 10
