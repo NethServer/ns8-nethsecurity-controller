@@ -1,0 +1,31 @@
+[Unit]
+Description=Podman vpn.service
+BindsTo=controller.service
+After=controller.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/vpn.pid %t/vpn.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/vpn.pid \
+    --cidfile %t/vpn.ctr-id \
+    --cgroups=no-conmon \
+    --pod-id-file %t/controller.pod-id \
+    --replace -d --name vpn \
+    -v vpn-data:/etc/openvpn/:z \
+    --volume=%S/state/clients:/etc/openvpn/clients:z \
+    --env-file=%S/state/network.env \
+    --env-file=%S/state/config.env \
+    --network=host --device /dev/net/tun \
+    --security-opt label=disable \
+    ${NETHSECURITY_VPN_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/vpn.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/vpn.ctr-id
+PIDFile=%t/vpn.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,30 @@
+[Unit]
+Description=Podman promtail.service
+BindsTo=controller.service
+After=vpn.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/promtail.pid %t/promtail.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/promtail.pid \
+    --cidfile %t/promtail.ctr-id \
+    --cgroups=no-conmon \
+    --pod-id-file %t/controller.pod-id \
+    --replace -d --name promtail \
+    --volume %S/etc/config.yml:/etc/promtail/config.yml:z \
+    --network=host \
+    --env-file=%S/state/promtail.env \
+    --env-file=%S/state/config.env \
+    ${PROMTAIL_IMAGE} \
+    -config.expand-env=true -config.file=/etc/promtail/config.yml
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/promtail.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/promtail.ctr-id
+PIDFile=%t/promtail.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

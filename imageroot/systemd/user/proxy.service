@@ -1,0 +1,30 @@
+
+[Unit]
+Description=Podman proxy.service
+BindsTo=controller.service
+After=api.service vpn.service 
+Requires=api.service vpn.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/.pid %t/proxy.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/proxy.pid \
+    --cidfile %t/proxy.ctr-id \
+    --cgroups=no-conmon \
+    --pod-id-file %t/controller.pod-id \
+    --replace -d --name proxy \
+    --volumes-from=vpn \
+    --network=host \
+    --env-file=%S/state/network.env \
+    ${NETHSECURITY_PROXY_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/proxy.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/proxy.ctr-id
+PIDFile=%t/proxy.pid
+Type=forking
+
+[Install]
+WantedBy=default.target
