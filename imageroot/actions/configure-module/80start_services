@@ -22,5 +22,5 @@
 
 # If the control reaches this step, the service can be enabled and started
 
-systemctl enable controller.service
-systemctl restart controller.service
+systemctl --user enable controller.service
+systemctl --user restart controller.service
