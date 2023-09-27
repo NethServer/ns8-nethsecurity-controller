@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+exec 1>&2 # Send any output to stderr, to not alter the action response protocol
+
+# Stop the controller to free the tun device
+systemctl --user disable --now controller.service
