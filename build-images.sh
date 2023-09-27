@@ -9,7 +9,7 @@ images=()
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
 reponame="nethsecurity-controller"
-tag=${IMAGE_TAG:-latest}
+tag=${IMAGE_TAG:-0.0.1}
 
 # Create a new empty container image
 container=$(buildah from scratch)
