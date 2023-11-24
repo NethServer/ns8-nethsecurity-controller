@@ -1,1 +1,68 @@
-{}
+{
+    "error": {
+        "403": "Operación no autorizada",
+        "invalid_cn": "Nombre del controlador no válido: debe contener solo letras y números",
+        "cannot_retrieve_installed_modules": "No es posible recibir los módulos instalados",
+        "401": "Autenticación no válida",
+        "cannot_retrieve_module_info": "No es posible recibir la información del módulo",
+        "generic_error": "Algo ha salido mal",
+        "invalid_host": "Nombre de host no válido: debe ser un FQDN válido",
+        "error": "Error",
+        "network_timeout": "Tiempo de espera de red agotado",
+        "404": "Recurso no encontrado",
+        "invalid_user": "Nombre de usuario no válido: debe contener sólo letras y números",
+        "network_error": "Error de red",
+        "validation_error": "Error de validación"
+    },
+    "settings": {
+        "user": "Usuario administrador",
+        "netmask": "Máscara de red de VPN",
+        "configure_instance": "Configurar {instance}",
+        "host": "FQDN del controlador",
+        "disabled": "Deshabilitado",
+        "lets_encrypt": "Solicitar certificado Let's Encrypt",
+        "save": "Guardar",
+        "enabled": "Habilitado",
+        "network": "Red VPN",
+        "title": "Ajustes",
+        "cn": "Nombre del controlador",
+        "password": "Contraseña de administrador"
+    },
+    "common": {
+        "required": "Requerido",
+        "work_in_progress": "Trabajo en progreso",
+        "processing": "Procesando..."
+    },
+    "status": {
+        "created": "Creado",
+        "size": "Tamaño",
+        "name": "Nombre",
+        "no_images": "No hay imágenes",
+        "app_volumes": "Volúmen de App | Volúmenes de App",
+        "services": "Servicio | Servicios",
+        "app_images": "Imagen de App | Imágenes de App",
+        "no_services": "No hay servicios",
+        "app_instance": "Instancia de aplicación",
+        "mount": "Montar",
+        "title": "Estado",
+        "installation_node": "Nodo de instalación",
+        "node": "Nodo",
+        "no_volumes": "No hay volúmenes"
+    },
+    "about": {
+        "title": "Acerca de"
+    },
+    "action": {
+        "list-backup-repositories": "Listar repositorios de copia de seguridad",
+        "get-module-info": "Obtener información del módulo",
+        "list-installed-modules": "Listar módulos instalados",
+        "list-backups": "Listar copias de seguridad",
+        "get-status": "Obtener estado",
+        "configure-module": "Configurar módulo",
+        "get-configuration": "Obtener la configuración",
+        "get-name": "Obtener nombre"
+    },
+    "task": {
+        "cannot_create_task": "No se puede crear la tarea {action}"
+    }
+}
