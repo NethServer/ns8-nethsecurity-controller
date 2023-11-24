@@ -1,68 +1,68 @@
 {
     "error": {
-        "403": "Operation not authorized",
+        "403": "Operación no autorizada",
         "invalid_cn": "Nombre del controlador no válido: debe contener solo letras y números",
-        "cannot_retrieve_installed_modules": "Cannot retrieve installed modules",
-        "401": "Invalid authentication",
-        "cannot_retrieve_module_info": "Cannot retrieve module info",
-        "generic_error": "Something went wrong",
+        "cannot_retrieve_installed_modules": "No es posible recibir los módulos instalados",
+        "401": "Autenticación no válida",
+        "cannot_retrieve_module_info": "No es posible recibir la información del módulo",
+        "generic_error": "Algo ha salido mal",
         "invalid_host": "Nombre de host no válido: debe ser un FQDN válido",
         "error": "Error",
-        "network_timeout": "Network timeout",
-        "404": "Resource not found",
+        "network_timeout": "Tiempo de espera de red agotado",
+        "404": "Recurso no encontrado",
         "invalid_user": "Nombre de usuario no válido: debe contener sólo letras y números",
-        "network_error": "Network error",
-        "validation_error": "Validation error"
+        "network_error": "Error de red",
+        "validation_error": "Error de validación"
     },
     "settings": {
         "user": "Usuario administrador",
         "netmask": "Máscara de red de VPN",
         "configure_instance": "Configurar {instance}",
         "host": "FQDN del controlador",
-        "disabled": "Disabled",
+        "disabled": "Deshabilitado",
         "lets_encrypt": "Solicitar certificado Let's Encrypt",
-        "save": "Save",
-        "enabled": "Enabled",
+        "save": "Guardar",
+        "enabled": "Habilitado",
         "network": "Red VPN",
-        "title": "Settings",
+        "title": "Ajustes",
         "cn": "Nombre del controlador",
         "password": "Contraseña de administrador"
     },
     "common": {
-        "required": "Requerido",
-        "work_in_progress": "Work in progress",
-        "processing": "Processing..."
+        "required": "Obligatorio",
+        "work_in_progress": "Trabajo en curso",
+        "processing": "Procesando..."
     },
     "status": {
-        "created": "Created",
-        "size": "Size",
-        "name": "Name",
-        "no_images": "No images",
-        "app_volumes": "App volume | App volumes",
-        "services": "Service | Services",
-        "app_images": "App image | App images",
-        "no_services": "No services",
-        "app_instance": "App instance",
-        "mount": "Mount",
-        "title": "Status",
-        "installation_node": "Installation node",
-        "node": "Node",
-        "no_volumes": "No volumes"
+        "created": "Creado",
+        "size": "Tamaño",
+        "name": "Nombre",
+        "no_images": "No hay imágenes",
+        "app_volumes": "Volúmen de aplicación | Volúmenes de aplicaciones",
+        "services": "Servicio | Servicios",
+        "app_images": "Imagen de App | Imágenes de App",
+        "no_services": "No hay servicios",
+        "app_instance": "Instancia de la aplicación",
+        "mount": "Montar",
+        "title": "Estado",
+        "installation_node": "Nodo de instalación",
+        "node": "Nodo",
+        "no_volumes": "Sin volúmenes"
     },
     "about": {
-        "title": "About"
+        "title": "Acerca de"
     },
     "action": {
-        "list-backup-repositories": "List backup repositories",
-        "get-module-info": "Get module info",
-        "list-installed-modules": "List installed modules",
-        "list-backups": "List backups",
-        "get-status": "Get status",
-        "configure-module": "Configure module",
-        "get-configuration": "Get configuration",
-        "get-name": "Get name"
+        "list-backup-repositories": "Mostrar repositorios de respaldo",
+        "get-module-info": "Obtener información del módulo",
+        "list-installed-modules": "Mostrar módulos instalados",
+        "list-backups": "Mostrar copias de seguridad",
+        "get-status": "Obtener el estado",
+        "configure-module": "Configurar el módulo",
+        "get-configuration": "Obtener la configuración",
+        "get-name": "Obtener el nombre"
     },
     "task": {
-        "cannot_create_task": "Cannot create task {action}"
+        "cannot_create_task": "No se puede crear la tarea {action}"
     }
 }
