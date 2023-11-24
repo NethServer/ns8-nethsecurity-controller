@@ -1,6 +1,6 @@
 {
     "error": {
-        "403": "Operación no autorizada",
+        "403": "Operation not authorized",
         "invalid_cn": "Nombre del controlador no válido: debe contener solo letras y números",
         "cannot_retrieve_installed_modules": "No se pueden recuperar los módulos instalados",
         "401": "Autenticación inválida",
@@ -29,7 +29,7 @@
         "password": "Contraseña de administrador"
     },
     "common": {
-        "required": "Requerido",
+        "required": "Required",
         "work_in_progress": "Trabajando",
         "processing": "Procesando..."
     },
