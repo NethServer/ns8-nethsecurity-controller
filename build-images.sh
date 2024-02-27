@@ -10,6 +10,10 @@ repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
 reponame="nethsecurity-controller"
 tag=${IMAGE_TAG:-0.0.1}
+promtail_version=2.7.1
+loki_version=2.9.4
+prometheus_version=2.50.1
+grafana_version=10.3.3
 
 # Create a new empty container image
 container=$(buildah from scratch)
@@ -34,7 +38,7 @@ buildah add "${container}" ui/dist /ui
 buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm node:tunadm" \
     --label="org.nethserver.tcp-ports-demand=5" \
-    --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn:$tag ghcr.io/nethserver/nethsecurity-api:$tag ghcr.io/nethserver/nethsecurity-ui:$tag ghcr.io/nethserver/nethsecurity-proxy:$tag docker.io/grafana/promtail:2.7.1" \
+    --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn:$tag ghcr.io/nethserver/nethsecurity-api:$tag ghcr.io/nethserver/nethsecurity-ui:$tag ghcr.io/nethserver/nethsecurity-proxy:$tag docker.io/grafana/promtail:$promtail_version docker.io/grafana/loki:v$loki_version docker.io/prom/prometheus:v$prometheus_version docker.io/grafana/grafana:$grafana_version" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
