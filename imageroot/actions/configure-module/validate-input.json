@@ -11,7 +11,9 @@
             "lets_encrypt": true,
             "ovpn_network": "127.2.10.0",
             "ovpn_netmask": "255.255.0.0",
-            "ovpn_cn": "nethsec"
+            "ovpn_cn": "nethsec",
+            "loki_retention": 180,
+            "prometheus_retention": 15
         }
     ],
     "type": "object",
@@ -51,6 +53,16 @@
             "type": "string",
             "description": "Controller name, it must be a valid CN of x509 certificate'",
             "minLength": 2
+        },
+        "loki_retention": {
+            "type": "integer",
+            "description": "Retention policy for Loki logs, default is 180 days",
+            "minimum": 1
+        },
+        "prometheus_retention": {
+            "type": "integer",
+            "description": "Retention policy for Prometehus metrics, default is 15 days",
+            "minimum": 1
         }
     }
 }

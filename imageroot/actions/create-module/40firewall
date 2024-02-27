@@ -8,5 +8,5 @@
 import os
 import agent
 
-ovpn_port = os.environ['TCP_PORTS'].split(',')[0]
+ovpn_port = os.environ['TCP_PORTS_RANGE'].split('-')[0]
 agent.assert_exp(agent.add_public_service(os.environ['MODULE_ID'], [f"{ovpn_port}/udp"]))

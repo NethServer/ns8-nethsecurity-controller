@@ -22,14 +22,13 @@ default_traefik_id = agent.resolve_agent_id('traefik@node')
 if default_traefik_id is None:
     sys.exit(2)
 
-# Remove traefik route
-response = agent.tasks.run(
-    agent_id=default_traefik_id,
-    action='delete-route',
-    data={
-        'instance': os.environ['MODULE_ID']
-    },
-)
-
-# Check if traefik configuration has been successfull
-agent.assert_exp(response['exit_code'] == 0)
+# Remove traefik routes
+for instance in [os.environ['MODULE_ID'], os.environ['MODULE_ID'] + '_grafana', os.environ['MODULE_ID'] + '_loki']:
+    response = agent.tasks.run(
+        agent_id=default_traefik_id,
+        action='delete-route',
+        data={
+            'instance': instance
+        },
+    )
+    agent.assert_exp(response['exit_code'] == 0)

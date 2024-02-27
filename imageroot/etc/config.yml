@@ -2,8 +2,7 @@ server:
   disable: true
 
 clients:
-  - url: http://${LOKI_ADDR}:${LOKI_HTTP_PORT}/loki/api/v1/push
-    bearer_token: ${LOKI_LOGS_INGRESS_TOKEN}
+  - url: http://${LOKI_ADDR}:${LOKI_HTTP_PORT}${LOKI_PATH}/loki/api/v1/push
 
 positions:
   filename: /tmp/positions.yaml
