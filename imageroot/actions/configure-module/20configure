@@ -105,14 +105,12 @@ server_address = request["ovpn_network"].removesuffix('.0') + '.1'
 with open('promtail.env', 'w') as promtail:
     promtail.write('LOKI_ADDR=127.0.0.1\n')
     promtail.write(f'LOKI_HTTP_PORT={ports[5]}\n')
-    promtail.write(f'LOKI_PATH={config["loki_path"]}\n')
     promtail.write(f'PROMTAIL_ADDRESS={server_address}\n')
     promtail.write(f'PROMTAIL_PORT={ports[4]}\n')
 
 with open('loki.env', 'w') as lfp:
     lfp.write(f"LOKI_HTTP_PORT={ports[5]}\n")
     lfp.write(f"LOKI_GRPC_PORT={ports[6]}\n")
-    lfp.write(f"LOKI_PATH={config['loki_path']}\n")
     lfp.write(f"LOKI_RETENTION={request.get('loki_rentention', '180')}d\n") # retention in days
 
 with open('grafana.env', 'w') as gfp:
@@ -149,7 +147,7 @@ with open('local.yml', 'w') as fp:
     fp.write('    type: loki\n')
     fp.write('    uid: loki\n')
     fp.write('    access: proxy\n')
-    fp.write(f'    url: http://127.0.0.1:{ports[5]}{config["loki_path"]}\n')
+    fp.write(f'    url: http://127.0.0.1:{ports[5]}\n')
 
 network = agent.read_envfile('network.env')
 tun = network.get('OVPN_TUN')

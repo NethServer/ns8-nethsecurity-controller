@@ -6,7 +6,6 @@ server:
   grpc_listen_port: ${LOKI_GRPC_PORT}
   http_listen_address: 127.0.0.1
   grpc_listen_address: 127.0.0.1
-  http_path_prefix: ${LOKI_PATH}
 
 common:
   instance_addr: 127.0.0.1
