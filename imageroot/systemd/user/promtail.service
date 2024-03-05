@@ -15,7 +15,7 @@ ExecStart=/usr/bin/podman run \
     --cgroups=no-conmon \
     --pod-id-file %t/controller.pod-id \
     --replace -d --name promtail \
-    --volume %S/etc/config.yml:/etc/promtail/config.yml:z \
+    --volume %S/etc/promtail.yml:/etc/promtail/config.yml:z \
     --network=host \
     --env-file=%S/state/promtail.env \
     --env-file=%S/state/config.env \
