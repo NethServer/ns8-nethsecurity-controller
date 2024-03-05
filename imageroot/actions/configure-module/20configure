@@ -132,6 +132,10 @@ with open('prometheus.yml', 'w', encoding='utf-8') as fp:
     fp.write('    file_sd_configs:\n')
     fp.write('      - files:\n')
     fp.write('        - "/prometheus/prometheus.d/*.yml"\n')
+    fp.write('  - job_name: "loki"\n')
+    fp.write('    static_configs:\n')
+    fp.write('      - targets:\n')
+    fp.write(f'        - 127.0.0.1:{ports[5]}\n')
 
 # Grafana configuration
 with open('local.yml', 'w') as fp:
