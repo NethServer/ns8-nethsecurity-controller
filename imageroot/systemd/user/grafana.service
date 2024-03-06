@@ -16,7 +16,7 @@ ExecStart=/usr/bin/podman run \
     --cgroups=no-conmon \
     --pod-id-file %t/controller.pod-id \
     --replace -d --name grafana \
-    --volume grafana-storage:/var/lib/grafana:z \
+    --volume grafana-data:/var/lib/grafana:z \
     --volume=%S/state/local.yml:/etc/grafana/provisioning/datasources/local.yml:z \
     --volume=%S/etc/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:z \
     --volume=%S/etc/dashboards/:/etc/grafana/dashboards:z \
