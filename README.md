@@ -4,8 +4,16 @@ Setup and start an instance of [nethsecurity-controller](https://github.com/Neth
 
 Each node can host multiple controller instances.
 
-**Note**
-This module is not yes present inside NS8 repository, so please install it manually following below instructions.
+The module is composed by the following containers:
+- [nethsecurity-api](#api-server): REST API python server to manage nethsec-vpn clients
+- [nethsecurity-vpn](#vpn): OpenVPN server, it authenticates the machines and create routes for the proxy
+- [nethsecurity-ui](#proxy-and-ui): lighttpd instance serving static UI files
+- [nethsecurity-proxy](#proxy-and-ui): traefik forwards requests to the connected machines using the machine name as path prefix
+- [promtail](#promtail): log collector for Loki, it listens for syslog messages on the VPN address and forwards them to Loki
+- [prometheus](#prometheus): metrics collector, it scrapes metrics from the connected machines
+- [loki](#loki): log storage, it stores logs from promtail
+- [grafana](#grafana): metrics visualization, it visualizes metrics from prometheus and logs from loki
+
 
 **Note**
 This module implements the backup but not the restore procedure.
@@ -35,49 +43,126 @@ Launch `configure-module`, by setting the following parameters:
 - `ovpn_cn`: OpenVPN Certificate CN
 - `api_user`: controller admin user
 - `api_password`: controller admin password
+- `loki_retention`: Loki retention period in days (default: ``180`` days)
+- `promtail_retention`: Promtail retention period in days (default: ``15`` days)
 
 Example:
 
-    api-cli run  module/nethsecurity-controller1/configure-module --data '{"host": "nscontroller.nethserver.org", "lets_encrypt": false, "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.255.0", "ovpn_cn": "nethsec", "api_user": "admin", "api_password": "password"}'
+    api-cli run  module/nethsecurity-controller1/configure-module --data '{"host": "mycontroller.nethsecurity.org", "lets_encrypt": false, "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.255.0", "ovpn_cn": "nethsec", "api_user": "admin", "api_password": "password", "loki_retention": "180", "promtail_retention": "15"}'
 
 The above command will:
 - start and configure the nethsecurity-controller instance
-- setup a route inside traefik to reach the controller
-- setup a syslog receiver
-- setup prometheus for metrics scraping
+- setup a the following routes inside traefik:
+  - one route to reach the controller based on the `host` parameter like `https://mycontroller.nethsecurity.org/`
+  - one route to reach the prometheus, with a random generated URL like `https://myontroller.nethsecurity.org/f0365996-c1b3-4252-9cf3-c2e7e86ed617/`
+  - one route to reach the loki, with a random generated URL like `https://mycontroller.nethsecurity.org/3e3e3e3e-3e3e-3e3e-3e3e-3e3e3e3e3e3e/`
+  - one route to reach the grafana, with a well-know URL like `https://mycontroller.nethsecurity.org/grafana/`
+- setup Promtail syslog receiver
+- setup Prometheus for metrics scraping
+- setup Loki for receiving logs
+- setup Grafana for metrics visualization
 
-Send a test HTTP request to the nethsecurity-controller backend service:
+Once the controller is configured, you access the controller URL, eg. `mycontroller.nethsecurity.org`, and manage NethSecurity units.
 
-    curl https://nscontroller.nethserver.org/
+## Module overview
 
-All logs are grouped the controller name (`ovpn_cn`). To query the logs, use:
-```
-logcli query '{controller_name="nethsec"}' --tail
-```
-
-## Module Overview
-
-This multi-container module allows to connect the NS8 cluster to NethSecurity installations.
-
-Here are all the module features:
+The module is composed by the following systemd units:
+- controller.service: runs the container pod, all containers are part of the same pod; it can start and stop all the containers at once
+- api.service: runs the nethsecurity-api container
+- vpn.service: runs the nethsecurity-vpn container
+- ui.service: runs the nethsecurity-ui container
+- proxy.service: runs the nethsecurity-proxy container
+- promtail.service: runs the promtail container
+- prometheus.service: runs the prometheus container
+- loki.service: runs the loki container
+- grafana.service: runs the grafana container
+- metrics-exporter.path: watch for vpn connections from vpn.service and start metrics-exporter.service; each time a new client connects, the vpn
+  container creates a file inside the `prometheus.d/` directory
+- metrics-exporter.service: executes the `metrics_exporter_handler` script to create a new prometheus target for the connected machine
 
 ### API Server
 
-The [api server](https://github.com/NethServer/nethsecurity-controller/tree/master/api) gives NethSecurity the ability to register itself to NS8 (through [`ns-plug`](https://nethserver.github.io/nethsecurity/packages/ns-plug/)) and gives access to the on-demand generated credentials for the VPN.
+The [api server](https://github.com/NethServer/nethsecurity-controller/tree/master/api) gives NethSecurity the ability to register itself to NS8 (through [`ns-plug`](https://dev.nethsecurity.org/nethsecurity/packages/ns-plug/)) and gives access to the on-demand generated credentials for the VPN.
 
-The API even registers the endpoints for the [Traefik Proxy](#proxy-and-ui) that allows the interaction directly with the firewall even if it's not in the same network.
+The API also registers the endpoints for the [Traefik Proxy](#proxy-and-ui) that allows direct interaction with the firewall, even if it's not in the same network.
 
 ### VPN
 
 The [OpenVPN container](https://github.com/NethServer/nethsecurity-controller/tree/master/vpn) tunnels connection from the NethSecurity to the NS8 through a VPN tunnel, due to [firewall configuration](https://github.com/NethServer/ns8-nethsecurity-controller/blob/main/imageroot/actions/configure-module/20configure#L87) in NS8, no client can be reached from other clients and only client-server communication is allowed.
 
+The module uses the NS8 [TUN feature](https://dev.nethsecurity.org/ns8-core/core/tun/) to create a new network interface and assign it to the VPN container.
+
 ### Proxy and UI
 
 The [UI](https://github.com/NethServer/nethsecurity-controller/tree/master/ui) allows the browse of the interface directly off the NethSecurity installation, this is possible due to the [Traefik Proxy](https://github.com/NethServer/nethsecurity-controller/tree/master/proxy) server that redirects the urls to the correct IP inside the VPN.
 
+### Promtail
+
+[Promtail](https://grafana.com/docs/loki/latest/send-data/promtail/) is a log collector for Loki, it listens for syslog messages on the VPN address and forwards them to Loki. The configuration is available at `/home/nethsecurity-controller1/.config/etc/promtail.yml`.
+Promtail sets the following labels:
+- `job` fixed to `syslog`
+- unit `hostname`
+- log `level`
+- `application` name
+- syslog `facility` name
+- `controller_name` the name of the controller as configured in `ovpn_cn`
+
+### Prometheus
+
+[Prometheus](https://prometheus.io/) is a metrics collector, it scrapes metrics from the connected machines. The configuration is available at `/home/nethsecurity-controller1/.config/state/local.yml` and it's generated every time by the `configure-module` action.
+It has a the following targets:
+- static target with job_name `loki` that scrapes Loki metrics
+- dynamic targets with job_name `node` that scrapes metrics from the connected machines from the `prometheus.d/` directory under the state directory (eg. `/home/nethsecurity-controller1/.config/state/prometheus.d`)
+
+Each dynamic target is created by the `metrics-exporter` and has the following labels:
+
+- `instance` the VPN IP of the connected machine with the netdata port (eg. `172.19.64.3:19999`)
+- `job` fixed to `node`
+- `node` the VPN IP of the connected machine
+- `unit` the unit unique name of the connected machine
+
+### Loki
+
+[Loki](https://grafana.com/oss/loki/) is a log storage, it stores logs from promtail. The configuration is available at `/home/nethsecurity-controller1/.config/etc/loki.yml`.
+
+It uses TSDB as storage and it's configured to store logs for `loki_retention` days.
+
+You can use `logcli` to query the logs.
+First, access the module with `runagent` and source the environment file `loki.env` to set the `LOKI_ADDR` variable:
+```
+runagent -m nethsecurity-controller1 /bin/bash
+. loki.env
+```
+
+List labels:
+```
+LOKI_ADDR=http://127.0.0.1:${LOKI_HTTP_PORT} logcli labels
+```
+
+You can do the same with curl: `curl -v http://127.0.0.1:${LOKI_HTTP_PORT}/loki/api/v1/labels`
+
+Query logs:
+```
+LOKI_ADDR=http://127.0.0.1:${LOKI_HTTP_PORT} logcli series --analyze-labels '{hostname="NethSec"}'
+LOKI_ADDR=http://127.0.0.1:${LOKI_HTTP_PORT} logcli query  '{hostname="NethSec"}'
+```
+
+### Grafana
+
+[Grafana](https://grafana.com/grafana/) is a metrics visualization, it visualizes metrics from prometheus and logs from loki. It's configured via environment variables and the configuration is available at `/home/nethsecurity-controller1/.config/state/grafana.env`.
+
+The modules has already two pre-configured datasources: Loki and Prometheus containers.
+It has also some pre-configured dashboards:
+
+- nethsecurity.json: a dashboard with the most important metrics from the connected machines, like CPU, memory, disk, network, and system load
+- logs.json: a dashboard where you can visualize the logs from all the connected machines and filter them by hostname, application, and priority
+- loki.json: a dashboard with the most important metrics from Loki, like the number of logs ingested, the number of logs dropped, and the status of queriers
+
+Default credentials are `admin`/`admin`. You can change them on the first login.
+
 ### Promtail and Metrics
 
-Using [`ns-plug`](https://nethserver.github.io/nethsecurity/packages/ns-plug/) the module automatically provides Prometheus and Loki endpoints so that NS8 can have all the data in the same place. You can browse the logs with [the command provided in configuration](#configure) while prometheus will most likely be already scraping off the NethSecurity data shortly after the first connection using [Service Discovery](https://github.com/NethServer/ns8-prometheus/#service-discovery).
+Using [`ns-plug`](https://dev.nethsecurity.org/nethsecurity/packages/ns-plug/) the module automatically provides Prometheus and Loki endpoints so that NS8 can have all the data in the same place. You can browse the logs with [the command provided in configuration](#configure) while prometheus will most likely be already scraping off the NethSecurity data shortly after the first connection using [Service Discovery](https://github.com/NethServer/ns8-prometheus/#service-discovery).
 
 ## Uninstall
 
