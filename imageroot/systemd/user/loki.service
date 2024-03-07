@@ -1,0 +1,32 @@
+[Unit]
+Description=Podman loki.service
+BindsTo=controller.service
+Before=promtail.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/loki.pid %t/loki.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/loki.pid \
+    --cidfile %t/loki.ctr-id \
+    --cgroups=no-conmon \
+    --pod-id-file %t/controller.pod-id \
+    --replace -d --name loki \
+    --volume=loki-data:/loki:z \
+    --volume %S/etc/loki.yaml:/etc/loki/local-config.yaml:z \
+    --network=host \
+    --env-file=%S/state/loki.env \
+    ${LOKI_IMAGE} \
+    -config.expand-env=true \
+    -config.file=/etc/loki/local-config.yaml \
+    -log.level warn
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/loki.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/loki.ctr-id
+PIDFile=%t/loki.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

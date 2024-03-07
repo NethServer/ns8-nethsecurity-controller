@@ -1,7 +1,7 @@
 [Unit]
 Description=Podman controller.service
-Requires=vpn.service api.service ui.service proxy.service promtail.service metrics-exporter.path
-Before=vpn.service api.service ui.service proxy.service promtail.service metrics-exporter.path
+Requires=vpn.service api.service ui.service proxy.service promtail.service metrics-exporter.path loki.service prometheus.service grafana.service
+Before=vpn.service api.service ui.service proxy.service promtail.service metrics-exporter.path loki.service prometheus.service grafana.service
 ConditionPathExists=%S/state/environment
 ConditionPathExists=%S/state/network.env
 

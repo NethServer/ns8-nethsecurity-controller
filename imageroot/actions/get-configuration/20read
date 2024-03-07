@@ -26,7 +26,7 @@ else:
     foctet=random.randrange(16,31)
     soctet=random.randrange(1,254)
 
-    config = {'host': '', 'lets_encrypt': False, 'ovpn_network': f'172.{foctet}.{soctet}.0', 'ovpn_netmask': '255.255.255.0', 'ovpn_cn': 'nethsec', 'api_user': 'admin', 'api_password': ''}
+    config = {'host': '', 'lets_encrypt': False, 'ovpn_network': f'172.{foctet}.{soctet}.0', 'ovpn_netmask': '255.255.255.0', 'ovpn_cn': 'nethsec', 'api_user': 'admin', 'api_password': '', 'loki_retention': 180, 'prometheus_retention': 15}
 
     characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
     random.shuffle(characters)
