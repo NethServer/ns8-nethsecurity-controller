@@ -13,6 +13,7 @@ The module is composed by the following containers:
 - [prometheus](#prometheus): metrics collector, it scrapes metrics from the connected machines
 - [loki](#loki): log storage, it stores logs from promtail
 - [grafana](#grafana): metrics visualization, it visualizes metrics from prometheus and logs from loki
+- [webssh](#webssh): web-based ssh client
 
 
 **Note**
@@ -79,6 +80,7 @@ The module is composed by the following systemd units:
 - metrics-exporter.path: watch for vpn connections from vpn.service and start metrics-exporter.service; each time a new client connects, the vpn
   container creates a file inside the `prometheus.d/` directory
 - metrics-exporter.service: executes the `metrics_exporter_handler` script to create a new prometheus target for the connected machine
+- webssh.service: runs the webssh container
 
 ### API Server
 
@@ -109,7 +111,7 @@ Promtail sets the following labels:
 
 ### Prometheus
 
-[Prometheus](https://prometheus.io/) is a metrics collector, it scrapes metrics from the connected machines. The configuration is available at `/home/nethsecurity-controller1/.config/state/local.yml` and it's generated every time by the `configure-module` action.
+[Prometheus](https://prometheus.io/) is a metrics collector, it scrapes metrics from the connected machines. The configuration is available at `/home/nethsecurity-controller1/.config/state/prometheus.yml` and it's generated every time by the `configure-module` action.
 It has a the following targets:
 - static target with job_name `loki` that scrapes Loki metrics
 - dynamic targets with job_name `node` that scrapes metrics from the connected machines from the `prometheus.d/` directory under the state directory (eg. `/home/nethsecurity-controller1/.config/state/prometheus.d`)
@@ -120,6 +122,8 @@ Each dynamic target is created by the `metrics-exporter` and has the following l
 - `job` fixed to `node`
 - `node` the VPN IP of the connected machine
 - `unit` the unit unique name of the connected machine
+
+Access to Prometheus web interface is protected using a random generated URL, you can find it inside the module configuration file at `/home/nethsecurity-controller1/.config/state/config.json`.
 
 ### Loki
 
@@ -147,9 +151,11 @@ LOKI_ADDR=http://127.0.0.1:${LOKI_HTTP_PORT} logcli series --analyze-labels '{ho
 LOKI_ADDR=http://127.0.0.1:${LOKI_HTTP_PORT} logcli query  '{hostname="NethSec"}'
 ```
 
+Access to Loki web interface is protected using a random generated URL, you can find it inside the module configuration file at `/home/nethsecurity-controller1/.config/state/config.json`.
+
 ### Grafana
 
-[Grafana](https://grafana.com/grafana/) is a metrics visualization, it visualizes metrics from prometheus and logs from loki. It's configured via environment variables and the configuration is available at `/home/nethsecurity-controller1/.config/state/grafana.env`.
+[Grafana](https://grafana.com/grafana/) is a metrics visualization, it visualizes metrics from prometheus and logs from loki. It's configured via environment variables and the configuration is available at `/home/nethsecurity-controller1/.config/state/grafana.env`, it also has a static configuration file at `/home/nethsecurity-controller1/.config/grafana.yml`.
 
 The modules has already two pre-configured datasources: Loki and Prometheus containers.
 It has also some pre-configured dashboards:
@@ -158,11 +164,13 @@ It has also some pre-configured dashboards:
 - logs.json: a dashboard where you can visualize the logs from all the connected machines and filter them by hostname, application, and priority
 - loki.json: a dashboard with the most important metrics from Loki, like the number of logs ingested, the number of logs dropped, and the status of queriers
 
-Default credentials are `admin`/`admin`. You can change them on the first login.
+Grafana is accessible at `https://<controller-host>/grafana/`, default credentials are `admin`/`admin`. You can change them on the first login.
 
-### Promtail and Metrics
+### WebSSH
 
-Using [`ns-plug`](https://dev.nethsecurity.org/nethsecurity/packages/ns-plug/) the module automatically provides Prometheus and Loki endpoints so that NS8 can have all the data in the same place. You can browse the logs with [the command provided in configuration](#configure) while prometheus will most likely be already scraping off the NethSecurity data shortly after the first connection using [Service Discovery](https://github.com/NethServer/ns8-prometheus/#service-discovery).
+[WebSSH](https://github.com/huashengdun/webssh) is a web-based ssh client. It's configured using parameters in the webssh.service unit.
+
+Access to WebSSH is protected using a random generated URL, you can find it inside the module configuration file at `/home/nethsecurity-controller1/.config/state/config.json`.
 
 ## Uninstall
 
