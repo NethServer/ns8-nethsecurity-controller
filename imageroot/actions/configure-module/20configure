@@ -24,7 +24,7 @@ try:
 except:
     config = request
 
-for path in ['loki_path', 'prometheus_path']:
+for path in ['loki_path', 'prometheus_path', 'webssh_path']:
     if not config.get(path):
         config[path] = f'/{uuid.uuid4()}'
 
@@ -90,7 +90,7 @@ response = agent.tasks.run(
         'http2https': True,
         'lets_encrypt': request["lets_encrypt"],
         'host': request["host"],
-        'path': '/webssh',
+        'path': config['webssh_path'],
         'strip_prefix': True
     },
 )
