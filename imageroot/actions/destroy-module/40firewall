@@ -9,4 +9,5 @@ import os
 import agent
 network = agent.read_envfile('network.env')
 agent.assert_exp(agent.remove_public_service(os.environ['MODULE_ID']))
-agent.assert_exp(agent.remove_custom_zone(network.get('OVPN_TUN')))
+# do not check return code: if the module has never been configured, the below call will fail
+agent.remove_custom_zone(network.get('OVPN_TUN'))
