@@ -24,7 +24,7 @@ try:
 except:
     config = request
 
-for path in ['loki_path', 'prometheus_path']:
+for path in ['loki_path', 'prometheus_path', 'webssh_path']:
     if not config.get(path):
         config[path] = f'/{uuid.uuid4()}'
 
@@ -77,6 +77,21 @@ response = agent.tasks.run(
         'lets_encrypt': request["lets_encrypt"],
         'host': request["host"],
         'path': config['prometheus_path']
+    },
+)
+agent.assert_exp(response['exit_code'] == 0)
+
+response = agent.tasks.run(
+    agent_id=agent.resolve_agent_id('traefik@node'),
+    action='set-route',
+    data={
+        'instance': os.environ['MODULE_ID'] + '_webssh',
+        'url':  f'http://127.0.0.1:{ports[9]}',
+        'http2https': True,
+        'lets_encrypt': request["lets_encrypt"],
+        'host': request["host"],
+        'path': config['webssh_path'],
+        'strip_prefix': True
     },
 )
 agent.assert_exp(response['exit_code'] == 0)
@@ -138,7 +153,7 @@ with open('prometheus.yml', 'w', encoding='utf-8') as fp:
     fp.write(f'        - 127.0.0.1:{ports[5]}\n')
 
 # Grafana configuration
-with open('local.yml', 'w') as fp:
+with open('grafana.yml', 'w') as fp:
     fp.write("apiVersion: 1\n")
     fp.write("datasources:\n")
     fp.write('  - name: Local Promethus\n')

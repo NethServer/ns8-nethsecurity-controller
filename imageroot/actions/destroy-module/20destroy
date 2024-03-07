@@ -23,12 +23,12 @@ if default_traefik_id is None:
     sys.exit(2)
 
 # Remove traefik routes
-for instance in [os.environ['MODULE_ID'], os.environ['MODULE_ID'] + '_grafana', os.environ['MODULE_ID'] + '_loki', os.environ['MODULE_ID'] + '_prometheus']:
+for instance in ['', '_grafana', '_loki', '_prometheus', '_webssh']:
     response = agent.tasks.run(
         agent_id=default_traefik_id,
         action='delete-route',
         data={
-            'instance': instance
+            'instance': os.environ['MODULE_ID'] + instance
         },
     )
     agent.assert_exp(response['exit_code'] == 0)
