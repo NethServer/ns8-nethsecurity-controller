@@ -153,7 +153,7 @@ with open('prometheus.yml', 'w', encoding='utf-8') as fp:
     fp.write(f'        - 127.0.0.1:{ports[5]}\n')
 
 # Grafana configuration
-with open('local.yml', 'w') as fp:
+with open('grafana.yml', 'w') as fp:
     fp.write("apiVersion: 1\n")
     fp.write("datasources:\n")
     fp.write('  - name: Local Promethus\n')
