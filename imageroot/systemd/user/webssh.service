@@ -1,0 +1,28 @@
+
+[Unit]
+Description=Podman webssh.service
+BindsTo=controller.service
+After=vpm.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+EnvironmentFile=%S/state/network.env
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/.pid %t/webssh.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/webssh.pid \
+    --cidfile %t/webssh.ctr-id \
+    --cgroups=no-conmon \
+    --pod-id-file %t/controller.pod-id \
+    --replace -d --name webssh \
+    --network=host \
+    ${WEBSSH_IMAGE} --address='127.0.0.1' --port=${WEBSSH_PORT}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/webssh.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/webssh.ctr-id
+PIDFile=%t/webssh.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

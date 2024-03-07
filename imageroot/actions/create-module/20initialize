@@ -18,6 +18,7 @@ promtail_port=$(($start+4))
 # port 6 and 7 are reserved for loki
 # port 8 is reserved for prometheus
 # port 9 is reserved for grafana
+webssh_port=$(($start+9))
 
 num=$(echo $MODULE_ID | sed 's/nethsecurity\-controller//')
 
@@ -33,6 +34,7 @@ UI_PORT=$ui_port
 UI_BIND_IP=127.0.0.1
 PROXY_PORT=$proxy_port
 PROXY_BIND_UI=127.0.0.1
+WEBSSH_PORT=$webssh_port
 EOF
 
 cat << EOF > secret.env

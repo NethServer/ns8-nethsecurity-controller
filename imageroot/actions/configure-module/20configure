@@ -81,6 +81,21 @@ response = agent.tasks.run(
 )
 agent.assert_exp(response['exit_code'] == 0)
 
+response = agent.tasks.run(
+    agent_id=agent.resolve_agent_id('traefik@node'),
+    action='set-route',
+    data={
+        'instance': os.environ['MODULE_ID'] + '_webssh',
+        'url':  f'http://127.0.0.1:{ports[9]}',
+        'http2https': True,
+        'lets_encrypt': request["lets_encrypt"],
+        'host': request["host"],
+        'path': '/webssh',
+        'strip_prefix': True
+    },
+)
+agent.assert_exp(response['exit_code'] == 0)
+
 
 # Replace password if passed as parameter, otherwise read the old one
 if 'api_password' in request and request['api_password'] != '':
