@@ -16,7 +16,8 @@ ExecStart=/usr/bin/podman run \
     --cgroups=no-conmon \
     --pod-id-file %t/controller.pod-id \
     --replace -d --name api \
-    --volume credentials:/nethsecurity-api/credentials/:z \
+    --volume api-credentials:/nethsecurity-api/credentials/:z \
+    --volume api-data:/nethsecurity-api/data/:z \
     --volumes-from=vpn \
     --network=host \
     --env-file=%S/state/network.env \

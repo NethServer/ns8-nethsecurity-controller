@@ -116,6 +116,10 @@ with open('config.env', 'w') as env:
     env.write(f'OVPN_NETMASK={request["ovpn_netmask"]}\n')
     env.write(f'OVPN_CN={request["ovpn_cn"]}\n')
     env.write(f'FQDN={request["host"]}\n')
+    env.write(f'PROMETHEUS_PATH={config["prometheus_path"]}\n')
+    env.write(f'WEBSSH_PATH={config["webssh_path"]}/\n')
+    env.write(f'GRAFANA_PATH=/grafana\n')
+    env.write(f'DATA_DIR=/nethsecurity-api/data\n')
 
 server_address = request["ovpn_network"].removesuffix('.0') + '.1'
 with open('promtail.env', 'w') as promtail:
