@@ -7,114 +7,74 @@
     </cv-row>
     <cv-row v-if="error.getConfiguration">
       <cv-column>
-        <NsInlineNotification
-          kind="error"
-          :title="$t('action.get-configuration')"
-          :description="error.getConfiguration"
-          :showCloseButton="false"
-        />
+        <NsInlineNotification kind="error" :title="$t('action.get-configuration')" :description="error.getConfiguration"
+          :showCloseButton="false" />
       </cv-column>
     </cv-row>
     <cv-row>
       <cv-column>
         <cv-tile light>
           <cv-form @submit.prevent="configureModule">
-            <cv-text-input
-              :label="$t('settings.cn')"
-              v-model="cn"
-              :placeholder="$t('settings.cn')"
-              :disabled="
-                loading.getConfiguration ||
-                loading.configureModule ||
-                !firstConfig
-              "
-              :invalid-message="error.cn"
-              ref="cn"
-            ></cv-text-input>
-            <cv-text-input
-              :label="$t('settings.network')"
-              v-model="network"
-              :placeholder="$t('settings.network')"
-              :disabled="
-                loading.getConfiguration ||
-                loading.configureModule ||
-                !firstConfig
-              "
-              :invalid-message="error.network"
-              ref="network"
-            ></cv-text-input>
-            <cv-text-input
-              :label="$t('settings.netmask')"
-              v-model="netmask"
-              :placeholder="$t('settings.netmask')"
-              :disabled="
-                loading.getConfiguration ||
-                loading.configureModule ||
-                !firstConfig
-              "
-              :invalid-message="error.netmask"
-              ref="netmask"
-              class="mg-bottom-xlg"
-            ></cv-text-input>
+            <cv-text-input :label="$t('settings.cn')" v-model="cn" :placeholder="$t('settings.cn')" :disabled="loading.getConfiguration ||
+          loading.configureModule ||
+          !firstConfig" :helper-text="$t('settings.cn_helper')" ></cv-text-input>
+            <cv-text-input :label="$t('settings.network')" v-model="network" :placeholder="$t('settings.network')"
+              :disabled="loading.getConfiguration ||
+          loading.configureModule ||
+          !firstConfig
+          " :invalid-message="error.network" ref="network" :helper-text="$t('settings.network_helper')"></cv-text-input>
+            <cv-text-input :label="$t('settings.netmask')" v-model="netmask" :placeholder="$t('settings.netmask')"
+              :disabled="loading.getConfiguration ||
+          loading.configureModule ||
+          !firstConfig
+          " :invalid-message="error.netmask" ref="netmask" class="mg-bottom-xlg"></cv-text-input>
 
-            <cv-text-input
-              :label="$t('settings.user')"
-              v-model="user"
-              :placeholder="$t('settings.user')"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              :invalid-message="error.user"
-              ref="user"
-            ></cv-text-input>
-            <cv-text-input
-              :label="$t('settings.password')"
-              v-model="password"
-              :placeholder="'***********'"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              :invalid-message="error.password"
-              ref="password"
-              class="mg-bottom-xlg"
-            ></cv-text-input>
+            <div class="mg-top-xxlg">
+              <cv-text-input :label="$t('settings.user')" v-model="user" :placeholder="$t('settings.user')"
+                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.user"
+                ref="user" :helper-text="$t('settings.user_helper')"></cv-text-input>
+              <cv-text-input :label="$t('settings.password')" v-model="password" :placeholder="password_placeholder"
+                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.password"
+                ref="password" class="mg-bottom-xlg" :helper-text="$t('settings.password_helper')"></cv-text-input>
+            </div>
+            <div class="mg-top-xxlg">
+              <NsTextInput v-model.trim="loki_retention" ref="loki_retention"
+                :invalid-message="$t(error.loki_retention)" type="number" :label="$t('settings.loki_retention')"
+                :helper-text="$t('settings.loki_retention_helper')
+          " :disabled="loading.configureModule
+          ">
+              </NsTextInput>
+              <NsTextInput v-model.trim="prometheus_retention" ref="prometheus_retention"
+                :invalid-message="$t(error.loki_retention)" type="number" :label="$t('settings.prometheus_retention')"
+                :helper-text="$t('settings.prometheus_retention_helper')
+          " :disabled="loading.configureModule
+          ">
+              </NsTextInput>
+            </div>
 
-            <cv-text-input
-              :label="$t('settings.host')"
-              v-model="host"
-              placeholder="controller.mydomain.org"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              :invalid-message="error.host"
-              ref="host"
-            ></cv-text-input>
-            <cv-toggle
-              value="letsEncrypt"
-              :label="$t('settings.lets_encrypt')"
-              v-model="lets_encrypt"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              class="mg-bottom"
-            >
-              <template slot="text-left">{{
-                $t("settings.disabled")
-              }}</template>
-              <template slot="text-right">{{
-                $t("settings.enabled")
-              }}</template>
-            </cv-toggle>
+            <div class="mg-top-xxlg">
+              <cv-text-input :label="$t('settings.host')" v-model="host" placeholder="controller.mydomain.org"
+                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.host"
+                ref="host" :helper-text="$t('settings.host_helper')"></cv-text-input>
+              <cv-toggle value="letsEncrypt" :label="$t('settings.lets_encrypt')" v-model="lets_encrypt"
+                :disabled="loading.getConfiguration || loading.configureModule" class="mg-bottom">
+                <template slot="text-left">{{
+          $t("settings.disabled")
+        }}</template>
+                <template slot="text-right">{{
+            $t("settings.enabled")
+                  }}</template>
+              </cv-toggle>
+            </div>
 
             <cv-row v-if="error.configureModule">
               <cv-column>
-                <NsInlineNotification
-                  kind="error"
-                  :title="$t('action.configure-module')"
-                  :description="error.configureModule"
-                  :showCloseButton="false"
-                />
+                <NsInlineNotification kind="error" :title="$t('action.configure-module')"
+                  :description="error.configureModule" :showCloseButton="false" />
               </cv-column>
             </cv-row>
-            <NsButton
-              kind="primary"
-              :icon="Save20"
-              :loading="loading.configureModule"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              >{{ $t("settings.save") }}</NsButton
-            >
+            <NsButton kind="primary" :icon="Save20" :loading="loading.configureModule"
+              :disabled="loading.getConfiguration || loading.configureModule">{{ $t("settings.save") }}</NsButton>
           </cv-form>
         </cv-tile>
       </cv-column>
@@ -152,6 +112,8 @@ export default {
       netmask: "",
       cn: "",
       firstConfig: true,
+      loki_retention: 180,
+      prometheus_retention: 15,
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -237,6 +199,7 @@ export default {
         this.firstConfig = true;
       } else {
         this.firstConfig = false;
+        this.password_placeholder = '************';
       }
       this.cn = config.ovpn_cn;
       this.lets_encrypt = config.lets_encrypt;
@@ -244,6 +207,8 @@ export default {
       this.netmask = config.ovpn_netmask;
       this.user = config.api_user;
       this.password = config.api_password;
+      this.loki_retention = config.loki_retention.toString();
+      this.prometheus_retention = config.prometheus_retention.toString();
 
       this.focusElement("host");
     },
@@ -334,6 +299,8 @@ export default {
         ovpn_netmask: this.netmask,
         ovpn_cn: this.cn,
         api_user: this.user,
+        loki_retention: parseInt(this.loki_retention),
+        prometheus_retention: parseInt(this.prometheus_retention),
       };
       if (this.password) {
         params.api_password = this.password;

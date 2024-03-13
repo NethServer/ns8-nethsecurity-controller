@@ -24,15 +24,24 @@
     "title": "Settings",
     "configure_instance": "Configure {instance}",
     "save": "Save",
-    "host": "Controller FQDN",
+    "host": "Controller Fully Qualified Domain Name",
     "cn": "Controller name",
-    "user": "Administrator user",
-    "password": "Administrator password",
+    "user": "Super-administrator user",
+    "password": "Super-administrator password",
     "network": "VPN network",
     "netmask": "VPN netmask",
     "lets_encrypt": "Request Let's Encrypt certificate",
     "disabled": "Disabled",
-    "enabled": "Enabled"
+    "enabled": "Enabled",
+    "loki_retention": "Logs retention",
+    "loki_retention_helper": "The amount of time to keep logs in Loki, expressed in days",
+    "prometheus_retention": "Metrics retention",
+    "prometheus_retention_helper": "The amount of time to keep metrics in Prometheus, expressed in days",
+    "cn_helper": "The name of the controller, used to create the VPN certification authority",
+    "network_helper": "The VPN network used to connect the units to the controller. Make sure it does not overlap with the units' networks",
+    "user_helper": "This is the only user that can create and manage other users inside the controller",
+    "password_helper": "The super-administrator password can be changed only from this interface",
+    "host_helper": "The hostname of the controller, it must be reachable from the units"
   },
   "about": {
     "title": "About"
@@ -63,6 +72,8 @@
     "cannot_retrieve_installed_modules": "Cannot retrieve installed modules",
     "invalid_cn": "Invalid controller name: it must contain only letters and numbers",
     "invalid_user": "Invalid user name: it must contain only letters and numbers",
-    "invalid_host": "Invalid host name: it must be a valid FQDN"
+    "invalid_host": "Invalid host name: it must be a valid FQDN",
+    "loki_retention": "Invalid logs retention",
+    "prometheus_retention": "Invalid metrics retention"
   }
 }

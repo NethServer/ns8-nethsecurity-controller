@@ -1,5 +1,10 @@
 # ui
 
+On node >= 18.x, execute this command before using yarn:
+```
+export NODE_OPTIONS=--openssl-legacy-provider
+```
+
 ## Project setup
 ```
 yarn install
