@@ -12,6 +12,7 @@ import agent.tasks
 import os
 import hashlib
 import uuid
+import bcrypt
 
 request = json.load(sys.stdin)
 
@@ -99,7 +100,7 @@ agent.assert_exp(response['exit_code'] == 0)
 
 # Replace password if passed as parameter, otherwise read the old one
 if 'api_password' in request and request['api_password'] != '':
-    request['api_password'] = hashlib.sha256(request['api_password'].encode('utf-8')).hexdigest()
+    request['api_password'] =  bcrypt.hashpw(bytes(request['api_password'], 'utf-8'), bcrypt.gensalt()).decode()
 else:
     request['api_password'] = config['api_password']
 
