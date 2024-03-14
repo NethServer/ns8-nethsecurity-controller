@@ -46,7 +46,8 @@
     "cn_tooltip": "The field will be read-only after the first configuration",
     "network_tooltip": "Make sure this network does not overlap with the units' networks. The field will be read-only after the first configuration",
     "netmask_tooltip": "Do not change this value unless you know what you are doing. The field will be read-only after the first configuration",
-    "netmask_helper": "The netmask determines the size of the VPN network. Use only class C networks"
+    "netmask_helper": "The netmask determines the size of the VPN network. Use only class C networks",
+    "password_placeholder": "Password already set, enter a new one to change it"
   },
   "about": {
     "title": "About"

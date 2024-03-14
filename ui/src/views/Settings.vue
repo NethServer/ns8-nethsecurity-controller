@@ -47,7 +47,7 @@
                 :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.user" ref="user"
                 :helper-text="$t('settings.user_helper')"></NsTextInput>
               <NsTextInput :label="$t('settings.password')" v-model="password"
-                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.password"
+                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.password" :placeholder="passwordPlaceholder"
                 ref="password" class="mg-bottom-xlg" :helper-text="$t('settings.password_helper')"></NsTextInput>
             </div>
             <div class="mg-top-xxlg">
@@ -127,6 +127,7 @@ export default {
       firstConfig: true,
       loki_retention: "180",
       prometheus_retention: "15",
+      passwordPlaceholder: "",
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -214,6 +215,7 @@ export default {
         this.firstConfig = true;
       } else {
         this.firstConfig = false;
+        this.passwordPlaceholder = this.$t("settings.password_placeholder");
       }
       this.cn = config.ovpn_cn;
       this.lets_encrypt = config.lets_encrypt;
