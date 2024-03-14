@@ -15,51 +15,51 @@
       <cv-column>
         <cv-tile light>
           <cv-form @submit.prevent="configureModule">
-              <NsTextInput :label="$t('settings.cn')" v-model="cn" :placeholder="$t('settings.cn')" :disabled="loading.getConfiguration ||
-            loading.configureModule ||
-            !firstConfig" :helper-text="$t('settings.cn_helper')" tooltipAlignment="end" tooltipDirection="right">
-                <template #tooltip>{{
-            $t("settings.cn_tooltip")
-          }}</template>
-              </NsTextInput>
-              <NsTextInput :label="$t('settings.network')" v-model="network" :placeholder="$t('settings.network')"
-                :disabled="loading.getConfiguration ||
-            loading.configureModule ||
-            !firstConfig
-            " :invalid-message="error.network" ref="network" :helper-text="$t('settings.network_helper')">
-                <template #tooltip>{{
-            $t("settings.network_tooltip")
-          }}</template>
-              </NsTextInput>
-              <NsTextInput :label="$t('settings.netmask')" v-model="netmask" :placeholder="$t('settings.netmask')"
-                :helper-text="$t('settings.netmask_helper')" :disabled="loading.getConfiguration ||
-            loading.configureModule ||
-            !firstConfig
-            " :invalid-message="error.netmask" ref="netmask"
-                class="mg-bottom-xlg">
-                <template #tooltip>{{
-            $t("settings.netmask_tooltip")
-          }}</template>
-              </NsTextInput>
+            <NsTextInput :label="$t('settings.cn')" v-model="cn" :placeholder="$t('settings.cn')" :disabled="loading.getConfiguration ||
+          loading.configureModule ||
+          !firstConfig" :helper-text="$t('settings.cn_helper')" tooltipAlignment="end" tooltipDirection="right">
+              <template #tooltip>{{
+          $t("settings.cn_tooltip")
+        }}</template>
+            </NsTextInput>
+            <NsTextInput :label="$t('settings.network')" v-model="network" :placeholder="$t('settings.network')"
+              :disabled="loading.getConfiguration ||
+          loading.configureModule ||
+          !firstConfig
+          " :invalid-message="error.network" ref="network" :helper-text="$t('settings.network_helper')">
+              <template #tooltip>{{
+          $t("settings.network_tooltip")
+        }}</template>
+            </NsTextInput>
+            <NsTextInput :label="$t('settings.netmask')" v-model="netmask" :placeholder="$t('settings.netmask')"
+              :helper-text="$t('settings.netmask_helper')" :disabled="loading.getConfiguration ||
+          loading.configureModule ||
+          !firstConfig
+          " :invalid-message="error.netmask" ref="netmask" class="mg-bottom-xlg">
+              <template #tooltip>{{
+          $t("settings.netmask_tooltip")
+        }}</template>
+            </NsTextInput>
 
             <div class="mg-top-xxlg">
               <NsTextInput :label="$t('settings.user')" v-model="user" :placeholder="$t('settings.user')"
                 :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.user" ref="user"
                 :helper-text="$t('settings.user_helper')"></NsTextInput>
               <NsTextInput :label="$t('settings.password')" v-model="password"
-                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.password" :placeholder="passwordPlaceholder"
-                ref="password" class="mg-bottom-xlg" :helper-text="$t('settings.password_helper')"></NsTextInput>
+                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.password"
+                :placeholder="passwordPlaceholder" ref="password" class="mg-bottom-xlg"
+                :helper-text="$t('settings.password_helper')"></NsTextInput>
             </div>
             <div class="mg-top-xxlg">
-              <NsTextInput v-model.trim="loki_retention" ref="loki_retention" 
+              <NsTextInput v-model.trim="loki_retention" ref="loki_retention"
                 :invalid-message="$t(error.loki_retention)" type="number" :label="$t('settings.loki_retention')"
                 :helper-text="$t('settings.loki_retention_helper')
-          " :disabled="loading.configureModule  
-          " >
+          " :disabled="loading.configureModule
+          ">
               </NsTextInput>
               <NsTextInput v-model.trim="prometheus_retention" ref="prometheus_retention"
-                :invalid-message="$t(error.prometheus_retention)" type="number" :label="$t('settings.prometheus_retention')"
-                :helper-text="$t('settings.prometheus_retention_helper') 
+                :invalid-message="$t(error.prometheus_retention)" type="number"
+                :label="$t('settings.prometheus_retention')" :helper-text="$t('settings.prometheus_retention_helper')
           " :disabled="loading.configureModule
           ">
               </NsTextInput>
