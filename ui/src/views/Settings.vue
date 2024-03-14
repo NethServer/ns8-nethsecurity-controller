@@ -15,47 +15,60 @@
       <cv-column>
         <cv-tile light>
           <cv-form @submit.prevent="configureModule">
-            <cv-text-input :label="$t('settings.cn')" v-model="cn" :placeholder="$t('settings.cn')" :disabled="loading.getConfiguration ||
-          loading.configureModule ||
-          !firstConfig" :helper-text="$t('settings.cn_helper')" ></cv-text-input>
-            <cv-text-input :label="$t('settings.network')" v-model="network" :placeholder="$t('settings.network')"
-              :disabled="loading.getConfiguration ||
-          loading.configureModule ||
-          !firstConfig
-          " :invalid-message="error.network" ref="network" :helper-text="$t('settings.network_helper')"></cv-text-input>
-            <cv-text-input :label="$t('settings.netmask')" v-model="netmask" :placeholder="$t('settings.netmask')"
-              :disabled="loading.getConfiguration ||
-          loading.configureModule ||
-          !firstConfig
-          " :invalid-message="error.netmask" ref="netmask" class="mg-bottom-xlg"></cv-text-input>
+              <NsTextInput :label="$t('settings.cn')" v-model="cn" :placeholder="$t('settings.cn')" :disabled="loading.getConfiguration ||
+            loading.configureModule ||
+            !firstConfig" :helper-text="$t('settings.cn_helper')" tooltipAlignment="end" tooltipDirection="right">
+                <template #tooltip>{{
+            $t("settings.cn_tooltip")
+          }}</template>
+              </NsTextInput>
+              <NsTextInput :label="$t('settings.network')" v-model="network" :placeholder="$t('settings.network')"
+                :disabled="loading.getConfiguration ||
+            loading.configureModule ||
+            !firstConfig
+            " :invalid-message="error.network" ref="network" :helper-text="$t('settings.network_helper')">
+                <template #tooltip>{{
+            $t("settings.network_tooltip")
+          }}</template>
+              </NsTextInput>
+              <NsTextInput :label="$t('settings.netmask')" v-model="netmask" :placeholder="$t('settings.netmask')"
+                :helper-text="$t('settings.netmask_helper')" :disabled="loading.getConfiguration ||
+            loading.configureModule ||
+            !firstConfig
+            " :invalid-message="error.netmask" ref="netmask"
+                class="mg-bottom-xlg">
+                <template #tooltip>{{
+            $t("settings.netmask_tooltip")
+          }}</template>
+              </NsTextInput>
 
             <div class="mg-top-xxlg">
-              <cv-text-input :label="$t('settings.user')" v-model="user" :placeholder="$t('settings.user')"
-                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.user"
-                ref="user" :helper-text="$t('settings.user_helper')"></cv-text-input>
-              <cv-text-input :label="$t('settings.password')" v-model="password" :placeholder="password_placeholder"
+              <NsTextInput :label="$t('settings.user')" v-model="user" :placeholder="$t('settings.user')"
+                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.user" ref="user"
+                :helper-text="$t('settings.user_helper')"></NsTextInput>
+              <NsTextInput :label="$t('settings.password')" v-model="password"
                 :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.password"
-                ref="password" class="mg-bottom-xlg" :helper-text="$t('settings.password_helper')"></cv-text-input>
+                ref="password" class="mg-bottom-xlg" :helper-text="$t('settings.password_helper')"></NsTextInput>
             </div>
             <div class="mg-top-xxlg">
-              <NsTextInput v-model.trim="loki_retention" ref="loki_retention"
+              <NsTextInput v-model.trim="loki_retention" ref="loki_retention" max="365" min="1"
                 :invalid-message="$t(error.loki_retention)" type="number" :label="$t('settings.loki_retention')"
                 :helper-text="$t('settings.loki_retention_helper')
-          " :disabled="loading.configureModule
-          ">
+          " :disabled="loading.configureModule  
+          " >
               </NsTextInput>
-              <NsTextInput v-model.trim="prometheus_retention" ref="prometheus_retention"
+              <NsTextInput v-model.trim="prometheus_retention" ref="prometheus_retention" max="365" min="1"
                 :invalid-message="$t(error.loki_retention)" type="number" :label="$t('settings.prometheus_retention')"
-                :helper-text="$t('settings.prometheus_retention_helper')
+                :helper-text="$t('settings.prometheus_retention_helper') 
           " :disabled="loading.configureModule
           ">
               </NsTextInput>
             </div>
 
             <div class="mg-top-xxlg">
-              <cv-text-input :label="$t('settings.host')" v-model="host" placeholder="controller.mydomain.org"
-                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.host"
-                ref="host" :helper-text="$t('settings.host_helper')"></cv-text-input>
+              <NsTextInput :label="$t('settings.host')" v-model="host" placeholder="controller.mydomain.org"
+                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.host" ref="host"
+                :helper-text="$t('settings.host_helper')"></NsTextInput>
               <cv-toggle value="letsEncrypt" :label="$t('settings.lets_encrypt')" v-model="lets_encrypt"
                 :disabled="loading.getConfiguration || loading.configureModule" class="mg-bottom">
                 <template slot="text-left">{{
@@ -63,7 +76,7 @@
         }}</template>
                 <template slot="text-right">{{
             $t("settings.enabled")
-                  }}</template>
+          }}</template>
               </cv-toggle>
             </div>
 
@@ -112,8 +125,8 @@ export default {
       netmask: "",
       cn: "",
       firstConfig: true,
-      loki_retention: 180,
-      prometheus_retention: 15,
+      loki_retention: "180",
+      prometheus_retention: "15",
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -128,6 +141,8 @@ export default {
         network: "",
         netmask: "",
         cn: "",
+        loki_retention: "",
+        prometheus_retention: "",
       },
     };
   },
@@ -199,7 +214,6 @@ export default {
         this.firstConfig = true;
       } else {
         this.firstConfig = false;
-        this.password_placeholder = '************';
       }
       this.cn = config.ovpn_cn;
       this.lets_encrypt = config.lets_encrypt;
@@ -251,6 +265,31 @@ export default {
         this.focusElement("host");
         isValidationOk = false;
       }
+
+      // validate loki_retention: minumum 1 day, maximum 365 days
+      if (parseInt(this.loki_retention) > 365) {
+        this.error.loki_retention = this.$t("error.loki_rention_max");
+        this.focusElement("loki_retention");
+        isValidationOk = false;
+      }
+      if (parseInt(this.loki_retention) < 1) {
+        this.error.loki_retention = this.$t("error.loki_rention_min");
+        this.focusElement("loki_retention");
+        isValidationOk = false;
+      }
+
+      // validate prometheus_retention: minumum 1 day
+      if (parseInt(this.prometheus_retention) > 365) {
+        this.error.prometheus_retention = this.$t("error.prometheus_rention_max");
+        this.focusElement("prometheus_retention");
+        isValidationOk = false;
+      }
+      if (parseInt(this.prometheus_retention) < 1) {
+        this.error.prometheus_retention = this.$t("error.prometheus_rention_min");
+        this.focusElement("prometheus_retention");
+        isValidationOk = false;
+      }
+
 
       return isValidationOk;
     },

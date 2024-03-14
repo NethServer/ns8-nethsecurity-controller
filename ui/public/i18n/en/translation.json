@@ -18,7 +18,8 @@
     "mount": "Mount",
     "no_services": "No services",
     "no_images": "No images",
-    "no_volumes": "No volumes"
+    "no_volumes": "No volumes",
+    "open_controller": "Open controller"
   },
   "settings": {
     "title": "Settings",
@@ -34,14 +35,18 @@
     "disabled": "Disabled",
     "enabled": "Enabled",
     "loki_retention": "Logs retention",
-    "loki_retention_helper": "The amount of time to keep logs in Loki, expressed in days",
+    "loki_retention_helper": "Days to keep logs in Loki",
     "prometheus_retention": "Metrics retention",
-    "prometheus_retention_helper": "The amount of time to keep metrics in Prometheus, expressed in days",
+    "prometheus_retention_helper": "Days to keep metrics in Prometheus",
     "cn_helper": "The name of the controller, used to create the VPN certification authority",
-    "network_helper": "The VPN network used to connect the units to the controller. Make sure it does not overlap with the units' networks",
+    "network_helper": "The VPN network used to connect the units to the controller.",
     "user_helper": "This is the only user that can create and manage other users inside the controller",
     "password_helper": "The super-administrator password can be changed only from this interface",
-    "host_helper": "The hostname of the controller, it must be reachable from the units"
+    "host_helper": "The FQDN of the controller, it must be reachable from the units",
+    "cn_tooltip": "The field will be read-only after the first configuration",
+    "network_tooltip": "Make sure this network does not overlap with the units' networks. The field will be read-only after the first configuration",
+    "netmask_tooltip": "Do not change this value unless you know what you are doing. The field will be read-only after the first configuration",
+    "netmask_helper": "The netmask determines the size of the VPN network. Use only class C networks"
   },
   "about": {
     "title": "About"
@@ -74,6 +79,10 @@
     "invalid_user": "Invalid user name: it must contain only letters and numbers",
     "invalid_host": "Invalid host name: it must be a valid FQDN",
     "loki_retention": "Invalid logs retention",
-    "prometheus_retention": "Invalid metrics retention"
+    "prometheus_retention": "Invalid metrics retention",
+    "prometheus_rention_max": "Metrics retention must be less than 365 days",
+    "prometheus_rention_min": "Metrics retention must be greater than 1 day",
+    "loki_retention_max": "Logs retention must be less than 365 days",
+    "loki_retention_min": "Logs retention must be greater than 1 day"
   }
 }
