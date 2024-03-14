@@ -51,14 +51,14 @@
                 ref="password" class="mg-bottom-xlg" :helper-text="$t('settings.password_helper')"></NsTextInput>
             </div>
             <div class="mg-top-xxlg">
-              <NsTextInput v-model.trim="loki_retention" ref="loki_retention" max="365" min="1"
+              <NsTextInput v-model.trim="loki_retention" ref="loki_retention" 
                 :invalid-message="$t(error.loki_retention)" type="number" :label="$t('settings.loki_retention')"
                 :helper-text="$t('settings.loki_retention_helper')
           " :disabled="loading.configureModule  
           " >
               </NsTextInput>
-              <NsTextInput v-model.trim="prometheus_retention" ref="prometheus_retention" max="365" min="1"
-                :invalid-message="$t(error.loki_retention)" type="number" :label="$t('settings.prometheus_retention')"
+              <NsTextInput v-model.trim="prometheus_retention" ref="prometheus_retention"
+                :invalid-message="$t(error.prometheus_retention)" type="number" :label="$t('settings.prometheus_retention')"
                 :helper-text="$t('settings.prometheus_retention_helper') 
           " :disabled="loading.configureModule
           ">
@@ -229,7 +229,7 @@ export default {
     validateConfigureModule() {
       this.clearErrors(this);
       let isValidationOk = true;
-      let fields = ["host", "cn", "network", "netmask", "user"];
+      let fields = ["host", "cn", "network", "netmask", "user", "loki_retention", "prometheus_retention"];
 
       // On first config the password must be non-empty
       if (this.firstConfig) {
@@ -268,28 +268,47 @@ export default {
 
       // validate loki_retention: minumum 1 day, maximum 365 days
       if (parseInt(this.loki_retention) > 365) {
-        this.error.loki_retention = this.$t("error.loki_rention_max");
+        this.error.loki_retention = this.$t("error.loki_retention_max");
         this.focusElement("loki_retention");
         isValidationOk = false;
       }
       if (parseInt(this.loki_retention) < 1) {
-        this.error.loki_retention = this.$t("error.loki_rention_min");
+        this.error.loki_retention = this.$t("error.loki_retention_min");
         this.focusElement("loki_retention");
         isValidationOk = false;
       }
 
-      // validate prometheus_retention: minumum 1 day
+      // validate prometheus_retention: minumum 1 day, maximum 365 days
       if (parseInt(this.prometheus_retention) > 365) {
-        this.error.prometheus_retention = this.$t("error.prometheus_rention_max");
+        this.error.prometheus_retention = this.$t("error.prometheus_retention_max");
         this.focusElement("prometheus_retention");
         isValidationOk = false;
       }
       if (parseInt(this.prometheus_retention) < 1) {
-        this.error.prometheus_retention = this.$t("error.prometheus_rention_min");
+        this.error.prometheus_retention = this.$t("error.prometheus_retention_min");
         this.focusElement("prometheus_retention");
         isValidationOk = false;
       }
 
+      // validate network
+      const network_re = new RegExp(
+        /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.0$/
+      );
+      if (!network_re.test(this.network)) {
+        this.error.network = this.$t("error.invalid_network");
+        this.focusElement("network");
+        isValidationOk = false;
+      }
+
+      // validate netmask
+      const netmask_re = new RegExp(
+        /^(255|254|252|248|240|224|192|128|0)\.(255|254|252|248|240|224|192|128|0)\.(255|254|252|248|240|224|192|128|0)\.(0|128|192|224|240|248|252|254|255)$/
+      );
+      if (!netmask_re.test(this.netmask)) {
+        this.error.netmask = this.$t("error.invalid_netmask");
+        this.focusElement("netmask");
+        isValidationOk = false;
+      }
 
       return isValidationOk;
     },

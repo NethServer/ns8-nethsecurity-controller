@@ -83,6 +83,8 @@
     "prometheus_rention_max": "Metrics retention must be less than 365 days",
     "prometheus_rention_min": "Metrics retention must be greater than 1 day",
     "loki_retention_max": "Logs retention must be less than 365 days",
-    "loki_retention_min": "Logs retention must be greater than 1 day"
+    "loki_retention_min": "Logs retention must be greater than 1 day",
+    "invalid_network": "Invalid network, it mus be a class C network like 192.168.200.0",
+    "invalid_netmask": "Invalid netmask, it must be a valid netmask like 255.255.255.0"
   }
 }
