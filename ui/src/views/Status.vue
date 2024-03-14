@@ -44,7 +44,18 @@
           :icon="Application32"
           :loading="loading.getStatus"
           class="min-height-card"
-        />
+        >
+        <template slot="content">
+        <NsButton
+              kind="ghost"
+              :icon="Launch20"
+              :disabled="loading.getConfiguration || !host"
+              @click="goToControllerApp"
+            >
+              {{ $t("status.open_controller") }}
+            </NsButton>
+        </template>
+        </NsInfoCard>
       </cv-column>
       <cv-column :md="4" :max="4">
         <NsInfoCard
@@ -277,17 +288,20 @@ export default {
         images: [],
         volumes: [],
       },
+      host: null,
       backupRepositories: [],
       backups: [],
       loading: {
         getStatus: false,
         listBackupRepositories: false,
         listBackups: false,
+        getConfiguration: false,
       },
       error: {
         getStatus: "",
         listBackupRepositories: "",
         listBackups: "",
+        getConfiguration: "",
       },
     };
   },
@@ -334,6 +348,7 @@ export default {
   created() {
     this.getStatus();
     this.listBackupRepositories();
+    this.getConfiguration();
   },
   methods: {
     async getStatus() {
@@ -490,6 +505,55 @@ export default {
       }
       this.backups = backups;
       this.loading.listBackups = false;
+    },
+    async getConfiguration() {
+      this.loading.getConfiguration = true;
+      this.error.getConfiguration = "";
+      const taskAction = "get-configuration";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.getConfigurationAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.getConfigurationCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.getConfiguration = this.getErrorMessage(err);
+        this.loading.getConfiguration = false;
+        return;
+      }
+    },
+    getConfigurationAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.getConfiguration = this.$t("error.generic_error");
+      this.loading.getConfiguration = false;
+    },
+    getConfigurationCompleted(taskContext, taskResult) {
+      this.loading.getConfiguration = false;
+      this.host = taskResult.output.host;
+    },
+    goToControllerApp() {
+      window.open(`https://${this.host}`, "_blank");
     },
   },
 };
