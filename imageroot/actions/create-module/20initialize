@@ -22,7 +22,8 @@ webssh_port=$(($start+9))
 
 num=$(echo $MODULE_ID | sed 's/nethsecurity\-controller//')
 
-secret=$(uuidgen | sha256sum | awk '{print $1}')
+jwt_secret=$(uuidgen | sha256sum | awk '{print $1}')
+reg_secret=$(uuidgen | sha256sum | awk '{print $1}')
 
 cat << EOF > network.env
 OVPN_UDP_PORT=$ovpn_udp_port
@@ -38,7 +39,8 @@ WEBSSH_PORT=$webssh_port
 EOF
 
 cat << EOF > secret.env
-SECRET_JWT=$secret
+SECRET_JWT=$jwt_secret
+REGISTRATION_TOKEN=$reg_secret
 EOF
 
 mkdir -p clients
