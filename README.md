@@ -16,9 +16,6 @@ The module is composed by the following containers:
 - [webssh](#webssh): web-based ssh client
 
 
-**Note**
-This module implements the backup but not the restore procedure.
-
 ## Install
 
 Instantiate the module with:
