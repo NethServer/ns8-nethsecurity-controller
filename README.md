@@ -40,7 +40,7 @@ Launch `configure-module`, by setting the following parameters:
 - `ovpn_netmask`: OpenVPN netmasj
 - `ovpn_cn`: OpenVPN Certificate CN
 - `api_user`: controller admin user
-- `api_password`: controller admin password
+- `api_password`: controller admin password, change it after first login
 - `loki_retention`: Loki retention period in days (default: ``180`` days)
 - `promtail_retention`: Promtail retention period in days (default: ``15`` days)
 
@@ -161,7 +161,7 @@ It has also some pre-configured dashboards:
 - logs.json: a dashboard where you can visualize the logs from all the connected machines and filter them by hostname, application, and priority
 - loki.json: a dashboard with the most important metrics from Loki, like the number of logs ingested, the number of logs dropped, and the status of queriers
 
-Grafana is accessible at `https://<controller-host>/grafana/`, default credentials are `admin`/`admin`. You can change them on the first login.
+Grafana is accessible at `https://<controller-host>/grafana/`, default credentials are the same set for the controller. You should change them on the first login.
 
 ### WebSSH
 
