@@ -12,7 +12,6 @@ import agent.tasks
 import os
 import hashlib
 import uuid
-import bcrypt
 
 request = json.load(sys.stdin)
 
@@ -97,14 +96,6 @@ response = agent.tasks.run(
 )
 agent.assert_exp(response['exit_code'] == 0)
 
-
-# Replace password if passed as parameter, otherwise read the old one
-if 'api_password' in request and request['api_password'] != '':
-    request['api_password'] =  bcrypt.hashpw(bytes(request['api_password'], 'utf-8'), bcrypt.gensalt()).decode()
-else:
-    request['api_password'] = config['api_password']
-
-
 # Save configuration to JSON for later user and backup
 with open('config.json', 'w') as cfp:
     cfp.write(json.dumps(config | request))
@@ -139,6 +130,8 @@ with open('grafana.env', 'w') as gfp:
     gfp.write("GF_SERVER_SERVE_FROM_SUB_PATH=true\n")
     gfp.write(f"GF_SERVER_HTTP_PORT={ports[8]}\n")
     gfp.write("GF_SERVER_HTTP_ADDR=127.0.0.1\n")
+    gfp.write(f'GF_SECURITY_ADMIN_USER={request["api_user"]}\n')
+    gfp.write(f'GF_SECURITY_ADMIN_PASSWORD={request["api_password"]}\n')
 
 with open('prometheus.env', 'w') as pfp:
     pfp.write(f"PROMETHEUS_PORT={ports[7]}\n")

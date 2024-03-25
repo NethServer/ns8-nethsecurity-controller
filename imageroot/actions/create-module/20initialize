@@ -44,6 +44,3 @@ REGISTRATION_TOKEN=$reg_secret
 EOF
 
 mkdir -p clients
-
-# Install bcrypt for password hashing
-pip install bcrypt==4.1.2
