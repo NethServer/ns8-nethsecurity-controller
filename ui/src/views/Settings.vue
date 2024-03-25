@@ -43,12 +43,16 @@
 
             <div class="mg-top-xxlg">
               <NsTextInput :label="$t('settings.user')" v-model="user" :placeholder="$t('settings.user')"
-                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.user" ref="user"
-                :helper-text="$t('settings.user_helper')"></NsTextInput>
+                :disabled="loading.getConfiguration || loading.configureModule || !firstConfig" :invalid-message="error.user" ref="user"
+                :helper-text="$t('settings.user_helper')">
+              <template #tooltip>{{$t("settings.user_tooltip")}}</template>
+              </NsTextInput>
               <NsTextInput :label="$t('settings.password')" v-model="password"
-                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.password"
+                :disabled="loading.getConfiguration || loading.configureModule || !firstConfig" :invalid-message="error.password"
                 :placeholder="passwordPlaceholder" ref="password" class="mg-bottom-xlg"
-                :helper-text="$t('settings.password_helper')"></NsTextInput>
+                :helper-text="$t('settings.password_helper')">
+              <template #tooltip>{{$t("settings.password_tooltip")}}</template>
+              </NsTextInput>
             </div>
             <div class="mg-top-xxlg">
               <NsTextInput v-model.trim="loki_retention" ref="loki_retention"
