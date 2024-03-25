@@ -28,7 +28,7 @@ else:
 
     config = {'host': '', 'lets_encrypt': False, 'ovpn_network': f'172.{foctet}.{soctet}.0', 'ovpn_netmask': '255.255.255.0', 'ovpn_cn': 'nethsec', 'api_user': 'admin', 'api_password': '', 'loki_retention': 180, 'prometheus_retention': 15}
 
-    characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
+    characters = list(string.ascii_letters + string.digits + "!@#%^+_")
     random.shuffle(characters)
     password = []
     for i in range(10):
