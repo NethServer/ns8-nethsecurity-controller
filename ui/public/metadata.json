@@ -1,20 +1,20 @@
 {
-  "name": "nethsec-controller",
+  "name": "nethsecurity-controller",
   "description": {
-    "en": "NethSecurity controller",
+    "en": "NethSecurity Controller",
     "it": "Controller NethSecurity"
   },
   "categories": ["security"],
   "authors": [
     {
-      "name": "Giacomo Sanchietti",
-      "email": "giacomo.sanchietti@gmail.com"
+      "name": "Nethesis dev team",
+      "email": "sviluppo@nethesis.it"
     }
   ],
   "docs": {
-    "documentation_url": "https://docs.nethsec-controller.com/",
-    "bug_url": "https://github.com/NethServer/dev",
-    "code_url": "https://github.com/author/ns8-nethsec-controller"
+    "documentation_url": "https://docs.nethsecurity.org/",
+    "bug_url": "https://github.com/NethServer/nethsecurity/issues",
+    "code_url": "https://github.com/NethServer/ns8-nethsecurity-controller"
   },
-  "source": "ghcr.io/nethserver/nethsec-controller"
+  "source": "ghcr.io/nethserver/nethsecurity-controller"
 }
