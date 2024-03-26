@@ -1,8 +1,8 @@
 {
-  "name": "nethsecurity-controller",
+  "name": "Nethsecurity Controller",
   "description": {
-    "en": "NethSecurity Controller",
-    "it": "Controller NethSecurity"
+    "en": "Centralized NethSecurity firewall manager",
+    "it": "Gestore centralizzato di firewall NethSecurity"
   },
   "categories": ["security"],
   "authors": [
