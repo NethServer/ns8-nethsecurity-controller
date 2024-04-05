@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title> WebSSH </title>
+    <link href="static/img/favicon.png" rel="icon" type="image/png">
+  </head>
+  <body>
+    <div class="container form-container" style="display: none">
+      <form id="connect" action="" method="post" enctype="multipart/form-data"{% if debug %} novalidate{% end %}>
+        <input type="hidden" id="term" name="term" value="xterm-256color">
+        {% module xsrf_form_html() %}
+      </form>
+    </div>
+    <script src="static/js/main.js"></script>
+  </body>
+</html>

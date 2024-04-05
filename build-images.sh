@@ -35,6 +35,13 @@ buildah run \
     adduser -Ss /bin/false -g webssh webssh && \
     chown -R webssh:webssh /code
     "
+# disable built-in ui
+buildah add "${webssh}" ../../webssh/index.html /code/webssh/templates/index.html
+# cleanup the container
+buildah run \
+    --workingdir '/code' \
+    ${webssh} \
+    sh -c 'rm -rf preview docker-compose.yml setup.* tests'
 popd
 popd
 rm -rf webssh_tmp
