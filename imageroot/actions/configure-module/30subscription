@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import agent
+
+rdb = agent.redis_connect(privileged=False)
+
+subscription = rdb.hgetall('cluster/subscription')
+
+with open('subscription.env', 'w') as env:
+    if subscription:
+        env.write(f'VALID_SUBSCRIPTION=true\n')
+    else:
+        env.write(f'VALID_SUBSCRIPTION=false\n')
+
