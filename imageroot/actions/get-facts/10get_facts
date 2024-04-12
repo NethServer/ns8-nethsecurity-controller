@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
+import json
+import subprocess
+import os
+import sys
+import agent
+
+units = 0
+users = 0
+try:
+    p = subprocess.run(["/usr/bin/podman", "exec", "-ti", "vpn", "find", "/etc/openvpn/ccd", "-type", "f"], capture_output=True, text=True)
+    units = len(p.stdout.split("\n")) - 1
+except Exception as ex:
+    print(agent.SD_ERR, ex, file=sys.stderr)
+    units = 0
+
+try:
+    p = subprocess.run(["/usr/bin/podman", "exec", "-ti", "api", "sqlite3", "/nethsecurity-api/data/db.sqlite", "select count(*) from accounts;"], capture_output=True, text=True)
+    users = int(p.stdout.strip())
+except Exception as ex:
+    print(agent.SD_ERR, ex, file=sys.stderr)
+    users = 0
+
+json.dump({
+    "units": units,
+    "active_users": users,
+    "total_users": users
+}, fp=sys.stdout)
