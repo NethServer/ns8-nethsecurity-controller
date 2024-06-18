@@ -106,7 +106,7 @@ subscription = rdb.hgetall('cluster/subscription')
 
 with open('config.env', 'w') as env:
     env.write(f'ADMIN_USER={request["api_user"]}\n')
-    env.write(f'ADMIN_PASSWORD={request["api_password"]}\n')
+    env.write(f'ADMIN_PASSWORD={request.get("api_password", config["api_password"])}\n')
     env.write(f'OVPN_NETWORK={request["ovpn_network"]}\n')
     env.write(f'OVPN_NETMASK={request["ovpn_netmask"]}\n')
     env.write(f'OVPN_CN={request["ovpn_cn"]}\n')
@@ -139,7 +139,7 @@ with open('grafana.env', 'w') as gfp:
     gfp.write(f"GF_SERVER_HTTP_PORT={ports[8]}\n")
     gfp.write("GF_SERVER_HTTP_ADDR=127.0.0.1\n")
     gfp.write(f'GF_SECURITY_ADMIN_USER={request["api_user"]}\n')
-    gfp.write(f'GF_SECURITY_ADMIN_PASSWORD={request["api_password"]}\n')
+    gfp.write(f'GF_SECURITY_ADMIN_PASSWORD={request.get("api_password", config["api_password"])}\n')
 
 with open('prometheus.env', 'w') as pfp:
     pfp.write(f"PROMETHEUS_PORT={ports[7]}\n")
