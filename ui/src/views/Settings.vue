@@ -33,19 +33,47 @@
           $t("settings.netmask_tooltip")
         }}</template>
             </NsTextInput>
-
             <div class="mg-top-xxlg">
               <NsTextInput :label="$t('settings.user')" v-model="user" :placeholder="$t('settings.user')"
                 :disabled="loading.getConfiguration || loading.configureModule || !firstConfig" :invalid-message="error.user" ref="user"
                 :helper-text="$t('settings.user_helper')">
               <template #tooltip>{{$t("settings.user_tooltip")}}</template>
               </NsTextInput>
+              <cv-row v-if="firstConfig">
+                <cv-column>
+                  <NsInlineNotification
+                    class="mg-bottom-xlg"
+                    kind="info"
+                    :title="$t('settings.password_information_title')"
+                    :description="
+                      $t('settings.password_information_description')
+                    "
+                    :showCloseButton="false"
+                  >
+                   <NsButton></NsButton>
+                  </NsInlineNotification>
+                </cv-column>
+              </cv-row>
               <NsTextInput :label="$t('settings.password')" v-model="password"
                 :disabled="loading.getConfiguration || loading.configureModule || !firstConfig" :invalid-message="error.password"
                 :placeholder="passwordPlaceholder" ref="password" class="mg-bottom-xlg"
                 :helper-text="$t('settings.password_helper')">
               <template #tooltip>{{$t("settings.password_tooltip")}}</template>
               </NsTextInput>
+            </div>
+            <div class="mg-top-xxlg">
+              <NsTextInput :label="$t('settings.host')" v-model="host" placeholder="controller.mydomain.org"
+                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.host" ref="host"
+                :helper-text="$t('settings.host_helper')"></NsTextInput>
+              <cv-toggle value="letsEncrypt" :label="$t('settings.lets_encrypt')" v-model="lets_encrypt"
+                :disabled="loading.getConfiguration || loading.configureModule" class="mg-bottom">
+                <template slot="text-left">{{
+          $t("settings.disabled")
+        }}</template>
+                <template slot="text-right">{{
+            $t("settings.enabled")
+          }}</template>
+              </cv-toggle>
             </div>
             <!-- advanced options -->
             <cv-accordion ref="accordion" class="maxwidth mg-bottom">
@@ -75,20 +103,6 @@
               </cv-accordion-item>
             </cv-accordion>
             <!-- end advanced options -->
-            <div class="mg-top-xxlg">
-              <NsTextInput :label="$t('settings.host')" v-model="host" placeholder="controller.mydomain.org"
-                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.host" ref="host"
-                :helper-text="$t('settings.host_helper')"></NsTextInput>
-              <cv-toggle value="letsEncrypt" :label="$t('settings.lets_encrypt')" v-model="lets_encrypt"
-                :disabled="loading.getConfiguration || loading.configureModule" class="mg-bottom">
-                <template slot="text-left">{{
-          $t("settings.disabled")
-        }}</template>
-                <template slot="text-right">{{
-            $t("settings.enabled")
-          }}</template>
-              </cv-toggle>
-            </div>
 
             <cv-row v-if="error.configureModule">
               <cv-column>
@@ -414,4 +428,7 @@ export default {
 
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
+.mg-bottom {
+  margin-bottom: 2rem;
+}
 </style>
