@@ -52,7 +52,7 @@
     "netmask_helper": "The netmask determines the size of the VPN network. Use only class C networks",
     "password_placeholder": "Password can be modified from the controller webapp",
     "password_information_title": "Default password",
-    "password_information_description": "The default administrator password is displayed only once, please store it in a safe place",
+    "password_information_description": "The default administrator password is displayed only once, please store it in a safe place"
   },
   "about": {
     "title": "About"
