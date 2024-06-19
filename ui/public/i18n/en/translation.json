@@ -43,7 +43,7 @@
     "network_helper": "The VPN network used to connect the units to the controller.",
     "user_helper": "This is the only user that can create and manage other users inside the controller",
     "user_tooltip": "The username grants access to the controller user interface and also to Grafana. Once configured, it cannot be changed",
-    "password_helper": "The administrator password can be set only if first configuration",
+    "password_helper": "The administrator password can be set only during first configuration",
     "password_tooltip": "The password grants access both to the controller user interface and also to Grafana. For security reasons, you should change it after first login",
     "host_helper": "The FQDN of the controller, it must be reachable from the units",
     "cn_tooltip": "The field will be read-only after the first configuration",
