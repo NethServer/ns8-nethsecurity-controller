@@ -23,6 +23,7 @@
   },
   "settings": {
     "title": "Settings",
+    "advanced": "Advanced",
     "configure_instance": "Configure {instance}",
     "save": "Save",
     "host": "Controller Fully Qualified Domain Name",
