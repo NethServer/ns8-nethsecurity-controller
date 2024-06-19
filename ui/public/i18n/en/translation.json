@@ -23,6 +23,7 @@
   },
   "settings": {
     "title": "Settings",
+    "advanced": "Advanced",
     "configure_instance": "Configure {instance}",
     "save": "Save",
     "host": "Controller Fully Qualified Domain Name",
@@ -42,14 +43,16 @@
     "network_helper": "The VPN network used to connect the units to the controller.",
     "user_helper": "This is the only user that can create and manage other users inside the controller",
     "user_tooltip": "The username grants access to the controller user interface and also to Grafana. Once configured, it cannot be changed",
-    "password_helper": "The administrator password can be set only if first configuration",
+    "password_helper": "The administrator password can be set only during first configuration",
     "password_tooltip": "The password grants access both to the controller user interface and also to Grafana. For security reasons, you should change it after first login",
     "host_helper": "The FQDN of the controller, it must be reachable from the units",
     "cn_tooltip": "The field will be read-only after the first configuration",
     "network_tooltip": "Make sure this network does not overlap with the units' networks. The field will be read-only after the first configuration",
     "netmask_tooltip": "Do not change this value unless you know what you are doing. The field will be read-only after the first configuration",
     "netmask_helper": "The netmask determines the size of the VPN network. Use only class C networks",
-    "password_placeholder": "Password already set, enter a new one to change it"
+    "password_placeholder": "Password can be modified from the controller webapp",
+    "password_information_title": "Default password",
+    "password_information_description": "The default administrator password is displayed only once, please store it in a safe place",
   },
   "about": {
     "title": "About"

@@ -15,13 +15,6 @@
       <cv-column>
         <cv-tile light>
           <cv-form @submit.prevent="configureModule">
-            <NsTextInput :label="$t('settings.cn')" v-model="cn" :placeholder="$t('settings.cn')" :disabled="loading.getConfiguration ||
-          loading.configureModule ||
-          !firstConfig" :helper-text="$t('settings.cn_helper')" tooltipAlignment="end" tooltipDirection="right">
-              <template #tooltip>{{
-          $t("settings.cn_tooltip")
-        }}</template>
-            </NsTextInput>
             <NsTextInput :label="$t('settings.network')" v-model="network" :placeholder="$t('settings.network')"
               :disabled="loading.getConfiguration ||
           loading.configureModule ||
@@ -40,13 +33,27 @@
           $t("settings.netmask_tooltip")
         }}</template>
             </NsTextInput>
-
             <div class="mg-top-xxlg">
               <NsTextInput :label="$t('settings.user')" v-model="user" :placeholder="$t('settings.user')"
                 :disabled="loading.getConfiguration || loading.configureModule || !firstConfig" :invalid-message="error.user" ref="user"
                 :helper-text="$t('settings.user_helper')">
               <template #tooltip>{{$t("settings.user_tooltip")}}</template>
               </NsTextInput>
+              <cv-row v-if="firstConfig">
+                <cv-column>
+                  <NsInlineNotification
+                    class="mg-bottom-xlg"
+                    kind="info"
+                    :title="$t('settings.password_information_title')"
+                    :description="
+                      $t('settings.password_information_description')
+                    "
+                    :showCloseButton="false"
+                  >
+                   <NsButton></NsButton>
+                  </NsInlineNotification>
+                </cv-column>
+              </cv-row>
               <NsTextInput :label="$t('settings.password')" v-model="password"
                 :disabled="loading.getConfiguration || loading.configureModule || !firstConfig" :invalid-message="error.password"
                 :placeholder="passwordPlaceholder" ref="password" class="mg-bottom-xlg"
@@ -54,21 +61,6 @@
               <template #tooltip>{{$t("settings.password_tooltip")}}</template>
               </NsTextInput>
             </div>
-            <div class="mg-top-xxlg">
-              <NsTextInput v-model.trim="loki_retention" ref="loki_retention"
-                :invalid-message="$t(error.loki_retention)" type="number" :label="$t('settings.loki_retention')"
-                :helper-text="$t('settings.loki_retention_helper')
-          " :disabled="loading.configureModule
-          ">
-              </NsTextInput>
-              <NsTextInput v-model.trim="prometheus_retention" ref="prometheus_retention"
-                :invalid-message="$t(error.prometheus_retention)" type="number"
-                :label="$t('settings.prometheus_retention')" :helper-text="$t('settings.prometheus_retention_helper')
-          " :disabled="loading.configureModule
-          ">
-              </NsTextInput>
-            </div>
-
             <div class="mg-top-xxlg">
               <NsTextInput :label="$t('settings.host')" v-model="host" placeholder="controller.mydomain.org"
                 :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.host" ref="host"
@@ -83,6 +75,34 @@
           }}</template>
               </cv-toggle>
             </div>
+            <!-- advanced options -->
+            <cv-accordion ref="accordion" class="maxwidth mg-bottom">
+              <cv-accordion-item :open="toggleAccordion[0]">
+                <template slot="title">{{ $t("settings.advanced") }}</template>
+                <template slot="content">
+                  <div class="mg-top-xxlg">
+                    <NsTextInput :label="$t('settings.cn')" v-model="cn" :placeholder="$t('settings.cn')" :disabled="loading.getConfiguration ||
+                      loading.configureModule ||
+                      !firstConfig" :helper-text="$t('settings.cn_helper')" tooltipAlignment="end" tooltipDirection="right">
+                    <template #tooltip>{{
+                      $t("settings.cn_tooltip")
+                    }}</template>
+                    </NsTextInput>
+                    <NsTextInput v-model.trim="loki_retention" ref="loki_retention"
+                      :invalid-message="$t(error.loki_retention)" type="number" :label="$t('settings.loki_retention')"
+                      :helper-text="$t('settings.loki_retention_helper')"
+                      :disabled="loading.configureModule">
+                    </NsTextInput>
+                    <NsTextInput v-model.trim="prometheus_retention" ref="prometheus_retention"
+                      :invalid-message="$t(error.prometheus_retention)" type="number"
+                      :label="$t('settings.prometheus_retention')" :helper-text="$t('settings.prometheus_retention_helper')"
+                      :disabled="loading.configureModule">
+                    </NsTextInput>
+                  </div>
+                </template>
+              </cv-accordion-item>
+            </cv-accordion>
+            <!-- end advanced options -->
 
             <cv-row v-if="error.configureModule">
               <cv-column>
@@ -408,4 +428,7 @@ export default {
 
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
+.mg-bottom {
+  margin-bottom: 2rem;
+}
 </style>
