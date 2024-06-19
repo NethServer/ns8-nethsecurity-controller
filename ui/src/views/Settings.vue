@@ -42,7 +42,7 @@
               <cv-row v-if="firstConfig">
                 <cv-column>
                   <NsInlineNotification
-                    class="mg-bottom-xlg"
+                    class="mg-bottom-xlg maxwidth"
                     kind="info"
                     :title="$t('settings.password_information_title')"
                     :description="
@@ -430,5 +430,8 @@ export default {
 @import "../styles/carbon-utils";
 .mg-bottom {
   margin-bottom: 2rem;
+}
+.maxwidth {
+  max-width: 38rem;
 }
 </style>
