@@ -83,7 +83,7 @@
                   <div class="mg-top-xxlg">
                     <NsTextInput :label="$t('settings.cn')" v-model="cn" :placeholder="$t('settings.cn')" :disabled="loading.getConfiguration ||
                       loading.configureModule ||
-                      !firstConfig" :helper-text="$t('settings.cn_helper')" tooltipAlignment="end" tooltipDirection="right">
+                      !firstConfig" :helper-text="$t('settings.cn_helper')" tooltipAlignment="end" tooltipDirection="right" ref="cn" :invalid-message="$t(error.cn)" >
                     <template #tooltip>{{
                       $t("settings.cn_tooltip")
                     }}</template>
