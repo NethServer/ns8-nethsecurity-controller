@@ -2,7 +2,7 @@
 [Unit]
 Description=Podman webssh.service
 BindsTo=controller.service
-After=vpm.service
+After=vpn.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
