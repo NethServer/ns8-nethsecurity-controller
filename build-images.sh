@@ -13,7 +13,7 @@ controller_version="1.0.1"
 promtail_version=2.7.1
 loki_version=2.9.4
 prometheus_version=2.50.1
-grafana_version=10.3.3
+grafana_version=11.2.0
 webssh_version=1.6.2
 timescale_version="latest-pg16"
 
