@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Load database credentials
+. db.env
+
+# Dump the DB from timescale
+podman exec -i timescale pd_restore -d "${REPORT_DB_URI}" < backup.sql
