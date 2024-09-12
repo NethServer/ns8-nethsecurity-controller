@@ -4,4 +4,4 @@
 . ./db.env
 
 # Dump the DB from timescale
-podman exec -i timescale pd_restore -d "${REPORT_DB_URI}" < backup.sql
+podman exec -i timescale psql --dbname "${REPORT_DB_URI}" < backup.sql
