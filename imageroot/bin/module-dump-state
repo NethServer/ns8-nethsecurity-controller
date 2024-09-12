@@ -1,7 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env sh
+
+set -e
 
 # Load database credentials
-. db.env
+. ./db.env
 
 # Dump the DB from timescale
 podman exec -i timescale pg_dump -d "${REPORT_DB_URI}" > backup.sql
