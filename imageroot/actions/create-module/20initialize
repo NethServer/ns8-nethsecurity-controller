@@ -50,6 +50,7 @@ POSTGRES_USER=report
 POSTGRES_PORT=$db_port
 POSTGRES_PASSWORD=$db_secret
 REPORT_DB_URI=postgres://report:$db_secret@127.0.0.1:$db_port/report
+TS_TUNE_MAX_BG_WORKERS=100
 EOF
 
 mkdir -p clients
