@@ -6,4 +6,4 @@ set -e
 . ./db.env
 
 # Dump the DB from timescale
-podman exec -i timescale pg_dump --dbname "${REPORT_DB_URI}" --data-only > backup.sql
+podman exec -i timescale pg_dump -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" > timescale.sql
