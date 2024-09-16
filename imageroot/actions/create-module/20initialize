@@ -26,6 +26,7 @@ num=$(echo $MODULE_ID | sed 's/nethsecurity\-controller//')
 jwt_secret=$(uuidgen | sha256sum | awk '{print $1}')
 reg_secret=$(uuidgen | sha256sum | awk '{print $1}')
 db_secret=$(uuidgen | sha256sum | awk '{print $1}')
+grafana_postgres_password=$(uuidgen | sha256sum | awk '{print $1}')
 
 cat << EOF > network.env
 OVPN_UDP_PORT=$ovpn_udp_port
@@ -49,6 +50,7 @@ cat << EOF > db.env
 POSTGRES_USER=report
 POSTGRES_PORT=$db_port
 POSTGRES_PASSWORD=$db_secret
+GRAFANA_POSTGRES_PASSWORD=$grafana_postgres_password
 REPORT_DB_URI=postgres://report:$db_secret@127.0.0.1:$db_port/report
 TS_TUNE_MAX_BG_WORKERS=100
 EOF
