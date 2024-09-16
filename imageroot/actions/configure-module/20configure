@@ -103,6 +103,7 @@ with open('config.json', 'w') as cfp:
 # Load subscription info
 rdb = agent.redis_connect(privileged=False)
 subscription = rdb.hgetall('cluster/subscription')
+metrics_retention_days = request.get('prometheus_retention', '15')
 
 with open('config.env', 'w') as env:
     env.write(f'ADMIN_USER={request["api_user"]}\n')
@@ -121,7 +122,7 @@ with open('config.env', 'w') as env:
         env.write(f'VALID_SUBSCRIPTION=false\n')
     if 'maxmind_license' in request:
         env.write(f'MAXMIND_LICENSE={request["maxmind_license"]}\n')
-    env.write(f'RETENTION_DAYS={request.get("retention_days", "60")}\n')
+    env.write(f'RETENTION_DAYS={metrics_retention_days}\n')
 
 server_address = request["ovpn_network"].removesuffix('.0') + '.1'
 with open('promtail.env', 'w') as promtail:
@@ -147,7 +148,7 @@ with open('grafana.env', 'w') as gfp:
 with open('prometheus.env', 'w') as pfp:
     pfp.write(f"PROMETHEUS_PORT={ports[7]}\n")
     pfp.write(f"PROMETHEUS_PATH={config['prometheus_path']}\n")
-    pfp.write(f"PROMETHEUS_RETENTION={request.get('prometheus_retention', '15')}d\n")
+    pfp.write(f"PROMETHEUS_RETENTION={metrics_retention_days}d\n")
 
 with open('prometheus.yml', 'w', encoding='utf-8') as fp:
     fp.write("global:\n")
