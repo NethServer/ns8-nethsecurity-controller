@@ -43,7 +43,7 @@ Launch `configure-module`, by setting the following parameters:
 - `api_user`: controller admin user
 - `api_password`: controller admin password, change it after first login
 - `loki_retention`: Loki retention period in days (default: ``180`` days)
-- `prometheus_retention`: Promtail retention period in days (default: ``15`` days)
+- `prometheus_retention`: Promtail and Timescale retention period in days (default: 15 days)
 - `maxmind_license`: [MaxMind](https://www.maxmind.com/) license key to download the GEO IP database, the database is loaded every time the API server is started
 
 Example:
