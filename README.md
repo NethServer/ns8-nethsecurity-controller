@@ -45,6 +45,7 @@ Launch `configure-module`, by setting the following parameters:
 - `loki_retention`: Loki retention period in days (default: ``180`` days)
 - `promtail_retention`: Promtail retention period in days (default: ``15`` days)
 - `maxmind_license`: [MaxMind](https://www.maxmind.com/) license key to download the GEO IP database, the database is loaded every time the API server is started
+- `retention_days`: retention period for the metrics in the Timescale database (default: `60` days) 
 
 Example:
 

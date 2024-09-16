@@ -121,6 +121,7 @@ with open('config.env', 'w') as env:
         env.write(f'VALID_SUBSCRIPTION=false\n')
     if 'maxmind_license' in request:
         env.write(f'MAXMIND_LICENSE={request["maxmind_license"]}\n')
+    env.write(f'RETENTION_DAYS={request.get("retention_days", "60")}\n')
 
 server_address = request["ovpn_network"].removesuffix('.0') + '.1'
 with open('promtail.env', 'w') as promtail:
