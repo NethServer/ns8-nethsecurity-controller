@@ -769,7 +769,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "client_address"
+              "options": "host"
             },
             "properties": [
               {
@@ -777,7 +777,7 @@
                 "value": [
                   {
                     "title": "",
-                    "url": "/grafana/d/b14a1181-a2ee-4df4-a732-888e0190037f/network-traffic-by-host?${__all_variables}&var-client_address=${__value.raw}"
+                    "url": "/grafana/d/c8d43e5f-068e-4cac-9283-2318d9e1911b/network-traffic-by-host?${__all_variables}&var-host=${__value.raw}"
                   }
                 ]
               }
@@ -887,13 +887,13 @@
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Network traffic",
   "uid": "fe0af3cb-9be0-4b2a-8ccb-86704956cf2e",
-  "version": 11,
+  "version": 13,
   "weekStart": ""
 }
