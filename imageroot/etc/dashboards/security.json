@@ -1314,13 +1314,13 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "utc",
-  "title": "Malware",
+  "title": "Security",
   "uid": "dd395331-5dc0-4172-b243-8646c0ca3ccd",
-  "version": 11,
+  "version": 12,
   "weekStart": ""
 }
