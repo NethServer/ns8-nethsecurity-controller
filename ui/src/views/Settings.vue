@@ -96,6 +96,19 @@
                       :invalid-message="$t(error.prometheus_retention)" type="number"
                       :label="$t('settings.prometheus_retention')"
                       :helper-text="$t('settings.prometheus_retention_helper')" :disabled="loading.configureModule">
+                      <template #tooltip>{{
+                          $t("settings.prometheus_retention_tooltip")
+                        }}</template>
+                    </NsTextInput>
+                    <NsTextInput v-model.trim="maxmind_license"
+                      ref="maxmind_license"
+                      :invalid-message="$t(error.maxmind_license)"
+                      type="password"
+                      :label="$t('settings.maxmind_license')"
+                      :helper-text="$t('settings.maxmind_license_helper')"
+                      :disabled="loading.configureModule"
+                      :passwordHideLabel="$t('password.hide_password')"
+                      :passwordShowLabel="$t('password.show_password')">
                     </NsTextInput>
                   </div>
                 </template>
@@ -151,6 +164,7 @@ export default {
       firstConfig: true,
       loki_retention: "180",
       prometheus_retention: "15",
+      maxmind_license: "",
       passwordPlaceholder: "",
       loading: {
         getConfiguration: false,
@@ -168,6 +182,7 @@ export default {
         cn: "",
         loki_retention: "",
         prometheus_retention: "",
+        maxmind_license: "",
       },
     };
   },
@@ -249,6 +264,7 @@ export default {
       this.password = config.api_password;
       this.loki_retention = config.loki_retention.toString();
       this.prometheus_retention = config.prometheus_retention.toString();
+      this.maxmind_license = config.maxmind_license;
       this.vpn_port = config.vpn_port;
 
       this.focusElement("host");
@@ -386,6 +402,7 @@ export default {
         api_user: this.user,
         loki_retention: parseInt(this.loki_retention),
         prometheus_retention: parseInt(this.prometheus_retention),
+        maxmind_license: this.maxmind_license,
       };
       if (this.password) {
         params.api_password = this.password;

@@ -38,7 +38,8 @@
     "loki_retention": "Logs retention",
     "loki_retention_helper": "Days to keep logs in Loki",
     "prometheus_retention": "Metrics retention",
-    "prometheus_retention_helper": "Days to keep metrics in Prometheus",
+    "prometheus_retention_helper": "Days to keep metrics in Prometheus and Timescale",
+    "prometheus_retention_tooltip": "Timescale is a time-series database used to store metrics. It is used by the controller to store and aggregate additional metrics on top of the metrics provided by Prometheus.",
     "cn_helper": "The name of the controller, used to create the VPN certification authority",
     "network_helper": "The VPN network used to connect the units to the controller.",
     "user_helper": "This is the only user that can create and manage other users inside the controller",
@@ -53,7 +54,9 @@
     "password_placeholder": "Password can be modified from the controller webapp",
     "password_information_title": "Default password",
     "password_information_description": "The default administrator password is displayed only once, please store it in a safe place",
-    "vpn_port_description": "Units will connect to controller using a VPN connection. Make sure the units can reach the controller on UDP port {port}"
+    "vpn_port_description": "Units will connect to controller using a VPN connection. Make sure the units can reach the controller on UDP port {port}",
+    "maxmind_license": "MaxMind license key",
+    "maxmind_license_helper": "The license key is required to use the MaxMind GeoIP2 database"
   },
   "about": {
     "title": "About"

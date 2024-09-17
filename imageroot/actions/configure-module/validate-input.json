@@ -13,7 +13,8 @@
             "ovpn_netmask": "255.255.0.0",
             "ovpn_cn": "nethsec",
             "loki_retention": 180,
-            "prometheus_retention": 15
+            "prometheus_retention": 15,
+            "maxmind_license": "1234567890"
         }
     ],
     "type": "object",
@@ -63,6 +64,11 @@
             "type": "integer",
             "description": "Retention policy for Prometehus metrics, default is 15 days",
             "minimum": 1
+        },
+        "maxmind_license": {
+            "type": "string",
+            "description": "MaxMind API key, required for GeoIP database updates",
+            "minLength": 1
         }
     }
 }
