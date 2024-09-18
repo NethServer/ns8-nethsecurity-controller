@@ -1,4 +1,41 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Local Promethus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "11.2.0"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph (old)",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -26,7 +63,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 7107,
   "graphTooltip": 0,
-  "id": 4,
+  "id": null,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -814,7 +851,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
               "expr": "netdata_net_net_kilobits_persec_average{unit=~\"$unit\",dimension=\"received\"}",
@@ -911,7 +948,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
               "expr": "abs(netdata_net_net_kilobits_persec_average{unit=~\"$unit\",dimension=\"sent\"})",
@@ -1008,7 +1045,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
               "expr": "netdata_net_packets_packets_persec_average{unit=~\"$unit\", dimension=~\"received\"}",
@@ -1105,7 +1142,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
               "expr": "abs(netdata_net_packets_packets_persec_average{unit=~\"$unit\", dimension=~\"sent\"})",
@@ -4011,7 +4048,7 @@
       "type": "row"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -4019,110 +4056,111 @@
         "y": 28
       },
       "id": 1465,
-      "panels": [],
-      "title": "VPN networking",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "default": false,
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 11,
-        "w": 8,
-        "x": 0,
-        "y": 29
-      },
-      "id": 1466,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "repeat": "vpninterface",
-      "repeatDirection": "h",
-      "targets": [
+      "panels": [
         {
           "datasource": {
+            "default": false,
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "netdata_net_net_kilobits_persec_average{unit=~\"$unit\",chart=~\"$vpninterface\"}",
-          "instant": true,
-          "legendFormat": " {{dimension}}",
-          "range": false,
-          "refId": "A"
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 8,
+            "x": 0,
+            "y": 29
+          },
+          "id": 1466,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "repeat": "vpninterface",
+          "repeatDirection": "h",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "netdata_net_net_kilobits_persec_average{unit=~\"$unit\",chart=~\"$vpninterface\"}",
+              "instant": true,
+              "legendFormat": " {{dimension}}",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "VPN interface: $vpninterface",
+          "type": "timeseries"
         }
       ],
-      "title": "VPN interface: $vpninterface",
-      "type": "timeseries"
+      "title": "VPN networking",
+      "type": "row"
     },
     {
       "collapsed": true,
@@ -4134,7 +4172,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 29
       },
       "id": 264,
       "panels": [
@@ -4266,7 +4304,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 30
       },
       "id": 285,
       "panels": [
@@ -4419,7 +4457,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 31
       },
       "id": 308,
       "panels": [
@@ -4552,7 +4590,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 32
       },
       "id": 364,
       "panels": [
@@ -5427,7 +5465,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 33
       },
       "id": 391,
       "panels": [
@@ -5895,7 +5933,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 34
       },
       "id": 416,
       "panels": [
@@ -6259,7 +6297,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 46
+        "y": 35
       },
       "id": 523,
       "panels": [
@@ -6495,7 +6533,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 47
+        "y": 36
       },
       "id": 567,
       "panels": [
@@ -6628,7 +6666,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 37
       },
       "id": 1106,
       "panels": [
@@ -6907,7 +6945,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 49
+        "y": 38
       },
       "id": 1174,
       "panels": [
@@ -7039,7 +7077,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 50
+        "y": 39
       },
       "id": 1245,
       "panels": [
@@ -7382,7 +7420,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 40
       },
       "id": 1381,
       "panels": [
@@ -7700,7 +7738,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 52
+        "y": 41
       },
       "id": 1460,
       "panels": [
@@ -8465,11 +8503,7 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "181ff9b0-e2be-4c71-897a-6575e3991a1c",
-          "value": "181ff9b0-e2be-4c71-897a-6575e3991a1c"
-        },
+        "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
@@ -8493,11 +8527,7 @@
         "type": "query"
       },
       {
-        "current": {
-          "selected": false,
-          "text": "Local Promethus",
-          "value": "prometheus"
-        },
+        "current": {},
         "description": "Prometheus datasource",
         "hide": 2,
         "includeAll": false,
@@ -8513,11 +8543,7 @@
       },
       {
         "allValue": "",
-        "current": {
-          "selected": true,
-          "text": "All",
-          "value": "$__all"
-        },
+        "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
@@ -8574,6 +8600,6 @@
   "timezone": "",
   "title": "Unit metrics",
   "uid": "W3S__804z",
-  "version": 11,
+  "version": 12,
   "weekStart": ""
 }
