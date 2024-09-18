@@ -49,6 +49,18 @@
     },
     {
       "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    },
+    {
+      "type": "panel",
       "id": "timeseries",
       "name": "Time series",
       "version": ""
@@ -79,9 +91,33 @@
   "panels": [
     {
       "datasource": {
-        "default": false,
         "type": "grafana-postgresql-datasource",
         "uid": "${DS_TIMESCALE}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 14,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# Threats\n\nBlocked IPs based on loaded blocklist categories.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.2.0",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_LOCAL_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -109,7 +145,7 @@
         "h": 8,
         "w": 5,
         "x": 0,
-        "y": 0
+        "y": 3
       },
       "id": 3,
       "options": {
@@ -134,12 +170,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT count(*) FROM ca_ts_malware_hourly_direction\nWHERE $__timeFilter(bucket) AND unit_id = $unitid ",
+          "rawSql": "SELECT count(*) FROM ca_ts_malware_hourly_direction\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'",
           "refId": "A",
           "sql": {
             "columns": [
@@ -165,9 +201,8 @@
     },
     {
       "datasource": {
-        "default": false,
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
+        "uid": "${DS_LOCAL_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -216,7 +251,7 @@
         "h": 8,
         "w": 7,
         "x": 5,
-        "y": 0
+        "y": 3
       },
       "id": 6,
       "options": {
@@ -245,12 +280,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT src, count(*) AS count FROM ca_ts_malware_hourly_direction\nWHERE $__timeFilter(bucket) AND $unitid = $unitid\nGROUP by src\nORDER by count DESC\nLIMIT 10",
+          "rawSql": "SELECT src, count(*) AS count FROM ca_ts_malware_hourly_direction\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP by src\nORDER by count DESC\nLIMIT 10",
           "refId": "A",
           "sql": {
             "columns": [
@@ -276,9 +311,8 @@
     },
     {
       "datasource": {
-        "default": false,
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
+        "uid": "${DS_LOCAL_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -300,7 +334,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 0
+        "y": 3
       },
       "id": 4,
       "options": {
@@ -327,12 +361,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT chain, SUM(count) FROM ca_ts_malware_hourly_chain\nWHERE $__timeFilter(bucket) AND $unitid = $unitid\nGROUP by chain",
+          "rawSql": "SELECT chain, SUM(count) FROM ca_ts_malware_hourly_chain\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP by chain",
           "refId": "A",
           "sql": {
             "columns": [
@@ -358,9 +392,8 @@
     },
     {
       "datasource": {
-        "default": false,
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
+        "uid": "${DS_LOCAL_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -382,7 +415,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 0
+        "y": 3
       },
       "id": 8,
       "options": {
@@ -409,12 +442,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT category, SUM(count) FROM ca_ts_malware_hourly_category\nWHERE $__timeFilter(bucket) AND $unitid = $unitid\nGROUP by category",
+          "rawSql": "SELECT category, SUM(count) FROM ca_ts_malware_hourly_category\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP by category",
           "refId": "A",
           "sql": {
             "columns": [
@@ -440,9 +473,8 @@
     },
     {
       "datasource": {
-        "default": false,
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
+        "uid": "${DS_LOCAL_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -476,9 +508,9 @@
       },
       "gridPos": {
         "h": 13,
-        "w": 10,
+        "w": 12,
         "x": 0,
-        "y": 8
+        "y": 11
       },
       "id": 1,
       "options": {
@@ -537,7 +569,7 @@
               "lookup": "lookup",
               "mode": "auto"
             },
-            "name": "Layer 1",
+            "name": "Blocked",
             "tooltip": true,
             "type": "markers"
           }
@@ -558,12 +590,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT count(*) as count, country AS lookup FROM ca_ts_malware_hourly_country\nWHERE $__timeFilter(bucket) AND unit_id = $unitid \nGROUP BY country",
+          "rawSql": "SELECT count(*) as count, country AS lookup FROM ca_ts_malware_hourly_country\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY country",
           "refId": "A",
           "sql": {
             "columns": [
@@ -589,9 +621,8 @@
     },
     {
       "datasource": {
-        "default": false,
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
+        "uid": "${DS_LOCAL_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -650,9 +681,9 @@
       },
       "gridPos": {
         "h": 13,
-        "w": 14,
-        "x": 10,
-        "y": 8
+        "w": 12,
+        "x": 12,
+        "y": 11
       },
       "id": 2,
       "options": {
@@ -671,12 +702,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, count(*) FROM ca_ts_malware_hourly_direction\nWHERE $__timeFilter(bucket) AND $unitid = $unitid\nGROUP by bucket",
+          "rawSql": "SELECT bucket, count(*) FROM ca_ts_malware_hourly_direction\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP by bucket",
           "refId": "A",
           "sql": {
             "columns": [
@@ -702,115 +733,28 @@
     },
     {
       "datasource": {
-        "default": false,
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
+        "uid": "${DS_LOCAL_TIMESCALE}"
       },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
+      "description": "",
       "gridPos": {
-        "h": 8,
-        "w": 10,
+        "h": 3,
+        "w": 24,
         "x": 0,
-        "y": 21
+        "y": 24
       },
-      "id": 7,
+      "id": 15,
       "options": {
-        "barRadius": 0,
-        "barWidth": 0.8,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
         },
-        "orientation": "horizontal",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        "content": "# Attacks\n\nBlocked IPs based on brute force attacks.",
+        "mode": "markdown"
       },
-      "pluginVersion": "10.3.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT country, count FROM ca_ts_malware_hourly_country\nWHERE $__timeFilter(bucket) AND unit_id = $unitid \nGROUP BY country, count\nORDER BY count DESC\nLIMIT 20",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Top 20 blocked threats by countries",
-      "type": "barchart"
+      "pluginVersion": "11.2.0",
+      "type": "text"
     },
     {
       "datasource": {
@@ -828,8 +772,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -842,9 +785,9 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 5,
+        "w": 6,
         "x": 0,
-        "y": 29
+        "y": 27
       },
       "id": 9,
       "options": {
@@ -874,7 +817,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT count(*) FROM ca_ts_attacks_hourly \nWHERE $__timeFilter(bucket) AND unit_id = $unitid ",
+          "rawSql": "SELECT count(*) FROM ca_ts_attacks_hourly \nWHERE $__timeFilter(bucket) AND uuid = '$uuid'",
           "refId": "A",
           "sql": {
             "columns": [
@@ -915,28 +858,16 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
+            "fillOpacity": 80,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
             "lineWidth": 1,
-            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -947,37 +878,47 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "short"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 8,
-        "w": 18,
-        "x": 5,
-        "y": 29
+        "w": 9,
+        "x": 6,
+        "y": 27
       },
-      "id": 12,
+      "id": 7,
       "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom",
+          "placement": "right",
           "showLegend": true
         },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
         "tooltip": {
           "mode": "single",
           "sort": "none"
-        }
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
       },
+      "pluginVersion": "10.3.3",
       "targets": [
         {
           "datasource": {
@@ -987,7 +928,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, count(*) FROM ca_ts_attacks_hourly\nWHERE $__timeFilter(bucket) AND $unitid = $unitid\nGROUP by bucket",
+          "rawSql": "SELECT country, SUM(count) as count FROM ca_ts_attacks_hourly\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND country != ''\nGROUP BY country\nORDER BY count DESC\nLIMIT 20",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1008,8 +949,119 @@
           }
         }
       ],
-      "title": "Blocked attacks by hour",
-      "type": "timeseries"
+      "title": "Top 20 blocked attacks by countries",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_TIMESCALE}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 9,
+        "x": 15,
+        "y": 27
+      },
+      "id": 16,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "10.3.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_LOCAL_TIMESCALE}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ip, count(*) as count FROM ts_attacks\nWHERE $__timeFilter(time) AND uuid = '$uuid'\nGROUP BY ip\nORDER BY count DESC\nLIMIT 20",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Top 20 blocked attacks by IP",
+      "type": "barchart"
     },
     {
       "datasource": {
@@ -1035,8 +1087,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1049,9 +1100,9 @@
       },
       "gridPos": {
         "h": 13,
-        "w": 10,
+        "w": 12,
         "x": 0,
-        "y": 37
+        "y": 35
       },
       "id": 11,
       "options": {
@@ -1110,7 +1161,7 @@
               "lookup": "lookup",
               "mode": "auto"
             },
-            "name": "Layer 1",
+            "name": "Blocked",
             "tooltip": true,
             "type": "markers"
           }
@@ -1136,7 +1187,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT count(*) as count, country AS lookup FROM ca_ts_attacks_hourly \nWHERE $__timeFilter(bucket) AND unit_id = $unitid \nGROUP BY country",
+          "rawSql": "SELECT count(*) as count, country AS lookup FROM ca_ts_attacks_hourly \nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY country",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1177,16 +1228,28 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "fillOpacity": 80,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
             "lineWidth": 1,
+            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -1197,8 +1260,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1210,34 +1272,24 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 7,
-        "x": 10,
-        "y": 37
+        "h": 13,
+        "w": 12,
+        "x": 12,
+        "y": 35
       },
-      "id": 10,
+      "id": 12,
       "options": {
-        "barRadius": 0,
-        "barWidth": 0.7,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
         "legend": {
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
-        "orientation": "horizontal",
-        "showValue": "auto",
-        "stacking": "none",
         "tooltip": {
           "mode": "single",
           "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        }
       },
-      "pluginVersion": "10.3.3",
       "targets": [
         {
           "datasource": {
@@ -1247,7 +1299,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT ip, count(*) AS count FROM ts_attacks \nWHERE $__timeFilter(time) AND $unitid = $unitid\nGROUP by ip\nORDER by count DESC\nLIMIT 10",
+          "rawSql": "SELECT bucket, count(*) FROM ca_ts_attacks_hourly\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP by bucket",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1268,13 +1320,197 @@
           }
         }
       ],
-      "title": "Top 10 blocked attacks by IPs",
-      "type": "barchart"
+      "title": "Blocked attacks by hour",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_TIMESCALE}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 48
+      },
+      "id": 13,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_LOCAL_TIMESCALE}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT country, count(*) FROM ca_ts_malware_hourly_country\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY country\nORDER BY count DESC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Blocked by countries",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_TIMESCALE}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 48
+      },
+      "id": 17,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_LOCAL_TIMESCALE}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ip, count(*) as count FROM ts_attacks\nWHERE $__timeFilter(time) AND uuid = '$uuid'\nGROUP BY ip\nORDER BY count DESC\nLIMIT 20",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Blocked by IP",
+      "type": "table"
     }
   ],
   "refresh": "",
   "schemaVersion": 39,
-  "tags": [],
+  "tags": [
+    "monitoring",
+    "unit",
+    "timescale"
+  ],
   "templating": {
     "list": [
       {
@@ -1283,15 +1519,15 @@
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_TIMESCALE}"
         },
-        "definition": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "definition": "SELECT uuid AS __value, name AS __text FROM units",
         "description": "",
         "hide": 0,
         "includeAll": false,
         "label": "Unit",
         "multi": false,
-        "name": "unitid",
+        "name": "uuid",
         "options": [],
-        "query": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "query": "SELECT uuid AS __value, name AS __text FROM units",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1302,6 +1538,7 @@
         "current": {},
         "hide": 2,
         "includeAll": false,
+        "label": "Local Timescale",
         "multi": false,
         "name": "DS_TIMESCALE",
         "options": [],
@@ -1318,9 +1555,9 @@
     "to": "now"
   },
   "timepicker": {},
-  "timezone": "utc",
+  "timezone": "",
   "title": "Security",
   "uid": "dd395331-5dc0-4172-b243-8646c0ca3ccd",
-  "version": 12,
+  "version": 21,
   "weekStart": ""
 }

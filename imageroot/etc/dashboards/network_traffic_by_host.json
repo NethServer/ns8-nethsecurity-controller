@@ -124,7 +124,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bytes FROM ca_dpi_stats_hourly_host\nWHERE $__timeFilter(bucket) AND unit_id = $unitid AND host like '$host'",
+          "rawSql": "SELECT bytes FROM ca_dpi_stats_hourly_host\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND host like '$host'",
           "refId": "A",
           "sql": {
             "columns": [
@@ -157,7 +157,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisBorderShow": false,
@@ -236,7 +236,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, sum(bytes) as bytes FROM ca_dpi_stats_hourly_host\nWHERE $__timeFilter(bucket) AND unit_id = $unitid AND host like '$host'\nGROUP BY bucket, bytes\nORDER BY bucket",
+          "rawSql": "SELECT bucket, sum(bytes) as bytes FROM ca_dpi_stats_hourly_host\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND host like '$host'\nGROUP BY bucket\nORDER BY bucket",
           "refId": "A",
           "sql": {
             "columns": [
@@ -348,7 +348,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  time_bucket('30m', time) AS time,\n  client_address as client,\n  SUM(bytes) AS value\nFROM dpi_stats\nWHERE $__timeFilter(time) AND host LIKE '$host' AND unit_id='$unitid'\nGROUP BY time, client\nORDER BY time",
+          "rawSql": "SELECT\n  time_bucket('30m', time) AS time,\n  client_address as client,\n  SUM(bytes) AS value\nFROM dpi_stats\nWHERE $__timeFilter(time) AND host LIKE '$host' AND uuid = '$uuid'\nGROUP BY time, client\nORDER BY time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -398,6 +398,7 @@
             "cellOptions": {
               "type": "auto"
             },
+            "filterable": true,
             "inspect": false
           },
           "mappings": [],
@@ -429,11 +430,12 @@
         "cellHeight": "sm",
         "footer": {
           "countRows": false,
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
           ],
-          "show": false
+          "show": true
         },
         "showHeader": true
       },
@@ -447,7 +449,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT client_address, client_name, SUM(bytes) as bytes FROM dpi_stats \nWHERE $__timeFilter(time) AND unit_id = '$unitid' AND host LIKE '$host'\nGROUP BY client_address, client_name\nORDER BY bytes DESC",
+          "rawSql": "SELECT client_address, client_name, SUM(bytes) as bytes FROM dpi_stats \nWHERE $__timeFilter(time) AND uuid = '$uuid' AND host LIKE '$host'\nGROUP BY client_address, client_name\nORDER BY bytes DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -477,8 +479,7 @@
   "tags": [
     "monitoring",
     "timescale",
-    "traffic",
-    "host"
+    "unit"
   ],
   "templating": {
     "list": [
@@ -488,14 +489,14 @@
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_TIMESCALE}"
         },
-        "definition": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "definition": "SELECT uuid AS __value, name  AS __text FROM units",
         "hide": 0,
         "includeAll": false,
         "label": "Unit",
         "multi": false,
-        "name": "unitid",
+        "name": "uuid",
         "options": [],
-        "query": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "query": "SELECT uuid AS __value, name  AS __text FROM units",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -505,13 +506,19 @@
       {
         "current": {
           "selected": false,
-          "text": "pod-031-2010-09.backblaze.com",
-          "value": "pod-031-2010-09.backblaze.com"
+          "text": "%",
+          "value": "%"
         },
         "hide": 0,
         "name": "host",
-        "options": [],
-        "query": "",
+        "options": [
+          {
+            "selected": true,
+            "text": "%",
+            "value": "%"
+          }
+        ],
+        "query": "%",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -519,6 +526,7 @@
         "current": {},
         "hide": 2,
         "includeAll": false,
+        "label": "Local Timescale",
         "multi": false,
         "name": "DS_TIMESCALE",
         "options": [],
@@ -531,13 +539,13 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Network traffic by host",
   "uid": "c8d43e5f-068e-4cac-9283-2318d9e1911b",
-  "version": 9,
+  "version": 15,
   "weekStart": ""
 }

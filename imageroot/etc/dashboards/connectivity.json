@@ -121,7 +121,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT distinct(wan) as wan, interface FROM ca_mwan_events_hourly\nWHERE $__timeFilter(bucket) AND unit_id = $unitid\n",
+          "rawSql": "SELECT distinct(wan) as wan, interface FROM ca_mwan_events_hourly\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -208,7 +208,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \n    time,\n    wan,\n    interface\nFROM mwan_events\nWHERE event = 'offline' AND $__timeFilter(time) AND unit_id = $unitid \nORDER BY time DESC\nLIMIT 3;",
+          "rawSql": "SELECT \n    time,\n    wan,\n    interface\nFROM mwan_events\nWHERE event = 'offline' AND $__timeFilter(time) AND uuid = '$uuid'\nORDER BY time DESC\nLIMIT 3;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -308,7 +308,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT DISTINCT ON (unit_id, wan, interface)\n    wan,\n    interface,\n    event AS last_known_status,\n    time AS last_update_time\nFROM mwan_events\nWHERE $__timeFilter(time) AND unit_id = $unitid \nORDER BY unit_id, wan, interface, time DESC;\n",
+          "rawSql": "SELECT DISTINCT ON (uuid, wan, interface)\n    wan,\n    interface,\n    event AS last_known_status,\n    time AS last_update_time\nFROM mwan_events\nWHERE $__timeFilter(time) AND uuid = '$uuid'\nORDER BY uuid, wan, interface, time DESC;\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -421,7 +421,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, count(*) as count FROM ca_mwan_events_hourly\nWHERE $__timeFilter(bucket) AND unit_id = $unitid\nGROUP by bucket",
+          "rawSql": "SELECT bucket, count(*) as count FROM ca_mwan_events_hourly\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP by bucket",
           "refId": "A",
           "sql": {
             "columns": [
@@ -452,8 +452,9 @@
     "list": [
       {
         "current": {},
-        "hide": 0,
+        "hide": 2,
         "includeAll": false,
+        "label": "Local Timescale",
         "multi": false,
         "name": "DS_TIMESCALE",
         "options": [],
@@ -469,14 +470,14 @@
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_TIMESCALE}"
         },
-        "definition": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "definition": "SELECT uuid AS __value, name AS __text FROM units",
         "hide": 0,
         "includeAll": false,
         "label": "Unit",
         "multi": false,
-        "name": "unitid",
+        "name": "uuid",
         "options": [],
-        "query": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "query": "SELECT uuid AS __value, name AS __text FROM units",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -486,13 +487,13 @@
     ]
   },
   "time": {
-    "from": "now-7d",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Connectivity",
   "uid": "ady5vjxjqywowd",
-  "version": 7,
+  "version": 10,
   "weekStart": ""
 }

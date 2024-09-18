@@ -127,7 +127,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT client_name \nFROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND unit_id = $unitid AND client_address = '$client_address'",
+          "rawSql": "SELECT client_name \nFROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND client_address = '$client_address'",
           "refId": "A",
           "sql": {
             "columns": [
@@ -238,7 +238,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, bytes \nFROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND unit_id = $unitid AND client_address = '$client_address'",
+          "rawSql": "SELECT bucket, bytes \nFROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND client_address = '$client_address'",
           "refId": "A",
           "sql": {
             "columns": [
@@ -321,7 +321,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bytes \nFROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND unit_id = $unitid AND client_address = '$client_address'",
+          "rawSql": "SELECT bytes \nFROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND client_address = '$client_address'",
           "refId": "A",
           "sql": {
             "columns": [
@@ -433,7 +433,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT REPLACE(application, 'netify.', '') as application, SUM(bytes) AS BYTES FROM dpi_stats \nWHERE application!='' AND $__timeFilter(time) AND client_address like '$client_address' AND unit_id='$unitid'\nGROUP BY application\nORDER BY bytes desc\nLIMIT 10",
+          "rawSql": "SELECT REPLACE(application, 'netify.', '') as application, SUM(bytes) AS BYTES FROM dpi_stats \nWHERE application!='' AND $__timeFilter(time) AND client_address like '$client_address' AND uuid = '$uuid'\nGROUP BY application\nORDER BY bytes desc\nLIMIT 10",
           "refId": "A",
           "sql": {
             "columns": [
@@ -473,6 +473,7 @@
             "cellOptions": {
               "type": "auto"
             },
+            "filterable": true,
             "inspect": false
           },
           "mappings": [],
@@ -504,11 +505,12 @@
         "cellHeight": "sm",
         "footer": {
           "countRows": false,
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
           ],
-          "show": false
+          "show": true
         },
         "showHeader": true
       },
@@ -522,7 +524,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT REPLACE(application, 'netify.', '') as application, SUM(bytes) as bytes FROM dpi_stats \nWHERE application!='' AND $__timeFilter(time) AND client_address like '$client_address' AND unit_id='$unitid'\nGROUP BY application\nORDER BY bytes DESC",
+          "rawSql": "SELECT REPLACE(application, 'netify.', '') as application, SUM(bytes) as bytes FROM dpi_stats \nWHERE application!='' AND $__timeFilter(time) AND client_address like '$client_address' AND uuid = '$uuid'\nGROUP BY application\nORDER BY bytes DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -634,7 +636,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT protocol, SUM(bytes) FROM dpi_stats \nWHERE protocol!='' AND $__timeFilter(time) AND client_address like '$client_address' AND unit_id='$unitid'\nGROUP BY protocol",
+          "rawSql": "SELECT protocol, SUM(bytes) FROM dpi_stats \nWHERE protocol!='' AND $__timeFilter(time) AND client_address like '$client_address' AND uuid = '$uuid'\nGROUP BY protocol",
           "refId": "A",
           "sql": {
             "columns": [
@@ -674,6 +676,7 @@
             "cellOptions": {
               "type": "auto"
             },
+            "filterable": true,
             "inspect": false
           },
           "mappings": [],
@@ -705,11 +708,12 @@
         "cellHeight": "sm",
         "footer": {
           "countRows": false,
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
           ],
-          "show": false
+          "show": true
         },
         "showHeader": true
       },
@@ -723,7 +727,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT protocol, SUM(bytes) as bytes FROM dpi_stats \nWHERE protocol!='' AND $__timeFilter(time) AND client_address like '$client_address' AND unit_id='$unitid'\nGROUP BY protocol\nORDER BY bytes DESC",
+          "rawSql": "SELECT protocol, SUM(bytes) as bytes FROM dpi_stats \nWHERE protocol!='' AND $__timeFilter(time) AND client_address like '$client_address' AND uuid = '$uuid'\nGROUP BY protocol\nORDER BY bytes DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -784,8 +788,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -835,7 +838,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT host, SUM(bytes) as bytes FROM dpi_stats \nWHERE host!='' AND $__timeFilter(time) AND unit_id = $unitid AND client_address like '$client_address'\nGROUP BY host\nORDER BY bytes DESC\nLIMIT 10",
+          "rawSql": "SELECT host, SUM(bytes) as bytes FROM dpi_stats \nWHERE host!='' AND $__timeFilter(time) AND uuid = '$uuid' AND client_address like '$client_address'\nGROUP BY host\nORDER BY bytes DESC\nLIMIT 10",
           "refId": "A",
           "sql": {
             "columns": [
@@ -872,6 +875,7 @@
             "cellOptions": {
               "type": "auto"
             },
+            "filterable": true,
             "inspect": false
           },
           "mappings": [],
@@ -879,8 +883,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -903,11 +906,12 @@
         "cellHeight": "sm",
         "footer": {
           "countRows": false,
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
           ],
-          "show": false
+          "show": true
         },
         "showHeader": true
       },
@@ -921,7 +925,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT host, SUM(bytes) as bytes FROM dpi_stats \nWHERE host!='' AND $__timeFilter(time) AND unit_id = $unitid AND client_address like '$client_address'\nGROUP BY host\nORDER BY bytes DESC",
+          "rawSql": "SELECT host, SUM(bytes) as bytes FROM dpi_stats \nWHERE host!='' AND $__timeFilter(time) AND uuid = '$uuid' AND client_address like '$client_address'\nGROUP BY host\nORDER BY bytes DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -950,11 +954,8 @@
   "schemaVersion": 39,
   "tags": [
     "monitoring",
-    "traffic",
     "unit",
-    "timescale",
-    "client",
-    "details"
+    "timescale"
   ],
   "templating": {
     "list": [
@@ -964,15 +965,15 @@
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_TIMESCALE}"
         },
-        "definition": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "definition": "SELECT uuid AS __value, name AS __text FROM units",
         "description": "",
         "hide": 0,
         "includeAll": false,
         "label": "Unit",
         "multi": false,
-        "name": "unitid",
+        "name": "uuid",
         "options": [],
-        "query": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "query": "SELECT uuid AS __value, name AS __text FROM units",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -982,19 +983,19 @@
       {
         "current": {
           "selected": false,
-          "text": "192.168.5.28",
-          "value": "192.168.5.28"
+          "text": "",
+          "value": ""
         },
         "hide": 0,
         "name": "client_address",
         "options": [
           {
-            "selected": false,
+            "selected": true,
             "text": "",
             "value": ""
           }
         ],
-        "query": "192.168.5.28",
+        "query": "",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -1002,6 +1003,7 @@
         "current": {},
         "hide": 2,
         "includeAll": false,
+        "label": "Local Timescale",
         "multi": false,
         "name": "DS_TIMESCALE",
         "options": [],
@@ -1014,13 +1016,13 @@
     ]
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-12h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Network traffic by client",
   "uid": "b14a1181-a2ee-4df4-a732-888e0190037f",
-  "version": 11,
+  "version": 17,
   "weekStart": ""
 }

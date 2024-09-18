@@ -147,7 +147,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT count(*) FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND unit_id = $unitid AND instance = '$instance'",
+          "rawSql": "SELECT count(*) FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND uuid = '$uuid' AND instance = '$instance'",
           "refId": "A",
           "sql": {
             "columns": [
@@ -260,7 +260,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT time, count(*) FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND unit_id = $unitid AND instance = '$instance'\nGROUP BY time",
+          "rawSql": "SELECT time, count(*) FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND uuid = '$uuid' AND instance = '$instance'\nGROUP BY time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -343,7 +343,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND unit_id = $unitid AND instance = '$instance'\n",
+          "rawSql": "SELECT SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance = '$instance'\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -451,7 +451,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT SUM(bytes_sent) + SUM(bytes_received) as bytes, common_name as user FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND unit_id = $unitid AND instance = '$instance'\nGROUP BY common_name\nORDER by bytes DESC\nLIMIT 20",
+          "rawSql": "SELECT SUM(bytes_sent) + SUM(bytes_received) as bytes, common_name as user FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance = '$instance'\nGROUP BY common_name\nORDER by bytes DESC\nLIMIT 20",
           "refId": "A",
           "sql": {
             "columns": [
@@ -597,7 +597,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT count(*) AS count, country AS lookup FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND unit_id = $unitid AND instance = '$instance'\nGROUP BY lookup",
+          "rawSql": "SELECT count(*) AS count, country AS lookup FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND uuid = '$uuid' AND instance = '$instance'\nGROUP BY lookup",
           "refId": "A",
           "sql": {
             "columns": [
@@ -670,8 +670,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -712,7 +711,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND unit_id = $unitid AND instance = '$instance'\nGROUP BY bucket\n",
+          "rawSql": "SELECT bucket, SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance = '$instance'\nGROUP BY bucket\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -774,8 +773,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -785,7 +783,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 6,
+        "w": 24,
         "x": 0,
         "y": 34
       },
@@ -823,7 +821,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND unit_id = $unitid AND instance = '$instance' AND common_name like $user \n  AND (bytes_sent + bytes_received) > 0\nGROUP BY bucket\nORDER BY bucket",
+          "rawSql": "SELECT bucket, SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance = '$instance' AND common_name like $user\n  AND (bytes_sent + bytes_received) > 0\nGROUP BY bucket\nORDER BY bucket",
           "refId": "A",
           "sql": {
             "columns": [
@@ -850,13 +848,18 @@
   ],
   "refresh": "",
   "schemaVersion": 39,
-  "tags": [],
+  "tags": [
+    "timescale",
+    "unit",
+    "monitoring"
+  ],
   "templating": {
     "list": [
       {
         "current": {},
         "hide": 2,
         "includeAll": false,
+        "label": "Local Timescale",
         "multi": false,
         "name": "DS_TIMESCALE",
         "options": [],
@@ -872,14 +875,14 @@
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_TIMESCALE}"
         },
-        "definition": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "definition": "SELECT uuid AS __value, name AS __text FROM units",
         "hide": 0,
         "includeAll": false,
         "label": "Unit",
         "multi": false,
-        "name": "unitid",
+        "name": "uuid",
         "options": [],
-        "query": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "query": "SELECT uuid AS __value, name AS __text FROM units",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -892,14 +895,14 @@
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_LOCAL_TIMESCALE}"
         },
-        "definition": "SELECT instance FROM ovpnrw_connections WHERE unit_id = $unitid",
+        "definition": "SELECT instance FROM ovpnrw_connections WHERE uuid = '$uuid'",
         "description": "",
         "hide": 0,
         "includeAll": false,
         "multi": false,
         "name": "instance",
         "options": [],
-        "query": "SELECT instance FROM ovpnrw_connections WHERE unit_id = $unitid",
+        "query": "SELECT instance FROM ovpnrw_connections WHERE uuid = '$uuid'",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -908,7 +911,7 @@
       },
       {
         "current": {},
-        "hide": 0,
+        "hide": 2,
         "includeAll": false,
         "label": "Local Prometheus",
         "multi": false,
@@ -927,14 +930,14 @@
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_TIMESCALE}"
         },
-        "definition": "SELECT common_name as __value FROM ovpnrw_connections WHERE unit_id = $unitid",
+        "definition": "SELECT common_name as __value FROM ovpnrw_connections WHERE uuid = '$uuid'",
         "hide": 0,
         "includeAll": true,
         "label": "User",
         "multi": false,
         "name": "user",
         "options": [],
-        "query": "SELECT common_name as __value FROM ovpnrw_connections WHERE unit_id = $unitid",
+        "query": "SELECT common_name as __value FROM ovpnrw_connections WHERE uuid = '$uuid'",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -944,13 +947,13 @@
     ]
   },
   "time": {
-    "from": "now-30d",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "VPN",
   "uid": "fdxlb58zxvpj4f",
-  "version": 30,
+  "version": 37,
   "weekStart": ""
 }

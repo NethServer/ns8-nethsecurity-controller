@@ -134,7 +134,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT sum(bytes) FROM ca_dpi_stats_hourly_bytes WHERE unit_id=$unitid ",
+          "rawSql": "SELECT sum(bytes) FROM ca_dpi_stats_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'",
           "refId": "A",
           "sql": {
             "columns": [
@@ -246,7 +246,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, bytes FROM ca_dpi_stats_hourly_bytes \nWHERE $__timeFilter(bucket) and unit_id =$unitid\nGROUP BY bucket, bytes",
+          "rawSql": "SELECT bucket, bytes FROM ca_dpi_stats_hourly_bytes \nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY bucket, bytes",
           "refId": "A",
           "sql": {
             "columns": [
@@ -334,7 +334,99 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT replace(application, 'netify.', '') AS application, sum(bytes) FROM ca_dpi_stats_hourly_application\nWHERE unit_id=$unitid\nGROUP BY application",
+          "rawSql": "SELECT\n    CASE\n        WHEN application_rank <= 10 THEN application\n        ELSE 'Other'\n    END AS application,\n    SUM(bytes) AS total_bytes\nFROM (\n    SELECT\n        replace(application, 'netify.', '') AS application,\n        SUM(bytes) AS bytes,\n        ROW_NUMBER() OVER (ORDER BY SUM(bytes) DESC) AS application_rank\n    FROM\n        ca_dpi_stats_hourly_application\n    WHERE\n        $__timeFilter(bucket) AND uuid = '$uuid'\n    GROUP BY\n        application\n) AS ranked_applications\nGROUP BY\n    CASE\n        WHEN application_rank <= 10 THEN application\n        ELSE 'Other'\n    END\nORDER BY\n    total_bytes DESC;\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Top 10 applications",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_TIMESCALE}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 8
+      },
+      "id": 16,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_LOCAL_TIMESCALE}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT replace(application, 'netify.', '') AS application, sum(bytes) as bytes FROM ca_dpi_stats_hourly_application\nWHERE $__timeFilter(bucket) AND  uuid = '$uuid'\nGROUP BY application\nORDER BY bytes DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -356,95 +448,7 @@
         }
       ],
       "title": "By application",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "default": false,
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": [],
-          "unit": "decbytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 6,
-        "y": 8
-      },
-      "id": 12,
-      "options": {
-        "displayLabels": [],
-        "legend": {
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true,
-          "values": [
-            "value"
-          ]
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "limit": 10,
-          "values": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT protocol, sum(bytes) as bytes FROM ca_dpi_stats_hourly_protocol\nWHERE unit_id=$unitid\nGROUP BY protocol",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "By protocol",
-      "type": "piechart"
+      "type": "table"
     },
     {
       "datasource": {
@@ -510,7 +514,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT client_name, sum(bytes) FROM ca_dpi_stats_hourly_client\nWHERE unit_id=$unitid\nGROUP BY client_name",
+          "rawSql": "SELECT client_name, sum(bytes) FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY client_name",
           "refId": "A",
           "sql": {
             "columns": [
@@ -544,6 +548,98 @@
       "fieldConfig": {
         "defaults": {
           "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 8
+      },
+      "id": 17,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_LOCAL_TIMESCALE}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT client_name, sum(bytes) as bytes FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY client_name\nORDER BY bytes DESC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "By client",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_TIMESCALE}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
             "mode": "palette-classic"
           },
           "custom": {
@@ -561,8 +657,188 @@
       "gridPos": {
         "h": 8,
         "w": 6,
-        "x": 18,
-        "y": 8
+        "x": 0,
+        "y": 16
+      },
+      "id": 12,
+      "options": {
+        "displayLabels": [],
+        "legend": {
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "limit": 10,
+          "values": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_LOCAL_TIMESCALE}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    CASE\n        WHEN protocol_rank <= 10 THEN protocol\n        ELSE 'Other'\n    END AS protocol,\n    SUM(bytes) AS total_bytes\nFROM (\n    SELECT\n        protocol,\n        SUM(bytes) AS bytes,\n        ROW_NUMBER() OVER (ORDER BY SUM(bytes) DESC) AS protocol_rank\n    FROM\n        ca_dpi_stats_hourly_protocol\n    WHERE\n        $__timeFilter(bucket) AND uuid = '$uuid'\n    GROUP BY\n        protocol\n) AS ranked_protocols\nGROUP BY\n    CASE\n        WHEN protocol_rank <= 10 THEN protocol\n        ELSE 'Other'\n    END\nORDER BY\n    total_bytes DESC;\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Top 10 protocols",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_TIMESCALE}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 16
+      },
+      "id": 18,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_LOCAL_TIMESCALE}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT protocol, sum(bytes) as bytes FROM ca_dpi_stats_hourly_protocol\nWHERE $__timeFilter(bucket) AND  uuid = '$uuid'\nGROUP BY protocol\nORDER BY bytes DESC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "By application",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_TIMESCALE}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 16
       },
       "id": 14,
       "options": {
@@ -598,7 +874,99 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT host, sum(bytes) FROM ca_dpi_stats_hourly_host\nWHERE unit_id=$unitid\nGROUP BY host",
+          "rawSql": "SELECT\n    CASE\n        WHEN host_rank <= 10 THEN host\n        ELSE 'Other'\n    END AS host,\n    SUM(bytes) AS total_bytes\nFROM (\n    SELECT\n        host,\n        SUM(bytes) AS bytes,\n        ROW_NUMBER() OVER (ORDER BY SUM(bytes) DESC) AS host_rank\n    FROM\n        ca_dpi_stats_hourly_host\n    WHERE\n        $__timeFilter(bucket) AND uuid = '$uuid'\n    GROUP BY\n        host\n) AS ranked_hosts\nGROUP BY\n    CASE\n        WHEN host_rank <= 10 THEN host\n        ELSE 'Other'\n    END\nORDER BY\n    total_bytes DESC;\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Top 10 hosts",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_TIMESCALE}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 16
+      },
+      "id": 19,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_LOCAL_TIMESCALE}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT host, sum(bytes) as bytes FROM ca_dpi_stats_hourly_host\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY host\nORDER BY bytes DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -620,7 +988,7 @@
         }
       ],
       "title": "By host",
-      "type": "piechart"
+      "type": "table"
     },
     {
       "datasource": {
@@ -646,8 +1014,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -681,7 +1048,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 24
       },
       "id": 5,
       "options": {
@@ -706,7 +1073,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT client_address, client_name, bytes FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND unit_id=$unitid\nORDER BY bytes DESC\nLIMIT 20",
+          "rawSql": "SELECT client_address, client_name, bytes FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nORDER BY bytes DESC\nLIMIT 20",
           "refId": "A",
           "sql": {
             "columns": [
@@ -754,8 +1121,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -789,7 +1155,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 24
       },
       "id": 15,
       "options": {
@@ -814,7 +1180,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT host, bytes FROM ca_dpi_stats_hourly_host\nWHERE $__timeFilter(bucket) AND unit_id=$unitid\nORDER BY bytes DESC\nLIMIT 20",
+          "rawSql": "SELECT host, bytes FROM ca_dpi_stats_hourly_host\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nORDER BY bytes DESC\nLIMIT 20",
           "refId": "A",
           "sql": {
             "columns": [
@@ -844,8 +1210,7 @@
   "tags": [
     "unit",
     "timescale",
-    "monitoring",
-    "traffic"
+    "monitoring"
   ],
   "templating": {
     "list": [
@@ -855,15 +1220,15 @@
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_TIMESCALE}"
         },
-        "definition": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "definition": "SELECT uuid AS __value, name AS __text FROM units",
         "description": "",
         "hide": 0,
         "includeAll": false,
         "label": "Unit",
         "multi": false,
-        "name": "unitid",
+        "name": "uuid",
         "options": [],
-        "query": "SELECT id AS __value, CONCAT(name,' (',uuid,')') AS __text FROM units",
+        "query": "SELECT uuid AS __value, name AS __text FROM units",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -874,6 +1239,7 @@
         "current": {},
         "hide": 2,
         "includeAll": false,
+        "label": "Local Timescale",
         "multi": false,
         "name": "DS_TIMESCALE",
         "options": [],
@@ -894,6 +1260,6 @@
   "timezone": "",
   "title": "Network traffic",
   "uid": "fe0af3cb-9be0-4b2a-8ccb-86704956cf2e",
-  "version": 13,
+  "version": 19,
   "weekStart": ""
 }
