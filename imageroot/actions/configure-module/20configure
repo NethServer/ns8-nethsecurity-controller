@@ -144,6 +144,7 @@ with open('grafana.env', 'w') as gfp:
     gfp.write("GF_SERVER_HTTP_ADDR=127.0.0.1\n")
     gfp.write(f'GF_SECURITY_ADMIN_USER={request["api_user"]}\n')
     gfp.write(f'GF_SECURITY_ADMIN_PASSWORD={request.get("api_password", config["api_password"])}\n')
+    gfp.write('GF_DATE_FORMATS_USE_BROWSER_LOCALE=true\n')
 
 with open('prometheus.env', 'w') as pfp:
     pfp.write(f"PROMETHEUS_PORT={ports[7]}\n")
