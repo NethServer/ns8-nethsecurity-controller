@@ -39,14 +39,14 @@
     },
     {
       "type": "panel",
-      "id": "stat",
-      "name": "Stat",
+      "id": "table",
+      "name": "Table",
       "version": ""
     },
     {
       "type": "panel",
-      "id": "table",
-      "name": "Table",
+      "id": "text",
+      "name": "Text",
       "version": ""
     },
     {
@@ -76,7 +76,22 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [
+        "unit"
+      ],
+      "targetBlank": false,
+      "title": "New link",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "panels": [
     {
       "datasource": {
@@ -228,7 +243,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \n    time,\n    wan,\n    interface\nFROM mwan_events\nWHERE event = 'offline' AND $__timeFilter(time) AND uuid = '$uuid'\nORDER BY time DESC\nLIMIT 3;",
+          "rawSql": "SELECT \n    time,\n    wan,\n    interface\nFROM mwan_events\nWHERE event = 'offline' AND uuid = '$uuid'\nORDER BY time DESC\nLIMIT 3;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -328,7 +343,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT DISTINCT ON (uuid, wan, interface)\n    wan,\n    interface,\n    event AS last_known_status,\n    time AS last_update_time\nFROM mwan_events\nWHERE $__timeFilter(time) AND uuid = '$uuid'\nORDER BY uuid, wan, interface, time DESC;\n",
+          "rawSql": "SELECT DISTINCT ON (uuid, wan, interface)\n    wan,\n    interface,\n    event AS last_known_status,\n    time AS last_update_time\nFROM mwan_events\nWHERE uuid = '$uuid'\nORDER BY uuid, wan, interface, time DESC;\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -462,74 +477,8 @@
           }
         }
       ],
-      "title": "MultiWAN events by hour",
+      "title": "MultiWAN events by time",
       "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "default": false,
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "Kbits"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 15
-      },
-      "id": 10,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.2.0",
-      "repeat": "wan",
-      "repeatDirection": "h",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_LOCAL_PROMETHUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(abs(netdata_net_net_kilobits_persec_average{unit=~'$uuid',chart='net.$wan'}))",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Total traffic: $wan",
-      "type": "stat"
     },
     {
       "datasource": {
@@ -595,9 +544,9 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 23
+        "y": 15
       },
       "id": 5,
       "options": {
@@ -633,9 +582,32 @@
     },
     {
       "datasource": {
-        "default": false,
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 10,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# Line quality\n\nPing sent to configured hosts, the traffic\nmay use any interface.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.2.0",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_LOCAL_PROMETHUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -680,8 +652,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -696,7 +667,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 31
+        "y": 26
       },
       "id": 7,
       "options": {
@@ -777,8 +748,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -793,7 +763,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 31
+        "y": 26
       },
       "id": 8,
       "options": {
@@ -889,7 +859,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 39
+        "y": 34
       },
       "id": 9,
       "options": {
@@ -922,6 +892,7 @@
       "type": "timeseries"
     }
   ],
+  "refresh": "",
   "schemaVersion": 39,
   "tags": [
     "timescale",
@@ -1001,13 +972,13 @@
     ]
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Connectivity",
   "uid": "ady5vjxjqywowd",
-  "version": 24,
+  "version": 31,
   "weekStart": ""
 }

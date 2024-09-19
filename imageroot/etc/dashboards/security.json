@@ -86,7 +86,22 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [
+        "unit"
+      ],
+      "targetBlank": false,
+      "title": "New link",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "liveNow": false,
   "panels": [
     {
@@ -204,6 +219,7 @@
         "type": "grafana-postgresql-datasource",
         "uid": "${DS_LOCAL_TIMESCALE}"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -266,14 +282,14 @@
           "showLegend": true
         },
         "orientation": "horizontal",
-        "showValue": "auto",
-        "stacking": "none",
+        "showValue": "always",
+        "stacking": "normal",
         "tooltip": {
           "mode": "single",
           "sort": "none"
         },
         "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        "xTickLabelSpacing": 100
       },
       "pluginVersion": "10.3.3",
       "targets": [
@@ -784,8 +800,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 6,
+        "h": 11,
+        "w": 5,
         "x": 0,
         "y": 27
       },
@@ -817,7 +833,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT count(*) FROM ca_ts_attacks_hourly \nWHERE $__timeFilter(bucket) AND uuid = '$uuid'",
+          "rawSql": "SELECT sum(count) FROM ca_ts_attacks_hourly \nWHERE $__timeFilter(bucket) AND uuid = '$uuid'",
           "refId": "A",
           "sql": {
             "columns": [
@@ -847,6 +863,7 @@
         "type": "grafana-postgresql-datasource",
         "uid": "${DS_TIMESCALE}"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -885,38 +902,37 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "short"
+          }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 11,
         "w": 9,
-        "x": 6,
+        "x": 5,
         "y": 27
       },
       "id": 7,
       "options": {
         "barRadius": 0,
-        "barWidth": 0.8,
+        "barWidth": 0.7,
         "fullHighlight": false,
         "groupWidth": 0.7,
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true
         },
         "orientation": "horizontal",
-        "showValue": "auto",
-        "stacking": "none",
+        "showValue": "always",
+        "stacking": "normal",
         "tooltip": {
           "mode": "single",
           "sort": "none"
         },
         "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        "xTickLabelSpacing": 100
       },
       "pluginVersion": "10.3.3",
       "targets": [
@@ -928,7 +944,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT country, SUM(count) as count FROM ca_ts_attacks_hourly\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND country != ''\nGROUP BY country\nORDER BY count DESC\nLIMIT 20",
+          "rawSql": "SELECT country, count(*) as count FROM ts_attacks \nWHERE $__timeFilter(time) AND uuid = '$uuid'\nGROUP by country\nORDER by count DESC\nLIMIT 10",
           "refId": "A",
           "sql": {
             "columns": [
@@ -949,7 +965,7 @@
           }
         }
       ],
-      "title": "Top 20 blocked attacks by countries",
+      "title": "Top 10 blocked attack by country",
       "type": "barchart"
     },
     {
@@ -1002,9 +1018,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 9,
-        "x": 15,
+        "h": 11,
+        "w": 10,
+        "x": 14,
         "y": 27
       },
       "id": 16,
@@ -1016,18 +1032,18 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true
         },
         "orientation": "horizontal",
-        "showValue": "auto",
+        "showValue": "always",
         "stacking": "none",
         "tooltip": {
           "mode": "single",
           "sort": "none"
         },
         "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        "xTickLabelSpacing": 100
       },
       "pluginVersion": "10.3.3",
       "targets": [
@@ -1039,7 +1055,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT ip, count(*) as count FROM ts_attacks\nWHERE $__timeFilter(time) AND uuid = '$uuid'\nGROUP BY ip\nORDER BY count DESC\nLIMIT 20",
+          "rawSql": "SELECT ip, count(*) as count FROM ts_attacks\nWHERE $__timeFilter(time) AND uuid = '$uuid'\nGROUP BY ip\nORDER BY count DESC\nLIMIT 10",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1060,7 +1076,7 @@
           }
         }
       ],
-      "title": "Top 20 blocked attacks by IP",
+      "title": "Top 10 blocked attacks by IP",
       "type": "barchart"
     },
     {
@@ -1102,7 +1118,7 @@
         "h": 13,
         "w": 12,
         "x": 0,
-        "y": 35
+        "y": 38
       },
       "id": 11,
       "options": {
@@ -1275,7 +1291,7 @@
         "h": 13,
         "w": 12,
         "x": 12,
-        "y": 35
+        "y": 38
       },
       "id": 12,
       "options": {
@@ -1360,10 +1376,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 12,
         "w": 12,
         "x": 0,
-        "y": 48
+        "y": 51
       },
       "id": 13,
       "options": {
@@ -1450,10 +1466,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 12,
         "w": 12,
         "x": 12,
-        "y": 48
+        "y": 51
       },
       "id": 17,
       "options": {
@@ -1551,13 +1567,13 @@
     ]
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Security",
   "uid": "dd395331-5dc0-4172-b243-8646c0ca3ccd",
-  "version": 21,
+  "version": 25,
   "weekStart": ""
 }

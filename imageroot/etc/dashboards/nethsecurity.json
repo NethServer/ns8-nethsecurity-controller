@@ -1,41 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_PROMETHEUS",
-      "label": "Local Promethus",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "11.2.0"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph (old)",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -63,8 +26,23 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 7107,
   "graphTooltip": 0,
-  "id": null,
-  "links": [],
+  "id": 4,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [
+        "unit"
+      ],
+      "targetBlank": false,
+      "title": "New link",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "liveNow": false,
   "panels": [
     {
@@ -851,7 +829,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "netdata_net_net_kilobits_persec_average{unit=~\"$unit\",dimension=\"received\"}",
@@ -948,7 +926,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "abs(netdata_net_net_kilobits_persec_average{unit=~\"$unit\",dimension=\"sent\"})",
@@ -1045,7 +1023,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "netdata_net_packets_packets_persec_average{unit=~\"$unit\", dimension=~\"received\"}",
@@ -1142,7 +1120,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "abs(netdata_net_packets_packets_persec_average{unit=~\"$unit\", dimension=~\"sent\"})",
@@ -4107,8 +4085,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -8503,7 +8480,11 @@
   "templating": {
     "list": [
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "181ff9b0-e2be-4c71-897a-6575e3991a1c",
+          "value": "181ff9b0-e2be-4c71-897a-6575e3991a1c"
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
@@ -8527,7 +8508,11 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "Local Promethus",
+          "value": "prometheus"
+        },
         "description": "Prometheus datasource",
         "hide": 2,
         "includeAll": false,
@@ -8543,7 +8528,11 @@
       },
       {
         "allValue": "",
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "net.tun_dedalo",
+          "value": "net.tun_dedalo"
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
@@ -8598,8 +8587,8 @@
     ]
   },
   "timezone": "",
-  "title": "Unit metrics",
+  "title": "Operating system",
   "uid": "W3S__804z",
-  "version": 12,
+  "version": 14,
   "weekStart": ""
 }

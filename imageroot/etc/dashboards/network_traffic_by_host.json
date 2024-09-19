@@ -62,7 +62,22 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [
+        "unit"
+      ],
+      "targetBlank": false,
+      "title": "New link",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "liveNow": false,
   "panels": [
     {
@@ -92,7 +107,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 7,
+        "w": 8,
         "x": 0,
         "y": 0
       },
@@ -200,8 +215,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 7,
+        "w": 16,
+        "x": 8,
         "y": 0
       },
       "id": 3,
@@ -217,14 +232,14 @@
           "showLegend": true
         },
         "orientation": "auto",
-        "showValue": "auto",
+        "showValue": "always",
         "stacking": "none",
         "tooltip": {
           "mode": "single",
           "sort": "none"
         },
         "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        "xTickLabelSpacing": 100
       },
       "pluginVersion": "11.2.0",
       "targets": [
@@ -312,7 +327,7 @@
       },
       "gridPos": {
         "h": 9,
-        "w": 19,
+        "w": 24,
         "x": 0,
         "y": 8
       },
@@ -329,14 +344,14 @@
           "showLegend": true
         },
         "orientation": "auto",
-        "showValue": "auto",
+        "showValue": "always",
         "stacking": "none",
         "tooltip": {
           "mode": "single",
           "sort": "none"
         },
         "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        "xTickLabelSpacing": 100
       },
       "pluginVersion": "10.3.3",
       "targets": [
@@ -420,8 +435,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 12,
-        "w": 8,
+        "h": 14,
+        "w": 24,
         "x": 0,
         "y": 17
       },
@@ -470,7 +485,7 @@
           }
         }
       ],
-      "title": "Visited by client",
+      "title": "Total traffic by client",
       "type": "table"
     }
   ],
@@ -506,18 +521,12 @@
       {
         "current": {
           "selected": false,
-          "text": "%",
-          "value": "%"
+          "text": "pod-031-2010-09.backblaze.com",
+          "value": "pod-031-2010-09.backblaze.com"
         },
         "hide": 0,
         "name": "host",
-        "options": [
-          {
-            "selected": true,
-            "text": "%",
-            "value": "%"
-          }
-        ],
+        "options": [],
         "query": "%",
         "skipUrlSync": false,
         "type": "textbox"
@@ -539,13 +548,13 @@
     ]
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Network traffic by host",
+  "title": "Network traffic by remote host",
   "uid": "c8d43e5f-068e-4cac-9283-2318d9e1911b",
-  "version": 15,
+  "version": 18,
   "weekStart": ""
 }
