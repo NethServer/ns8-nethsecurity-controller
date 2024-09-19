@@ -469,7 +469,7 @@
           }
         }
       ],
-      "title": "Traffic by application (top 10)",
+      "title": "Top 10 applications",
       "type": "barchart"
     },
     {
@@ -541,7 +541,7 @@
           "showLegend": true
         },
         "orientation": "horizontal",
-        "showValue": "never",
+        "showValue": "always",
         "stacking": "none",
         "tooltip": {
           "mode": "single",
@@ -581,7 +581,7 @@
           }
         }
       ],
-      "title": "Traffic by protocol (top 10)",
+      "title": "Top 10 protocols",
       "type": "barchart"
     },
     {
@@ -693,7 +693,7 @@
           }
         }
       ],
-      "title": "Traffic by host (top 10)",
+      "title": "Top 10 remote hosts",
       "type": "barchart"
     },
     {
@@ -720,7 +720,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -810,7 +811,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -897,7 +899,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -997,16 +1000,16 @@
       {
         "current": {
           "selected": false,
-          "text": "",
-          "value": ""
+          "text": "%",
+          "value": "%"
         },
         "hide": 0,
         "name": "client_address",
         "options": [
           {
             "selected": true,
-            "text": "",
-            "value": ""
+            "text": "%",
+            "value": "%"
           }
         ],
         "query": "%",
@@ -1037,6 +1040,6 @@
   "timezone": "",
   "title": "Network traffic by client",
   "uid": "b14a1181-a2ee-4df4-a732-888e0190037f",
-  "version": 22,
+  "version": 24,
   "weekStart": ""
 }

@@ -1,4 +1,41 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_LOCAL_PROMETHUS",
+      "label": "Local Promethus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "11.2.0"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph (old)",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -26,7 +63,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 7107,
   "graphTooltip": 0,
-  "id": 4,
+  "id": null,
   "links": [
     {
       "asDropdown": false,
@@ -163,7 +200,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_LOCAL_PROMETHUS}"
           },
           "editorMode": "code",
           "expr": "netdata_system_load_load_average{dimension!=\"load15\", unit=~\"$unit\"}",
@@ -220,7 +257,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "${DS_LOCAL_PROMETHUS}"
       },
       "description": "Total CPU utilization (all cores). 100% here means there is no CPU idle time at all. You can get per core usage at the _CPUs_ section and per application usage at the _Applications monitoring_ section.\n\nKeep an eye on **iowait**. If it is constantly high, your disks are a bottleneck and they slow your system down.\n\nAn important metric worth monitoring, is **softirq**. A constantly high percentage of softirq may indicate network driver issues.",
       "fieldConfig": {
@@ -363,7 +400,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_LOCAL_PROMETHUS}"
           },
           "description": "Total IPv4 Traffic.",
           "fieldConfig": {
@@ -471,7 +508,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_LOCAL_PROMETHUS}"
           },
           "description": "Total IPv6 Traffic.",
           "fieldConfig": {
@@ -604,7 +641,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_LOCAL_PROMETHUS}"
           },
           "description": "System Random Access Memory (i.e. physical memory) usage.",
           "fieldConfig": {
@@ -704,7 +741,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_ram_MiB_average{dimension=\"free\", unit=~\"$unit\"}",
@@ -829,7 +866,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_net_net_kilobits_persec_average{unit=~\"$unit\",dimension=\"received\"}",
@@ -926,7 +963,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "abs(netdata_net_net_kilobits_persec_average{unit=~\"$unit\",dimension=\"sent\"})",
@@ -1023,7 +1060,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_net_packets_packets_persec_average{unit=~\"$unit\", dimension=~\"received\"}",
@@ -1120,7 +1157,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "abs(netdata_net_packets_packets_persec_average{unit=~\"$unit\", dimension=~\"sent\"})",
@@ -1255,7 +1292,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_io_KiB_persec_average{unit=~\"$unit\"}",
@@ -1362,7 +1399,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "exemplar": true,
@@ -1495,7 +1532,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_processes_processes_average{unit=~\"$unit\"}",
@@ -1596,7 +1633,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_forks_processes_persec_average{unit=~\"$unit\"}",
@@ -1697,7 +1734,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_active_processes_processes_average{unit=~\"$unit\"}",
@@ -1798,7 +1835,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_ctxt_context_switches_persec_average{unit=~\"$unit\"}",
@@ -1931,7 +1968,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_idlejitter_microseconds_lost_persec_average{unit=~\"$unit\"}",
@@ -2060,7 +2097,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_intr_interrupts_persec_average{unit=~\"$unit\"}",
@@ -2185,7 +2222,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_interrupts_interrupts_persec_average{unit=~\"$unit\"}",
@@ -2336,7 +2373,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_softirqs_softirqs_persec_average{unit=~\"$unit\"}",
@@ -2465,7 +2502,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "disableTextWrap": false,
               "editorMode": "code",
@@ -2601,7 +2638,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_swap_MiB_average{unit=~\"$unit\"}",
@@ -2736,7 +2773,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "exemplar": false,
@@ -2844,7 +2881,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_mem_committed_MiB_average{unit=~\"$unit\"}",
@@ -2950,7 +2987,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_mem_pgfaults_faults_persec_average{unit=~\"$unit\"}",
@@ -3105,7 +3142,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_mem_writeback_MiB_average{unit=~\"$unit\"}",
@@ -3176,7 +3213,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_mem_kernel_MiB_average{unit=~\"$unit\"}",
@@ -3337,7 +3374,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_ops_operations_persec_average{unit=~\"$unit\"}",
@@ -3442,7 +3479,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_util___of_time_working_average{unit=~\"$unit\"}",
@@ -3547,7 +3584,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_backlog_milliseconds_average{unit=~\"$unit\"}",
@@ -3652,7 +3689,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_mops_merged_operations_persec_average{unit=~\"$unit\"}",
@@ -3756,7 +3793,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_await_milliseconds_operation_average{unit=~\"$unit\"}",
@@ -3861,7 +3898,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_space_GiB_average{unit=~\"$unit\"}",
@@ -3996,7 +4033,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_inodes_inodes_average{unit=~\"$unit\"}",
@@ -4085,7 +4122,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4098,7 +4136,7 @@
           },
           "gridPos": {
             "h": 11,
-            "w": 8,
+            "w": 6,
             "x": 0,
             "y": 29
           },
@@ -4121,13 +4159,13 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "exemplar": false,
               "expr": "netdata_net_net_kilobits_persec_average{unit=~\"$unit\",chart=~\"$vpninterface\"}",
               "instant": true,
-              "legendFormat": " {{dimension}}",
+              "legendFormat": "{{dimension}}",
               "range": false,
               "refId": "A"
             }
@@ -4244,7 +4282,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_sockstat_sockets_sockets_average{unit=~\"$unit\"}",
@@ -4397,7 +4435,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_packets_packets_persec_average{unit=~\"$unit\"}",
@@ -4530,7 +4568,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_errors_packets_persec_average{unit=~\"$unit\"}",
@@ -4662,7 +4700,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_sockstat_tcp_sockets_sockets_average{unit=~\"$unit\"}",
@@ -4768,7 +4806,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_tcpsock_active_connections_average{unit=~\"$unit\"}",
@@ -4874,7 +4912,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_tcpopens_connections_persec_average{unit=~\"$unit\"}",
@@ -4979,7 +5017,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_tcppackets_packets_persec_average{unit=~\"$unit\"}",
@@ -5086,7 +5124,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_tcppackets_packets_persec_average{unit=~\"$unit\"}",
@@ -5193,7 +5231,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ip_tcpconnaborts_connections_persec_average{unit=~\"$unit\"}",
@@ -5300,7 +5338,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_tcphandshake_events_persec_average{unit=~\"$unit\"}",
@@ -5405,7 +5443,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_sockstat_tcp_mem_KiB_average{unit=~\"$unit\"}",
@@ -5537,7 +5575,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_sockstat_udp_sockets_sockets_average{unit=~\"$unit\"}",
@@ -5642,7 +5680,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_udppackets_packets_persec_average{unit=~\"$unit\"}",
@@ -5747,7 +5785,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_sockstat_udp_mem_KiB_average{unit=~\"$unit\"}",
@@ -5873,7 +5911,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_udperrors_events_persec_average{unit=~\"$unit\"}",
@@ -6005,7 +6043,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_icmp_packets_persec_average{unit=~\"$unit\"}",
@@ -6111,7 +6149,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_icmp_errors_packets_persec_average{unit=~\"$unit\"}",
@@ -6237,7 +6275,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmp_messages_persec_average{unit=~\"$unit\"}",
@@ -6368,7 +6406,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ip_bcast_kilobits_persec_average{unit=~\"$unit\"}",
@@ -6473,7 +6511,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ip_bcastpkts_packets_persec_average{unit=~\"$unit\"}",
@@ -6606,7 +6644,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ip_ecnpkts_packets_persec_average{unit=~\"$unit\"}",
@@ -6759,7 +6797,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_packets_packets_persec_average{unit=~\"$unit\"}",
@@ -6885,7 +6923,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_ect_packets_persec_average{unit=~\"$unit\"}",
@@ -7017,7 +7055,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_sockstat6_tcp_sockets_sockets_average{unit=~\"$unit\"}",
@@ -7149,7 +7187,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_sockstat6_udp_sockets_sockets_average{unit=~\"$unit\"}",
@@ -7254,7 +7292,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_udppackets_packets_persec_average{unit=~\"$unit\"}",
@@ -7360,7 +7398,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_udperrors_events_persec_average{unit=~\"$unit\"}",
@@ -7532,7 +7570,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_mcast_kilobits_persec_average{unit=~\"$unit\"}",
@@ -7678,7 +7716,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_mcastpkts_packets_persec_average{unit=~\"$unit\"}",
@@ -7810,7 +7848,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmp_messages_persec_average{unit=~\"$unit\"}",
@@ -7916,7 +7954,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmperrors_errors_persec_average{unit=~\"$unit\"}",
@@ -8021,7 +8059,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmpechos_messages_persec_average{unit=~\"$unit\"}",
@@ -8126,7 +8164,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmprouter_messages_persec_average{unit=~\"$unit\"}",
@@ -8231,7 +8269,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmpneighbor_messages_persec_average{unit=~\"$unit\"}",
@@ -8336,7 +8374,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmpmldv2_reports_persec_average{unit=~\"$unit\"}",
@@ -8441,7 +8479,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmprouter_messages_persec_average{unit=~\"$unit\"}",
@@ -8480,11 +8518,7 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "181ff9b0-e2be-4c71-897a-6575e3991a1c",
-          "value": "181ff9b0-e2be-4c71-897a-6575e3991a1c"
-        },
+        "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
@@ -8508,11 +8542,7 @@
         "type": "query"
       },
       {
-        "current": {
-          "selected": false,
-          "text": "Local Promethus",
-          "value": "prometheus"
-        },
+        "current": {},
         "description": "Prometheus datasource",
         "hide": 2,
         "includeAll": false,
@@ -8528,16 +8558,12 @@
       },
       {
         "allValue": "",
-        "current": {
-          "selected": false,
-          "text": "net.tun_dedalo",
-          "value": "net.tun_dedalo"
-        },
+        "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${DS_LOCAL_PROMETHUS}"
         },
-        "definition": "label_values(netdata_net_net_kilobits_persec_average{chart=~\"^net.tun.*|^net.tap.*\"},chart)",
+        "definition": "label_values(netdata_net_net_kilobits_persec_average{chart=~\"^net.tun.*|^net.tap.*|^net.ipsec.*\"},chart)",
         "hide": 0,
         "includeAll": true,
         "label": "VPN interface",
@@ -8546,7 +8572,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(netdata_net_net_kilobits_persec_average{chart=~\"^net.tun.*|^net.tap.*\"},chart)",
+          "query": "label_values(netdata_net_net_kilobits_persec_average{chart=~\"^net.tun.*|^net.tap.*|^net.ipsec.*\"},chart)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -8558,7 +8584,7 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
@@ -8589,6 +8615,6 @@
   "timezone": "",
   "title": "Operating system",
   "uid": "W3S__804z",
-  "version": 14,
+  "version": 17,
   "weekStart": ""
 }

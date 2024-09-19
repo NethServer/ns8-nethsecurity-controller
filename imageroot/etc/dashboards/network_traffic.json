@@ -639,6 +639,7 @@
         "type": "grafana-postgresql-datasource",
         "uid": "${DS_TIMESCALE}"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -652,13 +653,13 @@
             "filterable": true,
             "inspect": false
           },
-          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -666,35 +667,17 @@
               }
             ]
           },
-          "unit": "bytes"
+          "unit": "decbytes"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "client_address"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "",
-                    "url": "/grafana/d/b14a1181-a2ee-4df4-a732-888e0190037f/network-traffic-by-host?${__all_variables}&var-client_address=${__value.raw}"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 15,
-        "w": 7,
+        "w": 12,
         "x": 0,
         "y": 28
       },
-      "id": 5,
+      "id": 18,
       "options": {
         "cellHeight": "sm",
         "footer": {
@@ -704,7 +687,7 @@
           "reducer": [
             "sum"
           ],
-          "show": false
+          "show": true
         },
         "showHeader": true
       },
@@ -718,7 +701,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT client_address, client_name, bytes FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nORDER BY bytes DESC\n",
+          "rawSql": "SELECT protocol, sum(bytes) as bytes FROM ca_dpi_stats_hourly_protocol\nWHERE $__timeFilter(bucket) AND  uuid = '$uuid'\nGROUP BY protocol\nORDER BY bytes DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -739,7 +722,7 @@
           }
         }
       ],
-      "title": "Active clients",
+      "title": "Protocols",
       "type": "table"
     },
     {
@@ -767,7 +750,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -781,8 +765,8 @@
       },
       "gridPos": {
         "h": 15,
-        "w": 8,
-        "x": 7,
+        "w": 12,
+        "x": 12,
         "y": 28
       },
       "id": 16,
@@ -830,7 +814,7 @@
           }
         }
       ],
-      "title": "By application",
+      "title": "Applications",
       "type": "table"
     },
     {
@@ -839,7 +823,6 @@
         "type": "grafana-postgresql-datasource",
         "uid": "${DS_TIMESCALE}"
       },
-      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -853,12 +836,14 @@
             "filterable": true,
             "inspect": false
           },
+          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -866,17 +851,35 @@
               }
             ]
           },
-          "unit": "decbytes"
+          "unit": "bytes"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "client_address"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Client details",
+                    "url": "/grafana/d/b14a1181-a2ee-4df4-a732-888e0190037f/network-traffic-by-host?${__all_variables}&var-client_address=${__value.raw}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 18,
-        "y": 28
+        "h": 17,
+        "w": 12,
+        "x": 0,
+        "y": 43
       },
-      "id": 17,
+      "id": 5,
       "options": {
         "cellHeight": "sm",
         "footer": {
@@ -900,7 +903,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT client_name, sum(bytes) as bytes FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY client_name\nORDER BY bytes DESC",
+          "rawSql": "SELECT client_address, client_name, bytes FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nORDER BY bytes DESC\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -921,7 +924,7 @@
           }
         }
       ],
-      "title": "By client",
+      "title": "Clients",
       "type": "table"
     },
     {
@@ -949,7 +952,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -959,13 +963,31 @@
           },
           "unit": "decbytes"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "host"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Remote host details",
+                    "url": "/grafana/d/c8d43e5f-068e-4cac-9283-2318d9e1911b/network-traffic-by-host?${__all_variables}&var-host=${__value.raw}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 18,
-        "y": 36
+        "h": 17,
+        "w": 12,
+        "x": 12,
+        "y": 43
       },
       "id": 19,
       "options": {
@@ -1012,205 +1034,7 @@
           }
         }
       ],
-      "title": "By remote host",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "default": false,
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "decbytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 13,
-        "w": 12,
-        "x": 0,
-        "y": 43
-      },
-      "id": 18,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": true
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "11.2.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT protocol, sum(bytes) as bytes FROM ca_dpi_stats_hourly_protocol\nWHERE $__timeFilter(bucket) AND  uuid = '$uuid'\nGROUP BY protocol\nORDER BY bytes DESC",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "By protocol",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "default": false,
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "host"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "",
-                    "url": "/grafana/d/c8d43e5f-068e-4cac-9283-2318d9e1911b/network-traffic-by-host?${__all_variables}&var-host=${__value.raw}"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 44
-      },
-      "id": 15,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": true
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "11.2.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT host, bytes FROM ca_dpi_stats_hourly_host\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nORDER BY bytes DESC\nLIMIT 20",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Top 20 contacted remote hosts",
+      "title": "Remote hosts",
       "type": "table"
     }
   ],
@@ -1269,6 +1093,6 @@
   "timezone": "",
   "title": "Network traffic",
   "uid": "fe0af3cb-9be0-4b2a-8ccb-86704956cf2e",
-  "version": 28,
+  "version": 31,
   "weekStart": ""
 }
