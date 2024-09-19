@@ -58,7 +58,7 @@
       }
     ]
   },
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
@@ -720,8 +720,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -811,8 +810,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -899,8 +897,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1000,16 +997,16 @@
       {
         "current": {
           "selected": false,
-          "text": "%",
-          "value": "%"
+          "text": "",
+          "value": ""
         },
         "hide": 0,
         "name": "client_address",
         "options": [
           {
             "selected": true,
-            "text": "%",
-            "value": "%"
+            "text": "",
+            "value": ""
           }
         ],
         "query": "%",
@@ -1040,6 +1037,6 @@
   "timezone": "",
   "title": "Network traffic by client",
   "uid": "b14a1181-a2ee-4df4-a732-888e0190037f",
-  "version": 24,
+  "version": 25,
   "weekStart": ""
 }

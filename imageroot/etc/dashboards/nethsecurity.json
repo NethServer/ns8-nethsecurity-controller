@@ -59,7 +59,7 @@
     ]
   },
   "description": "Netdata dashboards for Grafana via Prometheus.",
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "gnetId": 7107,
   "graphTooltip": 0,
@@ -4122,8 +4122,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -8584,7 +8583,7 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
@@ -8615,6 +8614,6 @@
   "timezone": "",
   "title": "Operating system",
   "uid": "W3S__804z",
-  "version": 17,
+  "version": 18,
   "weekStart": ""
 }

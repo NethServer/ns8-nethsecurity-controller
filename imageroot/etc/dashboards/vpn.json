@@ -84,7 +84,7 @@
       }
     ]
   },
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
@@ -1379,6 +1379,6 @@
   "timezone": "browser",
   "title": "VPN",
   "uid": "fdxlb58zxvpj4f",
-  "version": 65,
+  "version": 66,
   "weekStart": ""
 }

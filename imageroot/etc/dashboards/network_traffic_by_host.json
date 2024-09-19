@@ -58,7 +58,7 @@
       }
     ]
   },
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
@@ -555,6 +555,6 @@
   "timezone": "",
   "title": "Network traffic by remote host",
   "uid": "c8d43e5f-068e-4cac-9283-2318d9e1911b",
-  "version": 18,
+  "version": 19,
   "weekStart": ""
 }
