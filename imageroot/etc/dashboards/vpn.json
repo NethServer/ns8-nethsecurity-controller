@@ -631,7 +631,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -790,7 +791,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -828,7 +830,7 @@
           "sort": "none"
         },
         "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        "xTickLabelSpacing": 100
       },
       "pluginVersion": "11.2.0",
       "targets": [
@@ -840,7 +842,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance = $rwinstance\nGROUP BY bucket\n",
+          "rawSql": "SELECT bucket, SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance = $rwinstance\nGROUP BY bucket\nORDER BY bucket \n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -902,7 +904,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -998,7 +1001,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1372,13 +1376,13 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-7d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "VPN",
   "uid": "fdxlb58zxvpj4f",
-  "version": 66,
+  "version": 69,
   "weekStart": ""
 }
