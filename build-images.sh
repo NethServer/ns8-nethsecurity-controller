@@ -15,7 +15,7 @@ loki_version=2.9.4
 prometheus_version=2.50.1
 grafana_version=11.2.0
 webssh_version=1.6.2
-timescale_version="latest-pg16"
+timescale_version="2.16.1-pg16"
 
 # Create a new empty container for webssh
 echo "Build webssh container" # from https://github.com/huashengdun/webssh
