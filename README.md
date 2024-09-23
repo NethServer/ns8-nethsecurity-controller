@@ -180,10 +180,10 @@ Access to WebSSH is protected using a random generated URL, you can find it insi
 
 [Timescale](https://docs.timescale.com/latest/main) is a time-series database for storing metrics. It's configured via environment variables and the configuration is available at `/home/nethsecurity-controller1/.config/state/db.env`.
 
-If Postgres client is installed, you can connect to the database with the following command:
+You can connect to the database with the following command:
 ```
 runagent -m nethsecurity-controller1
-source db.env; psql -d $REPORT_DB_URI
+source db.env; podman exec -it timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}"
 ```
 
 ## Uninstall
