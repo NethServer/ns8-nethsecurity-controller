@@ -1,4 +1,41 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_LOCAL_PROMETHUS",
+      "label": "Local Promethus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "11.2.0"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph (old)",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -22,12 +59,27 @@
     ]
   },
   "description": "Netdata dashboards for Grafana via Prometheus.",
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "gnetId": 7107,
   "graphTooltip": 0,
-  "id": 1,
-  "links": [],
+  "id": null,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [
+        "unit"
+      ],
+      "targetBlank": false,
+      "title": "New link",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "liveNow": false,
   "panels": [
     {
@@ -58,6 +110,7 @@
     },
     {
       "datasource": {
+        "default": false,
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
@@ -74,6 +127,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 10,
             "gradientMode": "none",
@@ -114,8 +168,7 @@
               }
             ]
           },
-          "unit": "none",
-          "unitScale": true
+          "unit": "none"
         },
         "overrides": []
       },
@@ -126,7 +179,6 @@
         "y": 1
       },
       "id": 11,
-      "links": [],
       "options": {
         "legend": {
           "calcs": [
@@ -148,7 +200,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_LOCAL_PROMETHUS}"
           },
           "editorMode": "code",
           "expr": "netdata_system_load_load_average{dimension!=\"load15\", unit=~\"$unit\"}",
@@ -205,7 +257,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "${DS_LOCAL_PROMETHUS}"
       },
       "description": "Total CPU utilization (all cores). 100% here means there is no CPU idle time at all. You can get per core usage at the _CPUs_ section and per application usage at the _Applications monitoring_ section.\n\nKeep an eye on **iowait**. If it is constantly high, your disks are a bottleneck and they slow your system down.\n\nAn important metric worth monitoring, is **softirq**. A constantly high percentage of softirq may indicate network driver issues.",
       "fieldConfig": {
@@ -220,6 +272,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 50,
             "gradientMode": "none",
@@ -261,8 +314,7 @@
               }
             ]
           },
-          "unit": "percent",
-          "unitScale": true
+          "unit": "percent"
         },
         "overrides": [
           {
@@ -294,7 +346,6 @@
         "y": 8
       },
       "id": 8,
-      "links": [],
       "options": {
         "legend": {
           "calcs": [
@@ -333,7 +384,7 @@
       "type": "timeseries"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": {
         "type": "datasource",
         "uid": "grafana"
@@ -345,7 +396,222 @@
         "y": 14
       },
       "id": 45,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_LOCAL_PROMETHUS}"
+          },
+          "description": "Total IPv4 Traffic.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "KBs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 9
+          },
+          "id": 24,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min",
+                "sum"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.3.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "netdata_system_ip_kilobits_persec_average{unit=~\"$unit\"}",
+              "format": "time_series",
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{dimension}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "IPv4 bandwidth",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_LOCAL_PROMETHUS}"
+          },
+          "description": "Total IPv6 Traffic.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "KBs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 9
+          },
+          "id": 25,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min",
+                "sum"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.3.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "netdata_system_ipv6_kilobits_persec_average{unit=~\"$unit\"}",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "{{dimension}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "IPv6 bandwidth",
+          "transparent": true,
+          "type": "timeseries"
+        }
+      ],
       "targets": [
         {
           "datasource": {
@@ -359,225 +625,7 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Total IPv4 Traffic.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "KBs",
-          "unitScale": true
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 15
-      },
-      "id": 24,
-      "links": [],
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min",
-            "sum"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "10.3.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": true,
-          "expr": "netdata_system_ip_kilobits_persec_average{unit=~\"$unit\"}",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{dimension}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "IPv4 bandwidth",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Total IPv6 Traffic.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "KBs",
-          "unitScale": true
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 15
-      },
-      "id": 25,
-      "links": [],
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min",
-            "sum"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "10.3.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "netdata_system_ipv6_kilobits_persec_average{unit=~\"$unit\"}",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "{{dimension}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "IPv6 bandwidth",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": {
         "type": "datasource",
         "uid": "grafana"
@@ -586,10 +634,129 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 15
       },
       "id": 41,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_LOCAL_PROMETHUS}"
+          },
+          "description": "System Random Access Memory (i.e. physical memory) usage.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "decmbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 24,
+            "x": 0,
+            "y": 12
+          },
+          "id": 16,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.3.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "netdata_system_ram_MiB_average{dimension!=\"free\", unit=~\"$unit\"}",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "{{dimension}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_LOCAL_PROMETHUS}"
+              },
+              "editorMode": "code",
+              "expr": "netdata_system_ram_MiB_average{dimension=\"free\", unit=~\"$unit\"}",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "{{dimension}}",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "System RAM",
+          "transparent": true,
+          "type": "timeseries"
+        }
+      ],
       "targets": [
         {
           "datasource": {
@@ -603,126 +770,6 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "System Random Access Memory (i.e. physical memory) usage.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "normal"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "decmbytes",
-          "unitScale": true
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 23
-      },
-      "id": 16,
-      "links": [],
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "10.3.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "netdata_system_ram_MiB_average{dimension!=\"free\", unit=~\"$unit\"}",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "{{dimension}}",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "netdata_system_ram_MiB_average{dimension=\"free\", unit=~\"$unit\"}",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "{{dimension}}",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "System RAM",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
       "collapsed": true,
       "datasource": {
         "type": "datasource",
@@ -732,7 +779,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 16
       },
       "id": 586,
       "panels": [
@@ -783,8 +830,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -801,7 +847,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 31
+            "y": 39
           },
           "id": 1461,
           "options": {
@@ -820,7 +866,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_net_net_kilobits_persec_average{unit=~\"$unit\",dimension=\"received\"}",
@@ -881,8 +927,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -899,7 +944,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 31
+            "y": 39
           },
           "id": 1462,
           "options": {
@@ -918,7 +963,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "abs(netdata_net_net_kilobits_persec_average{unit=~\"$unit\",dimension=\"sent\"})",
@@ -979,8 +1024,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -997,7 +1041,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 39
+            "y": 47
           },
           "id": 1463,
           "options": {
@@ -1016,7 +1060,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_net_packets_packets_persec_average{unit=~\"$unit\", dimension=~\"received\"}",
@@ -1077,8 +1121,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1095,7 +1138,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 39
+            "y": 47
           },
           "id": 1464,
           "options": {
@@ -1114,7 +1157,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "prometheus"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "abs(netdata_net_packets_packets_persec_average{unit=~\"$unit\", dimension=~\"sent\"})",
@@ -1153,7 +1196,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 17
       },
       "id": 39,
       "panels": [
@@ -1205,8 +1248,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1223,7 +1265,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 32
+            "y": 40
           },
           "id": 13,
           "links": [],
@@ -1250,7 +1292,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_io_KiB_persec_average{unit=~\"$unit\"}",
@@ -1313,8 +1355,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1331,7 +1372,7 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 32
+            "y": 40
           },
           "id": 14,
           "links": [],
@@ -1358,7 +1399,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "exemplar": true,
@@ -1398,7 +1439,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 18
       },
       "id": 47,
       "panels": [
@@ -1468,7 +1509,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 22
+            "y": 30
           },
           "id": 29,
           "links": [],
@@ -1491,7 +1532,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_processes_processes_average{unit=~\"$unit\"}",
@@ -1571,7 +1612,7 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 22
+            "y": 30
           },
           "id": 31,
           "links": [],
@@ -1592,7 +1633,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_forks_processes_persec_average{unit=~\"$unit\"}",
@@ -1672,7 +1713,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 29
+            "y": 37
           },
           "id": 33,
           "links": [],
@@ -1693,7 +1734,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_active_processes_processes_average{unit=~\"$unit\"}",
@@ -1773,7 +1814,7 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 29
+            "y": 37
           },
           "id": 35,
           "links": [],
@@ -1794,7 +1835,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_ctxt_context_switches_persec_average{unit=~\"$unit\"}",
@@ -1832,7 +1873,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 19
       },
       "id": 49,
       "panels": [
@@ -1901,7 +1942,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 23
+            "y": 31
           },
           "id": 51,
           "links": [],
@@ -1927,7 +1968,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_idlejitter_microseconds_lost_persec_average{unit=~\"$unit\"}",
@@ -1965,7 +2006,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 20
       },
       "id": 59,
       "panels": [
@@ -2035,7 +2076,7 @@
             "h": 7,
             "w": 11,
             "x": 0,
-            "y": 24
+            "y": 32
           },
           "id": 55,
           "links": [],
@@ -2056,7 +2097,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_intr_interrupts_persec_average{unit=~\"$unit\"}",
@@ -2158,7 +2199,7 @@
             "h": 7,
             "w": 13,
             "x": 11,
-            "y": 24
+            "y": 32
           },
           "id": 57,
           "links": [],
@@ -2181,7 +2222,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_interrupts_interrupts_persec_average{unit=~\"$unit\"}",
@@ -2219,7 +2260,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 21
       },
       "id": 63,
       "panels": [
@@ -2309,7 +2350,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 25
+            "y": 33
           },
           "id": 113,
           "links": [],
@@ -2332,7 +2373,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_softirqs_softirqs_persec_average{unit=~\"$unit\"}",
@@ -2370,7 +2411,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 22
       },
       "id": 81,
       "panels": [
@@ -2438,7 +2479,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 26
+            "y": 34
           },
           "id": 79,
           "links": [],
@@ -2461,7 +2502,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "disableTextWrap": false,
               "editorMode": "code",
@@ -2502,7 +2543,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 23
       },
       "id": 43,
       "panels": [
@@ -2571,7 +2612,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 39
+            "y": 47
           },
           "id": 18,
           "links": [],
@@ -2597,7 +2638,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_system_swap_MiB_average{unit=~\"$unit\"}",
@@ -2635,7 +2676,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 24
       },
       "id": 146,
       "panels": [
@@ -2706,7 +2747,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 40
+            "y": 48
           },
           "id": 140,
           "links": [],
@@ -2732,7 +2773,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "exemplar": false,
@@ -2814,7 +2855,7 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 40
+            "y": 48
           },
           "id": 142,
           "links": [],
@@ -2840,7 +2881,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_mem_committed_MiB_average{unit=~\"$unit\"}",
@@ -2919,7 +2960,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 47
+            "y": 55
           },
           "id": 144,
           "links": [],
@@ -2946,7 +2987,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_mem_pgfaults_faults_persec_average{unit=~\"$unit\"}",
@@ -2983,7 +3024,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 25
       },
       "id": 152,
       "panels": [
@@ -3074,7 +3115,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 41
+            "y": 49
           },
           "id": 148,
           "links": [],
@@ -3101,7 +3142,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_mem_writeback_MiB_average{unit=~\"$unit\"}",
@@ -3137,7 +3178,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 41
+            "y": 49
           },
           "hiddenSeries": false,
           "id": 150,
@@ -3172,7 +3213,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_mem_kernel_MiB_average{unit=~\"$unit\"}",
@@ -3238,7 +3279,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 26
       },
       "id": 178,
       "panels": [
@@ -3260,6 +3301,7 @@
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 10,
                 "gradientMode": "none",
@@ -3298,8 +3340,7 @@
                   }
                 ]
               },
-              "unit": "decmbytes",
-              "unitScale": true
+              "unit": "decmbytes"
             },
             "overrides": []
           },
@@ -3307,10 +3348,9 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 42
+            "y": 23
           },
           "id": 158,
-          "links": [],
           "options": {
             "legend": {
               "calcs": [
@@ -3334,7 +3374,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_ops_operations_persec_average{unit=~\"$unit\"}",
@@ -3366,6 +3406,7 @@
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 10,
                 "gradientMode": "none",
@@ -3404,8 +3445,7 @@
                   }
                 ]
               },
-              "unit": "ms",
-              "unitScale": true
+              "unit": "ms"
             },
             "overrides": []
           },
@@ -3413,10 +3453,9 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 42
+            "y": 23
           },
           "id": 164,
-          "links": [],
           "options": {
             "legend": {
               "calcs": [
@@ -3440,7 +3479,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_util___of_time_working_average{unit=~\"$unit\"}",
@@ -3472,6 +3511,7 @@
                 "axisLabel": "operations",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 10,
                 "gradientMode": "none",
@@ -3510,8 +3550,7 @@
                   }
                 ]
               },
-              "unit": "none",
-              "unitScale": true
+              "unit": "none"
             },
             "overrides": []
           },
@@ -3519,10 +3558,9 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 49
+            "y": 30
           },
           "id": 162,
-          "links": [],
           "options": {
             "legend": {
               "calcs": [
@@ -3546,7 +3584,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_backlog_milliseconds_average{unit=~\"$unit\"}",
@@ -3578,6 +3616,7 @@
                 "axisLabel": "ms per operation",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 10,
                 "gradientMode": "none",
@@ -3616,8 +3655,7 @@
                   }
                 ]
               },
-              "unit": "ms",
-              "unitScale": true
+              "unit": "ms"
             },
             "overrides": []
           },
@@ -3625,10 +3663,9 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 49
+            "y": 30
           },
           "id": 172,
-          "links": [],
           "options": {
             "legend": {
               "calcs": [
@@ -3652,7 +3689,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_mops_merged_operations_persec_average{unit=~\"$unit\"}",
@@ -3731,10 +3768,9 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 56
+            "y": 37
           },
           "id": 166,
-          "links": [],
           "options": {
             "legend": {
               "calcs": [
@@ -3757,7 +3793,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_await_milliseconds_operation_average{unit=~\"$unit\"}",
@@ -3836,10 +3872,9 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 56
+            "y": 37
           },
           "id": 176,
-          "links": [],
           "options": {
             "legend": {
               "calcs": [
@@ -3863,7 +3898,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_space_GiB_average{unit=~\"$unit\"}",
@@ -3902,7 +3937,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 27
       },
       "id": 185,
       "panels": [
@@ -3924,6 +3959,7 @@
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 50,
                 "gradientMode": "none",
@@ -3963,8 +3999,7 @@
                   }
                 ]
               },
-              "unit": "kbytes",
-              "unitScale": true
+              "unit": "kbytes"
             },
             "overrides": []
           },
@@ -3972,10 +4007,9 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 43
+            "y": 24
           },
           "id": 183,
-          "links": [],
           "options": {
             "legend": {
               "calcs": [
@@ -3999,7 +4033,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_disk_inodes_inodes_average{unit=~\"$unit\"}",
@@ -4030,6 +4064,120 @@
     },
     {
       "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 1465,
+      "panels": [
+        {
+          "datasource": {
+            "default": false,
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 6,
+            "x": 0,
+            "y": 29
+          },
+          "id": 1466,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "repeat": "vpninterface",
+          "repeatDirection": "h",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_LOCAL_PROMETHUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "netdata_net_net_kilobits_persec_average{unit=~\"$unit\",chart=~\"$vpninterface\"}",
+              "instant": true,
+              "legendFormat": "{{dimension}}",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "VPN interface: $vpninterface",
+          "type": "timeseries"
+        }
+      ],
+      "title": "VPN networking",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
       "datasource": {
         "type": "datasource",
         "uid": "grafana"
@@ -4038,7 +4186,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 29
       },
       "id": 264,
       "panels": [
@@ -4107,7 +4255,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 51
+            "y": 59
           },
           "id": 458,
           "links": [],
@@ -4133,7 +4281,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_sockstat_sockets_sockets_average{unit=~\"$unit\"}",
@@ -4170,7 +4318,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 30
       },
       "id": 285,
       "panels": [
@@ -4259,7 +4407,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 52
+            "y": 60
           },
           "id": 283,
           "links": [],
@@ -4286,7 +4434,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_packets_packets_persec_average{unit=~\"$unit\"}",
@@ -4323,7 +4471,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 31
       },
       "id": 308,
       "panels": [
@@ -4392,7 +4540,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 53
+            "y": 61
           },
           "id": 304,
           "links": [],
@@ -4419,7 +4567,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_errors_packets_persec_average{unit=~\"$unit\"}",
@@ -4456,7 +4604,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 32
       },
       "id": 364,
       "panels": [
@@ -4525,7 +4673,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 54
+            "y": 62
           },
           "id": 327,
           "links": [],
@@ -4551,7 +4699,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_sockstat_tcp_sockets_sockets_average{unit=~\"$unit\"}",
@@ -4631,7 +4779,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 61
+            "y": 69
           },
           "id": 329,
           "links": [],
@@ -4657,7 +4805,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_tcpsock_active_connections_average{unit=~\"$unit\"}",
@@ -4737,7 +4885,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 61
+            "y": 69
           },
           "id": 331,
           "links": [],
@@ -4763,7 +4911,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_tcpopens_connections_persec_average{unit=~\"$unit\"}",
@@ -4841,7 +4989,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 69
+            "y": 77
           },
           "id": 350,
           "links": [],
@@ -4868,7 +5016,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_tcppackets_packets_persec_average{unit=~\"$unit\"}",
@@ -4948,7 +5096,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 69
+            "y": 77
           },
           "id": 352,
           "links": [],
@@ -4975,7 +5123,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_tcppackets_packets_persec_average{unit=~\"$unit\"}",
@@ -5055,7 +5203,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 77
+            "y": 85
           },
           "id": 356,
           "links": [],
@@ -5082,7 +5230,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ip_tcpconnaborts_connections_persec_average{unit=~\"$unit\"}",
@@ -5162,7 +5310,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 84
+            "y": 92
           },
           "id": 354,
           "links": [],
@@ -5189,7 +5337,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_tcphandshake_events_persec_average{unit=~\"$unit\"}",
@@ -5268,7 +5416,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 84
+            "y": 92
           },
           "id": 362,
           "links": [],
@@ -5294,7 +5442,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_sockstat_tcp_mem_KiB_average{unit=~\"$unit\"}",
@@ -5331,7 +5479,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 46
+        "y": 33
       },
       "id": 391,
       "panels": [
@@ -5400,7 +5548,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 55
+            "y": 63
           },
           "id": 383,
           "links": [],
@@ -5426,7 +5574,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_sockstat_udp_sockets_sockets_average{unit=~\"$unit\"}",
@@ -5504,7 +5652,7 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 55
+            "y": 63
           },
           "id": 385,
           "links": [],
@@ -5531,7 +5679,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_udppackets_packets_persec_average{unit=~\"$unit\"}",
@@ -5610,7 +5758,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 62
+            "y": 70
           },
           "id": 387,
           "links": [],
@@ -5636,7 +5784,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_sockstat_udp_mem_KiB_average{unit=~\"$unit\"}",
@@ -5736,7 +5884,7 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 62
+            "y": 70
           },
           "id": 389,
           "links": [],
@@ -5762,7 +5910,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_udperrors_events_persec_average{unit=~\"$unit\"}",
@@ -5799,7 +5947,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 47
+        "y": 34
       },
       "id": 416,
       "panels": [
@@ -5867,7 +6015,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 56
+            "y": 64
           },
           "id": 410,
           "links": [],
@@ -5894,7 +6042,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_icmp_packets_persec_average{unit=~\"$unit\"}",
@@ -5973,7 +6121,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 56
+            "y": 64
           },
           "id": 412,
           "links": [],
@@ -6000,7 +6148,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv4_icmp_errors_packets_persec_average{unit=~\"$unit\"}",
@@ -6099,7 +6247,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 64
+            "y": 72
           },
           "id": 414,
           "links": [],
@@ -6126,7 +6274,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmp_messages_persec_average{unit=~\"$unit\"}",
@@ -6163,7 +6311,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 35
       },
       "id": 523,
       "panels": [
@@ -6231,7 +6379,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 57
+            "y": 65
           },
           "id": 502,
           "links": [],
@@ -6257,7 +6405,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ip_bcast_kilobits_persec_average{unit=~\"$unit\"}",
@@ -6335,7 +6483,7 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 57
+            "y": 65
           },
           "id": 504,
           "links": [],
@@ -6362,7 +6510,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ip_bcastpkts_packets_persec_average{unit=~\"$unit\"}",
@@ -6399,7 +6547,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 49
+        "y": 36
       },
       "id": 567,
       "panels": [
@@ -6468,7 +6616,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 58
+            "y": 66
           },
           "id": 565,
           "links": [],
@@ -6495,7 +6643,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ip_ecnpkts_packets_persec_average{unit=~\"$unit\"}",
@@ -6532,7 +6680,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 50
+        "y": 37
       },
       "id": 1106,
       "panels": [
@@ -6621,7 +6769,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 51
+            "y": 59
           },
           "id": 1104,
           "links": [],
@@ -6648,7 +6796,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_packets_packets_persec_average{unit=~\"$unit\"}",
@@ -6747,7 +6895,7 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 51
+            "y": 59
           },
           "id": 1107,
           "links": [],
@@ -6774,7 +6922,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_ect_packets_persec_average{unit=~\"$unit\"}",
@@ -6811,7 +6959,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 38
       },
       "id": 1174,
       "panels": [
@@ -6880,7 +7028,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 52
+            "y": 60
           },
           "id": 1172,
           "links": [],
@@ -6906,7 +7054,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_sockstat6_tcp_sockets_sockets_average{unit=~\"$unit\"}",
@@ -6943,7 +7091,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 52
+        "y": 39
       },
       "id": 1245,
       "panels": [
@@ -7012,7 +7160,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 53
+            "y": 61
           },
           "id": 1239,
           "links": [],
@@ -7038,7 +7186,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_sockstat6_udp_sockets_sockets_average{unit=~\"$unit\"}",
@@ -7116,7 +7264,7 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 53
+            "y": 61
           },
           "id": 1241,
           "links": [],
@@ -7143,7 +7291,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_udppackets_packets_persec_average{unit=~\"$unit\"}",
@@ -7222,7 +7370,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 60
+            "y": 68
           },
           "id": 1243,
           "links": [],
@@ -7249,7 +7397,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_udperrors_events_persec_average{unit=~\"$unit\"}",
@@ -7286,7 +7434,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 53
+        "y": 40
       },
       "id": 1381,
       "panels": [
@@ -7395,7 +7543,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 54
+            "y": 62
           },
           "id": 1377,
           "links": [],
@@ -7421,7 +7569,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_mcast_kilobits_persec_average{unit=~\"$unit\"}",
@@ -7540,7 +7688,7 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 54
+            "y": 62
           },
           "id": 1379,
           "links": [],
@@ -7567,7 +7715,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_mcastpkts_packets_persec_average{unit=~\"$unit\"}",
@@ -7604,7 +7752,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 41
       },
       "id": 1460,
       "panels": [
@@ -7672,7 +7820,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 55
+            "y": 63
           },
           "id": 1446,
           "links": [],
@@ -7699,7 +7847,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmp_messages_persec_average{unit=~\"$unit\"}",
@@ -7778,7 +7926,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 62
+            "y": 70
           },
           "id": 1448,
           "links": [],
@@ -7805,7 +7953,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmperrors_errors_persec_average{unit=~\"$unit\"}",
@@ -7883,7 +8031,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 69
+            "y": 77
           },
           "id": 1450,
           "links": [],
@@ -7910,7 +8058,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmpechos_messages_persec_average{unit=~\"$unit\"}",
@@ -7988,7 +8136,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 69
+            "y": 77
           },
           "id": 1452,
           "links": [],
@@ -8015,7 +8163,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmprouter_messages_persec_average{unit=~\"$unit\"}",
@@ -8093,7 +8241,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 78
+            "y": 86
           },
           "id": 1454,
           "links": [],
@@ -8120,7 +8268,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmpneighbor_messages_persec_average{unit=~\"$unit\"}",
@@ -8198,7 +8346,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 78
+            "y": 86
           },
           "id": 1456,
           "links": [],
@@ -8225,7 +8373,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmpmldv2_reports_persec_average{unit=~\"$unit\"}",
@@ -8303,7 +8451,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 87
+            "y": 95
           },
           "id": 1458,
           "links": [],
@@ -8330,7 +8478,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_LOCAL_PROMETHUS}"
               },
               "editorMode": "code",
               "expr": "netdata_ipv6_icmprouter_messages_persec_average{unit=~\"$unit\"}",
@@ -8369,11 +8517,7 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": true,
-          "text": "7BD33F72-F9D7-4A78-80A0-7ACD15991B92",
-          "value": "7BD33F72-F9D7-4A78-80A0-7ACD15991B92"
-        },
+        "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
@@ -8397,11 +8541,7 @@
         "type": "query"
       },
       {
-        "current": {
-          "selected": false,
-          "text": "Local Promethus",
-          "value": "prometheus"
-        },
+        "current": {},
         "description": "Prometheus datasource",
         "hide": 2,
         "includeAll": false,
@@ -8414,6 +8554,31 @@
         "regex": "",
         "skipUrlSync": false,
         "type": "datasource"
+      },
+      {
+        "allValue": "",
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_LOCAL_PROMETHUS}"
+        },
+        "definition": "label_values(netdata_net_net_kilobits_persec_average{chart=~\"^net.tun.*|^net.tap.*|^net.ipsec.*\"},chart)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "VPN interface",
+        "multi": false,
+        "name": "vpninterface",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(netdata_net_net_kilobits_persec_average{chart=~\"^net.tun.*|^net.tap.*|^net.ipsec.*\"},chart)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
       }
     ]
   },
@@ -8447,8 +8612,8 @@
     ]
   },
   "timezone": "",
-  "title": "Unit metrics",
+  "title": "Operating system",
   "uid": "W3S__804z",
-  "version": 25,
+  "version": 18,
   "weekStart": ""
 }

@@ -103,6 +103,7 @@ with open('config.json', 'w') as cfp:
 # Load subscription info
 rdb = agent.redis_connect(privileged=False)
 subscription = rdb.hgetall('cluster/subscription')
+metrics_retention_days = request.get('prometheus_retention', '15')
 
 with open('config.env', 'w') as env:
     env.write(f'ADMIN_USER={request["api_user"]}\n')
@@ -119,6 +120,9 @@ with open('config.env', 'w') as env:
         env.write(f'VALID_SUBSCRIPTION=true\n')
     else:
         env.write(f'VALID_SUBSCRIPTION=false\n')
+    if 'maxmind_license' in request:
+        env.write(f'MAXMIND_LICENSE={request["maxmind_license"]}\n')
+    env.write(f'RETENTION_DAYS={metrics_retention_days}\n')
 
 server_address = request["ovpn_network"].removesuffix('.0') + '.1'
 with open('promtail.env', 'w') as promtail:
@@ -140,11 +144,12 @@ with open('grafana.env', 'w') as gfp:
     gfp.write("GF_SERVER_HTTP_ADDR=127.0.0.1\n")
     gfp.write(f'GF_SECURITY_ADMIN_USER={request["api_user"]}\n')
     gfp.write(f'GF_SECURITY_ADMIN_PASSWORD={request.get("api_password", config["api_password"])}\n')
+    gfp.write('GF_DATE_FORMATS_USE_BROWSER_LOCALE=true\n')
 
 with open('prometheus.env', 'w') as pfp:
     pfp.write(f"PROMETHEUS_PORT={ports[7]}\n")
     pfp.write(f"PROMETHEUS_PATH={config['prometheus_path']}\n")
-    pfp.write(f"PROMETHEUS_RETENTION={request.get('prometheus_retention', '15')}d\n")
+    pfp.write(f"PROMETHEUS_RETENTION={metrics_retention_days}d\n")
 
 with open('prometheus.yml', 'w', encoding='utf-8') as fp:
     fp.write("global:\n")
@@ -159,6 +164,7 @@ with open('prometheus.yml', 'w', encoding='utf-8') as fp:
     fp.write(f'        - 127.0.0.1:{ports[5]}\n')
 
 # Grafana configuration
+db = agent.read_envfile('db.env')
 with open('grafana.yml', 'w') as fp:
     fp.write("apiVersion: 1\n")
     fp.write("datasources:\n")
@@ -173,6 +179,23 @@ with open('grafana.yml', 'w') as fp:
     fp.write('    uid: loki\n')
     fp.write('    access: proxy\n')
     fp.write(f'    url: http://127.0.0.1:{ports[5]}\n')
+
+    fp.write('  - name: Local Timescale\n')
+    fp.write('    type: postgres\n')
+    fp.write('    uid: timescale\n')
+    fp.write(f'    url: 127.0.0.1:{db.get("POSTGRES_PORT")}\n')
+    fp.write(f'    user: grafana\n')
+    fp.write('    secureJsonData:\n')
+    fp.write(f'      password: {db.get("GRAFANA_POSTGRES_PASSWORD")}\n')
+    fp.write('    jsonData:\n')
+    fp.write('      database: report\n')
+    fp.write('      sslmode: disable\n')
+    fp.write('      maxOpenConns: 100\n')
+    fp.write('      maxIdleConns: 100\n')
+    fp.write('      maxIdleConnsAuto: true\n')
+    fp.write('      connMaxLifetime: 14400\n')
+    fp.write('      postgresVersion: 1500\n')
+    fp.write('      timescaledb: true\n')
 
 network = agent.read_envfile('network.env')
 tun = network.get('OVPN_TUN')

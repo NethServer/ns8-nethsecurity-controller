@@ -1,0 +1,31 @@
+[Unit]
+Description=Podman timescale.service
+BindsTo=controller.service
+Before=api.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+EnvironmentFile=%S/state/secret.env
+EnvironmentFile=%S/state/db.env
+WorkingDirectory=%S/state
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/timescale.pid %t/timescale.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/timescale.pid \
+    --cidfile %t/timescale.ctr-id \
+    --cgroups=no-conmon \
+    --pod-id-file %t/controller.pod-id \
+    --replace -d --name timescale \
+    --volume=timescale-data:/var/lib/postgresql/data:z \
+    --env-file=%S/state/db.env \
+    --network=host \
+    ${TIMESCALEDB_IMAGE} -p ${POSTGRES_PORT} -h 127.0.0.1
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/timescale.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/timescale.ctr-id
+PIDFile=%t/timescale.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

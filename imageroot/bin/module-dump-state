@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+set -e
+
+# Load database credentials
+. ./db.env
+
+# Dump the DB from timescale
+podman exec -i timescale pg_dump -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" > timescale.sql

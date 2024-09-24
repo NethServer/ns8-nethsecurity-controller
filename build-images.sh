@@ -9,12 +9,13 @@ images=()
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
 reponame="nethsecurity-controller"
-controller_version="1.0.1"
+controller_version="1.1.0"
 promtail_version=2.7.1
 loki_version=2.9.4
 prometheus_version=2.50.1
-grafana_version=10.3.3
+grafana_version=11.2.0
 webssh_version=1.6.2
+timescale_version="2.16.1-pg16"
 
 # Create a new empty container for webssh
 echo "Build webssh container" # from https://github.com/huashengdun/webssh
@@ -74,8 +75,8 @@ buildah add "${container}" ui/dist /ui
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm node:tunadm" \
-    --label="org.nethserver.tcp-ports-demand=10" \
-    --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn:$controller_version ghcr.io/nethserver/nethsecurity-api:$controller_version ghcr.io/nethserver/nethsecurity-ui:$controller_version ghcr.io/nethserver/nethsecurity-proxy:$controller_version docker.io/grafana/promtail:$promtail_version docker.io/grafana/loki:$loki_version docker.io/prom/prometheus:v$prometheus_version docker.io/grafana/grafana:$grafana_version ghcr.io/nethserver/webssh:${IMAGETAG:-latest}" \
+    --label="org.nethserver.tcp-ports-demand=11" \
+    --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn:$controller_version ghcr.io/nethserver/nethsecurity-api:$controller_version ghcr.io/nethserver/nethsecurity-ui:$controller_version ghcr.io/nethserver/nethsecurity-proxy:$controller_version docker.io/grafana/promtail:$promtail_version docker.io/grafana/loki:$loki_version docker.io/prom/prometheus:v$prometheus_version docker.io/grafana/grafana:$grafana_version ghcr.io/nethserver/webssh:${IMAGETAG:-latest} docker.io/timescale/timescaledb:$timescale_version" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"

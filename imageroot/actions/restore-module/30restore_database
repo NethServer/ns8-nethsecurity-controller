@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Load database credentials
+. ./db.env
+
+# Wait for database to be ready pooling every 5 seconds
+until podman exec timescale pg_isready -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -d "${POSTGRES_DB}"; do
+  sleep 5
+done
+
+# Dump the DB from timescale
+podman exec -i timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" < backup.sql

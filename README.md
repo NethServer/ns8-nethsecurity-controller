@@ -14,6 +14,7 @@ The module is composed by the following containers:
 - [loki](#loki): log storage, it stores logs from promtail
 - [grafana](#grafana): metrics visualization, it visualizes metrics from prometheus and logs from loki
 - [webssh](#webssh): web-based ssh client
+- [timescale](#timescale): time-series database for storing metrics
 
 
 ## Install
@@ -42,11 +43,12 @@ Launch `configure-module`, by setting the following parameters:
 - `api_user`: controller admin user
 - `api_password`: controller admin password, change it after first login
 - `loki_retention`: Loki retention period in days (default: ``180`` days)
-- `promtail_retention`: Promtail retention period in days (default: ``15`` days)
+- `prometheus_retention`: Promtail and Timescale retention period in days (default: 15 days)
+- `maxmind_license`: [MaxMind](https://www.maxmind.com/) license key to download the GEO IP database, the database is loaded every time the API server is started
 
 Example:
 
-    api-cli run  module/nethsecurity-controller1/configure-module --data '{"host": "mycontroller.nethsecurity.org", "lets_encrypt": false, "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.255.0", "ovpn_cn": "nethsec", "api_user": "admin", "api_password": "password", "loki_retention": 180, "prometheus_retention": 15}'
+    api-cli run  module/nethsecurity-controller1/configure-module --data '{"host": "mycontroller.nethsecurity.org", "lets_encrypt": false, "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.255.0", "ovpn_cn": "nethsec", "api_user": "admin", "api_password": "password", "loki_retention": 180, "prometheus_retention": 15, ""maxmind_license": "xxx"}'
 
 The above command will:
 - start and configure the nethsecurity-controller instance
@@ -160,6 +162,11 @@ It has also some pre-configured dashboards:
 - nethsecurity.json: a dashboard with the most important metrics from the connected machines, like CPU, memory, disk, network, and system load
 - logs.json: a dashboard where you can visualize the logs from all the connected machines and filter them by hostname, application, and priority
 - loki.json: a dashboard with the most important metrics from Loki, like the number of logs ingested, the number of logs dropped, and the status of queriers
+- network_traffic.json: this dashboard uses data from Timescale database and shows the global network traffic by unit
+- network_traffic_by_client.json: this dashboard uses data from Timescale database and shows the network traffic by unit and client (a client is a machine connected to the unit local network)
+- network_traffic_by_host.json: this dashboard uses data from Timescale database and shows the network traffic by unit and host (a host is a machien on the internet)
+- malware.json: this dashboard uses data from Timescale database and shows the malware blocked by the unit
+- vpn.json: this dashboard uses data from Timescale database and shows the VPN connections
 
 Grafana is accessible at `https://<controller-host>/grafana/`, default credentials are the same set for the controller. You should change them on the first login.
 
@@ -168,6 +175,16 @@ Grafana is accessible at `https://<controller-host>/grafana/`, default credentia
 [WebSSH](https://github.com/huashengdun/webssh) is a web-based ssh client. It's configured using parameters in the webssh.service unit.
 
 Access to WebSSH is protected using a random generated URL, you can find it inside the module configuration file at `/home/nethsecurity-controller1/.config/state/config.json`.
+
+### Timescale
+
+[Timescale](https://docs.timescale.com/latest/main) is a time-series database for storing metrics. It's configured via environment variables and the configuration is available at `/home/nethsecurity-controller1/.config/state/db.env`.
+
+You can connect to the database with the following command:
+```
+runagent -m nethsecurity-controller1
+source db.env; podman exec -it timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}"
+```
 
 ## Uninstall
 
