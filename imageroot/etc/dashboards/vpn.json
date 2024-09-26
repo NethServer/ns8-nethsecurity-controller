@@ -1,73 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_LOCAL_TIMESCALE",
-      "label": "Local Timescale",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "grafana-postgresql-datasource",
-      "pluginName": "PostgreSQL"
-    },
-    {
-      "name": "DS_LOCAL_PROMETHUS",
-      "label": "Local Promethus",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "barchart",
-      "name": "Bar chart",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "geomap",
-      "name": "Geomap",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "11.2.0"
-    },
-    {
-      "type": "datasource",
-      "id": "grafana-postgresql-datasource",
-      "name": "PostgreSQL",
-      "version": "1.0.0"
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -87,7 +18,7 @@
   "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 9,
   "links": [
     {
       "asDropdown": false,
@@ -177,12 +108,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT count(*) FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND uuid = '$uuid' AND instance = $rwinstance",
+          "rawSql": "SELECT count(*) FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND uuid = '$uuid' AND instance LIKE '$rwinstance'",
           "refId": "A",
           "sql": {
             "columns": [
@@ -290,12 +221,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT time, count(*) FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND uuid = '$uuid' AND instance = $rwinstance\nGROUP BY time",
+          "rawSql": "SELECT time, count(*) FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND uuid = '$uuid' AND instance LIKE '$rwinstance'\nGROUP BY time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -373,12 +304,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance = $rwinstance\n",
+          "rawSql": "SELECT SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance LIKE '$rwinstance'\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -481,12 +412,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT SUM(bytes_sent) + SUM(bytes_received) as bytes, common_name as user FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance = $rwinstance\nGROUP BY common_name\nORDER by bytes DESC\nLIMIT 20",
+          "rawSql": "SELECT SUM(bytes_sent) + SUM(bytes_received) as bytes, common_name as user FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance LIKE '$rwinstance'\nGROUP BY common_name\nORDER by bytes DESC\nLIMIT 20",
           "refId": "A",
           "sql": {
             "columns": [
@@ -595,7 +526,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_LOCAL_PROMETHUS}"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "netdata_net_net_kilobits_persec_average{unit=~'$uuid',chart=~'net.$rwinterface'}",
@@ -631,8 +562,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -725,12 +655,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT count(*) AS count, country AS lookup FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND uuid = '$uuid' AND instance = $rwinstance\nGROUP BY lookup",
+          "rawSql": "SELECT count(*) AS count, country AS lookup FROM ovpnrw_connections\nWHERE $__timeFilter(time) AND uuid = '$uuid' AND instance LIKE '$rwinstance'\nGROUP BY lookup",
           "refId": "A",
           "sql": {
             "columns": [
@@ -791,8 +721,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -837,12 +766,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance = $rwinstance\nGROUP BY bucket\nORDER BY bucket \n",
+          "rawSql": "SELECT bucket, SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance LIKE '$rwinstance'\nGROUP BY bucket\nORDER BY bucket \n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -904,8 +833,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -948,12 +876,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance = $rwinstance AND common_name like $user\n  AND (bytes_sent + bytes_received) > 0\nGROUP BY bucket\nORDER BY bucket",
+          "rawSql": "SELECT bucket, SUM(bytes_sent) + SUM(bytes_received) as bytes FROM ca_ovpnrw_connections_hourly_bytes\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND instance LIKE '$rwinstance' AND common_name like '$user'\n  AND (bytes_sent + bytes_received) > 0\nGROUP BY bucket\nORDER BY bucket",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1001,8 +929,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1075,12 +1002,12 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT common_name, TO_TIMESTAMP(start_time) AS start_time, duration, TO_TIMESTAMP(start_time + duration) AS end_time, bytes_received, bytes_sent, virtual_ip_addr, remote_ip_addr\nFROM ovpnrw_connections\nWHERE uuid = '$uuid' AND instance = $rwinstance AND $__timeFilter(time) ",
+          "rawSql": "SELECT common_name, TO_TIMESTAMP(start_time) AS start_time, duration, TO_TIMESTAMP(start_time + duration) AS end_time, bytes_received, bytes_sent, virtual_ip_addr, remote_ip_addr\nFROM ovpnrw_connections\nWHERE uuid = '$uuid' AND instance LIKE '$rwinstance' AND $__timeFilter(time) ",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1201,7 +1128,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_LOCAL_PROMETHUS}"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "netdata_net_net_kilobits_persec_average{unit=~'$uuid',chart=~'net.$tuninterface'}",
@@ -1225,7 +1152,11 @@
   "templating": {
     "list": [
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "Local Timescale",
+          "value": "timescale"
+        },
         "hide": 2,
         "includeAll": false,
         "label": "Local Timescale",
@@ -1239,7 +1170,11 @@
         "type": "datasource"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "NethSec",
+          "value": "20501f7e-8365-4c44-8061-1ad83e6fe6a4"
+        },
         "datasource": {
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_TIMESCALE}"
@@ -1259,10 +1194,15 @@
         "type": "query"
       },
       {
-        "current": {},
+        "allValue": "%",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "grafana-postgresql-datasource",
-          "uid": "${DS_LOCAL_TIMESCALE}"
+          "uid": "${DS_TIMESCALE}"
         },
         "definition": "SELECT instance AS __value, CONCAT(name,' (',instance,')') AS __text FROM openvpn_config WHERE uuid = '$uuid' AND type = 'rw'",
         "description": "",
@@ -1280,7 +1220,11 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "Local Promethus",
+          "value": "prometheus"
+        },
         "hide": 2,
         "includeAll": false,
         "label": "Local Prometheus",
@@ -1295,7 +1239,11 @@
       },
       {
         "allValue": "%",
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_TIMESCALE}"
@@ -1315,18 +1263,23 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "isNone": true,
+          "selected": false,
+          "text": "None",
+          "value": ""
+        },
         "datasource": {
           "type": "grafana-postgresql-datasource",
-          "uid": "${DS_LOCAL_TIMESCALE}"
+          "uid": "${DS_TIMESCALE}"
         },
-        "definition": "SELECT device AS __value FROM openvpn_config WHERE uuid = '$uuid' AND instance = $rwinstance",
+        "definition": "SELECT device AS __value FROM openvpn_config WHERE uuid = '$uuid' AND instance LIKE '$rwinstance'",
         "hide": 2,
         "includeAll": false,
         "multi": false,
         "name": "rwinterface",
         "options": [],
-        "query": "SELECT device AS __value FROM openvpn_config WHERE uuid = '$uuid' AND instance = $rwinstance",
+        "query": "SELECT device AS __value FROM openvpn_config WHERE uuid = '$uuid' AND instance LIKE '$rwinstance'",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1334,7 +1287,11 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_TIMESCALE}"
@@ -1355,10 +1312,15 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "isNone": true,
+          "selected": false,
+          "text": "None",
+          "value": ""
+        },
         "datasource": {
           "type": "grafana-postgresql-datasource",
-          "uid": "${DS_LOCAL_TIMESCALE}"
+          "uid": "${DS_TIMESCALE}"
         },
         "definition": "SELECT device AS __value FROM openvpn_config WHERE uuid = '$uuid' AND instance = '$tunnel'",
         "hide": 2,
@@ -1376,13 +1338,13 @@
     ]
   },
   "time": {
-    "from": "now-7d",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "VPN",
   "uid": "fdxlb58zxvpj4f",
-  "version": 69,
+  "version": 2,
   "weekStart": ""
 }

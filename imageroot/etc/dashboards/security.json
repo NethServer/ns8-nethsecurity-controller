@@ -1,7 +1,7 @@
 {
   "__inputs": [
     {
-      "name": "DS_LOCAL_TIMESCALE",
+      "name": "DS_TIMESCALE",
       "label": "Local Timescale",
       "description": "",
       "type": "datasource",
@@ -132,7 +132,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_LOCAL_TIMESCALE}"
+        "uid": "${DS_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -217,7 +217,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_LOCAL_TIMESCALE}"
+        "uid": "${DS_TIMESCALE}"
       },
       "description": "",
       "fieldConfig": {
@@ -328,7 +328,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_LOCAL_TIMESCALE}"
+        "uid": "${DS_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -412,7 +412,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_LOCAL_TIMESCALE}"
+        "uid": "${DS_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -493,7 +493,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_LOCAL_TIMESCALE}"
+        "uid": "${DS_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -641,7 +641,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_LOCAL_TIMESCALE}"
+        "uid": "${DS_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -753,7 +753,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_LOCAL_TIMESCALE}"
+        "uid": "${DS_TIMESCALE}"
       },
       "description": "",
       "gridPos": {
@@ -831,7 +831,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
@@ -942,7 +942,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
@@ -1053,7 +1053,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
@@ -1201,7 +1201,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
@@ -1313,7 +1313,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
@@ -1403,7 +1403,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
@@ -1493,7 +1493,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",

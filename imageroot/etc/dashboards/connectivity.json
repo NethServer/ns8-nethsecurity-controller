@@ -1,7 +1,7 @@
 {
   "__inputs": [
     {
-      "name": "DS_LOCAL_TIMESCALE",
+      "name": "DS_TIMESCALE",
       "label": "Local Timescale",
       "description": "",
       "type": "datasource",
@@ -9,7 +9,7 @@
       "pluginName": "PostgreSQL"
     },
     {
-      "name": "DS_LOCAL_PROMETHUS",
+      "name": "DS_PROMETHEUS",
       "label": "Local Promethus",
       "description": "",
       "type": "datasource",
@@ -96,7 +96,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_LOCAL_TIMESCALE}"
+        "uid": "${DS_TIMESCALE}"
       },
       "description": "",
       "fieldConfig": {
@@ -166,7 +166,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
@@ -198,7 +198,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_LOCAL_TIMESCALE}"
+        "uid": "${DS_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -253,7 +253,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
@@ -285,7 +285,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_LOCAL_TIMESCALE}"
+        "uid": "${DS_TIMESCALE}"
       },
       "fieldConfig": {
         "defaults": {
@@ -366,7 +366,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LOCAL_TIMESCALE}"
+            "uid": "${DS_TIMESCALE}"
           },
           "editorMode": "code",
           "format": "table",
@@ -482,7 +482,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_LOCAL_PROMETHUS}"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "netdata_net_net_kilobits_persec_average{unit=~'$uuid',chart='net.$wan'}",
@@ -522,7 +522,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_LOCAL_PROMETHUS}"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -602,7 +602,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_LOCAL_PROMETHUS}"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "netdata_fping_latency_ms_average{unit=~'$uuid'}",
@@ -699,7 +699,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_LOCAL_PROMETHUS}"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "netdata_fping_packets_packets_average{unit=~'$uuid'}",
@@ -796,7 +796,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_LOCAL_PROMETHUS}"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "netdata_fping_quality_percentage_average{unit=~'$uuid'}",
@@ -871,7 +871,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-postgresql-datasource",
-          "uid": "${DS_LOCAL_TIMESCALE}"
+          "uid": "${DS_TIMESCALE}"
         },
         "definition": "SELECT device AS __value, interface AS __text FROM wan_config WHERE uuid = '$uuid'",
         "hide": 0,
