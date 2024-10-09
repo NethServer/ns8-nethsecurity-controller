@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Allocate new port for timescale
+
+import os
+import sys
+
+if not hasattr(agent, 'allocate_ports'):
+    sys.exit(0) # core version too old, skip and try on next update
+
+import node.ports_manager
+
+(start,end) = os.environ["TCP_PORTS_RANGE"].split('-')
+ports = [*range(int(start), int(end)+1)]
+
+# On old versions, ports were 10
+if len(ports) < 11:
+    allocated_ports = node.ports_manager.allocate_ports(11, os.environ['MODULE_ID'], "tcp")
+
