@@ -22,4 +22,4 @@ ports = [*range(int(start), int(end)+1)]
 # On old versions, ports were 10
 if len(ports) < 11:
     allocated_ports = node.ports_manager.allocate_ports(11, os.environ['MODULE_ID'], "tcp")
-
+    print(f"New ports allocated: {allocated_ports}", file=sys.stderr)
