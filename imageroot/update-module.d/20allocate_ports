@@ -7,19 +7,28 @@
 
 # Allocate new port for timescale
 
-import os
 import sys
 import agent
 
 if not hasattr(agent, 'allocate_ports'):
     sys.exit(0) # core version too old, skip and try on next update
 
-import node.ports_manager
-
-(start,end) = os.environ["TCP_PORTS_RANGE"].split('-')
+# Read the env file, do not use real environment because it could be not updated
+env = agent.read_envfile('environment')
+(start,end) = env["TCP_PORTS_RANGE"].split('-')
 ports = [*range(int(start), int(end)+1)]
 
 # On old versions, ports were 10
 if len(ports) < 11:
-    allocated_ports = node.ports_manager.allocate_ports(11, os.environ['MODULE_ID'], "tcp")
+    allocated_ports =  agent.allocate_ports(11, "tcp")
     print(f"New ports allocated: {allocated_ports}", file=sys.stderr)
+
+    # Remove old VPN port from firewall
+    network = agent.read_envfile('network.env')
+    agent.remove_public_service(os.environ['MODULE_ID'])
+    # Add new VPN port to the firewall
+    ovpn_port = allocated_ports[0]
+
+    # Update the environment file
+    agent.set_env('TCP_PORT', allocated_ports[0])
+    agent.set_env("TCP_PORTS_RANGE", f"{allocated_ports[0]}-{allocated_ports[-1]}")
