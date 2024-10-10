@@ -44,11 +44,12 @@ Launch `configure-module`, by setting the following parameters:
 - `api_password`: controller admin password, change it after first login
 - `loki_retention`: Loki retention period in days (default: ``180`` days)
 - `prometheus_retention`: Promtail and Timescale retention period in days (default: 15 days)
-- `maxmind_license`: [MaxMind](https://www.maxmind.com/) license key to download the GEO IP database, the database is loaded every time the API server is started
+- `maxmind_license`: [MaxMind](https://www.maxmind.com/) license key to download the GEO IP database, the database is loaded every time the API server is started;
+  this field is optionale, omit it if you do not have a valid license key
 
 Example:
 
-    api-cli run  module/nethsecurity-controller1/configure-module --data '{"host": "mycontroller.nethsecurity.org", "lets_encrypt": false, "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.255.0", "ovpn_cn": "nethsec", "api_user": "admin", "api_password": "password", "loki_retention": 180, "prometheus_retention": 15, ""maxmind_license": "xxx"}'
+    api-cli run  module/nethsecurity-controller1/configure-module --data '{"host": "mycontroller.nethsecurity.org", "lets_encrypt": false, "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.255.0", "ovpn_cn": "nethsec", "api_user": "admin", "api_password": "password", "loki_retention": 180, "prometheus_retention": 15, "maxmind_license": "xxx"}'
 
 The above command will:
 - start and configure the nethsecurity-controller instance
