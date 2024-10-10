@@ -41,6 +41,17 @@
           class="min-height-card" />
       </cv-column>
       <cv-column :md="4" :max="4">
+        <NsInfoCard
+          light
+          :title="$t('status.ovpn_udp_port')"
+          :description="vpn_port"
+          :icon="Network_232"
+          :loading="loading.getConfiguration"
+          class="min-height-card"
+        >
+        </NsInfoCard>
+      </cv-column>
+      <cv-column :md="4" :max="4">
         <NsBackupCard :title="core.$t('backup.title')" :noBackupMessage="core.$t('backup.no_backup_configured')"
           :goToBackupLabel="core.$t('backup.go_to_backup')" :repositoryLabel="core.$t('backup.repository')"
           :statusLabel="core.$t('common.status')" :statusSuccessLabel="core.$t('common.success')"
@@ -465,6 +476,7 @@ export default {
     getConfigurationCompleted(taskContext, taskResult) {
       this.loading.getConfiguration = false;
       this.host = taskResult.output.host;
+      this.vpn_port = taskResult.output.vpn_port;
     },
     goToControllerApp() {
       window.open(`https://${this.host}`, "_blank");
