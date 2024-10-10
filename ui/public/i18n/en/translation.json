@@ -19,7 +19,8 @@
     "no_services": "No services",
     "no_images": "No images",
     "no_volumes": "No volumes",
-    "open_controller": "Open Controller"
+    "open_controller": "Open Controller",
+    "ovpn_udp_port": "OpenVPN UDP port"
   },
   "settings": {
     "title": "Settings",
