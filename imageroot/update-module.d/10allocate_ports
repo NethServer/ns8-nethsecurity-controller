@@ -45,7 +45,7 @@ with open('db.env', 'w') as db_fp:
     db_fp.write(f"POSTGRES_PORT={db_port}\n")
     db_fp.write(f"POSTGRES_PASSWORD={db_secret}\n")
     db_fp.write(f"GRAFANA_POSTGRES_PASSWORD={grafana_postgres_password}\n")
-    db_fp.write(f"REPORT_DB_URI=postgres://report:{db_secret}@127.0.0.1:{db_port}/report")
+    db_fp.write(f"REPORT_DB_URI=postgres://report:{db_secret}@127.0.0.1:{db_port}/report\n")
     db_fp.write(f"TS_TUNE_MAX_BG_WORKERS=100")
 
 with open('grafana.yml', 'a') as fp:
