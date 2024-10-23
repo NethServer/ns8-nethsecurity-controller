@@ -38,14 +38,14 @@ Launch `configure-module`, by setting the following parameters:
 - `host`: a fully qualified domain name for the controller
 - `lets_encrypt`: enable or disable Let's Encrypt certificate
 - `ovpn_network`: OpenVPN network
-- `ovpn_netmask`: OpenVPN netmasj
+- `ovpn_netmask`: OpenVPN netmask
 - `ovpn_cn`: OpenVPN Certificate CN
 - `api_user`: controller admin user
 - `api_password`: controller admin password, change it after first login
 - `loki_retention`: Loki retention period in days (default: ``180`` days)
 - `prometheus_retention`: Promtail and Timescale retention period in days (default: 15 days)
 - `maxmind_license`: [MaxMind](https://www.maxmind.com/) license key to download the GEO IP database, the database is loaded every time the API server is started;
-  this field is optionale, omit it if you do not have a valid license key
+  this field is optional, omit it if you do not have a valid license key
 
 Example:
 
@@ -162,10 +162,10 @@ It has also some pre-configured dashboards:
 
 - nethsecurity.json: a dashboard with the most important metrics from the connected machines, like CPU, memory, disk, network, and system load
 - logs.json: a dashboard where you can visualize the logs from all the connected machines and filter them by hostname, application, and priority
-- loki.json: a dashboard with the most important metrics from Loki, like the number of logs ingested, the number of logs dropped, and the status of queriers
+- loki.json: a dashboard with the most important metrics from Loki, like the number of logs ingested, the number of logs dropped, and the status of queries
 - network_traffic.json: this dashboard uses data from Timescale database and shows the global network traffic by unit
 - network_traffic_by_client.json: this dashboard uses data from Timescale database and shows the network traffic by unit and client (a client is a machine connected to the unit local network)
-- network_traffic_by_host.json: this dashboard uses data from Timescale database and shows the network traffic by unit and host (a host is a machien on the internet)
+- network_traffic_by_host.json: this dashboard uses data from Timescale database and shows the network traffic by unit and host (a host is a machine on the internet)
 - malware.json: this dashboard uses data from Timescale database and shows the malware blocked by the unit
 - vpn.json: this dashboard uses data from Timescale database and shows the VPN connections
 
