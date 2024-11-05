@@ -18,6 +18,7 @@ ExecStart=/usr/bin/podman run \
     --replace -d --name api \
     --volume api-credentials:/nethsecurity-api/credentials/:z \
     --volume api-data:/nethsecurity-api/data/:z \
+    --volume api-secrets:/nethsecurity-api/secrets/:z \
     --volumes-from=vpn \
     --network=host \
     --env-file=%S/state/network.env \
@@ -27,6 +28,7 @@ ExecStart=/usr/bin/podman run \
     --env-file=%S/state/subscription.env \
     --env-file=%S/state/db.env \
     --env 'GIN_MODE=release' \
+    --env SECRETS_DIR=/nethsecurity-api/secrets \
     ${NETHSECURITY_API_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/api.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/api.ctr-id
