@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# sets a 2FA provider in the config.env file
+missing_config = True
+fqdn = ''
+with open('config.env', 'r') as file:
+    while line := file.readline():
+        if line.startswith('FQDN'):
+            fqdn = line.split('=')[1].strip()
+        if line.startswith('ISSUER_2FA'):
+            missing_config = False
+
+if missing_config:
+    with open('config.env', 'a') as file:
+        file.write(f'ISSUER_2FA={fqdn}\n')
