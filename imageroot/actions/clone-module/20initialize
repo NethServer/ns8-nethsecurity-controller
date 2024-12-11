@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+exec 1>&2 # Send any output to stderr, to not alter the action response protocol
+set -e
+
+start=$(echo $TCP_PORTS_RANGE | cut -d'-' -f1)
+
+ovpn_udp_port=$start
+api_port=$(($start+1))
+ui_port=$(($start+2))
+proxy_port=$(($start+3))
+promtail_port=$(($start+4))
+# port 6 and 7 are reserved for loki
+# port 8 is reserved for prometheus
+# port 9 is reserved for grafana
+webssh_port=$(($start+9))
+db_port=$(($start+10))
+
+num=$(echo $MODULE_ID | sed 's/nethsecurity\-controller//')
+
+# the port range has changed we must update the ports in the network.env file
+cat << EOF > network.env
+OVPN_UDP_PORT=$ovpn_udp_port
+OVPN_TUN=tunnsc$num
+API_PORT=$api_port
+API_BIND_IP=127.0.0.1
+LISTEN_ADDRESS=127.0.0.1:$api_port
+UI_PORT=$ui_port
+UI_BIND_IP=127.0.0.1
+PROXY_PORT=$proxy_port
+PROXY_BIND_UI=127.0.0.1
+WEBSSH_PORT=$webssh_port
+EOF
+
+# replace the ports in the db.env file
+sed -i "s/^POSTGRES_PORT=.*/POSTGRES_PORT=$db_port/" db.env
+sed -i "s|^\(REPORT_DB_URI=postgres://report:[^@]*@127.0.0.1:\)[0-9]\{1,\}|\1$db_port|" db.env
+
+mkdir -p clients
