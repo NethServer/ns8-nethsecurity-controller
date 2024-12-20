@@ -253,7 +253,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, bytes \nFROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND client_address = '$client_address'",
+          "rawSql": "SELECT bucket, bytes \nFROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND client_address = '$client_address'\nORDER BY bucket",
           "refId": "A",
           "sql": {
             "columns": [
