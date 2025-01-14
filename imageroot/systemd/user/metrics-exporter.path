@@ -2,6 +2,7 @@
 Description=Watch for vpn connections from vpn.service
 BindsTo=controller.service
 After=vpn.service
+DefaultDependencies=no
 
 [Path]
 PathChanged=%S/state/clients
