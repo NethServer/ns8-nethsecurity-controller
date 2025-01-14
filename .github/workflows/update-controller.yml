@@ -30,7 +30,7 @@ jobs:
           NEW_TAG=$(curl https://api.github.com/repos/NethServer/nethsecurity-controller/tags | jq -r .[0].name)
           sed -i "s/controller_version=.*/controller_version=\"$NEW_TAG\"/g" build-images.sh
       - name: Commit and create PR
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           title: 'build(deps): Update nethsecurity-controller package (automated)'
           branch: 'build-update-nethsecurity-controller-package-automated'
