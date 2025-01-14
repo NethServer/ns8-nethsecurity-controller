@@ -42,7 +42,6 @@ WEBSSH_PORT=$webssh_port
 EOF
 
 cat << EOF > secret.env
-SECRET_JWT=$jwt_secret
 REGISTRATION_TOKEN=$reg_secret
 EOF
 
