@@ -77,7 +77,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm node:tunadm,portsadm" \
     --label="org.nethserver.min-core=3.1.0" \
     --label="org.nethserver.tcp-ports-demand=11" \
-    --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn:$controller_version ghcr.io/nethserver/nethsecurity-api:$controller_version ghcr.io/nethserver/nethsecurity-ui:$controller_version ghcr.io/nethserver/nethsecurity-proxy:$controller_version docker.io/grafana/promtail:$promtail_version docker.io/grafana/loki:$loki_version docker.io/prom/prometheus:v$prometheus_version docker.io/grafana/grafana:$grafana_version ghcr.io/nethserver/webssh:${IMAGETAG:-latest} docker.io/timescale/timescaledb:$timescale_version" \
+    --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn:$controller_version ghcr.io/nethserver/nethsecurity-api:$controller_version ghcr.io/nethserver/nethsecurity-ui:1.3.5 ghcr.io/nethserver/nethsecurity-proxy:$controller_version docker.io/grafana/promtail:$promtail_version docker.io/grafana/loki:$loki_version docker.io/prom/prometheus:v$prometheus_version docker.io/grafana/grafana:$grafana_version ghcr.io/nethserver/webssh:${IMAGETAG:-latest} docker.io/timescale/timescaledb:$timescale_version" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
