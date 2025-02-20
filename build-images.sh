@@ -59,7 +59,7 @@ container=$(buildah from scratch)
 # Reuse existing nodebuilder-nethsecurity-controller container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-nethsecurity-controller; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-nethsecurity-controller -v "${PWD}:/usr/src:Z" docker.io/library/node:18.20.6-alpine
+    buildah from --name nodebuilder-nethsecurity-controller -v "${PWD}:/usr/src:Z" docker.io/library/node:18.20.7-alpine
 fi
 
 echo "Build static UI files with node..."
