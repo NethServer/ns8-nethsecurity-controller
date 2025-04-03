@@ -1538,7 +1538,7 @@
           "type": "grafana-postgresql-datasource",
           "uid": "${DS_TIMESCALE}"
         },
-        "definition": "SELECT uuid AS __value, name AS __text FROM units",
+        "definition": "SELECT uuid AS __value, name AS __text FROM units ORDER BY created_at DESC",
         "description": "",
         "hide": 0,
         "includeAll": false,
@@ -1546,7 +1546,7 @@
         "multi": false,
         "name": "uuid",
         "options": [],
-        "query": "SELECT uuid AS __value, name AS __text FROM units",
+        "query": "SELECT uuid AS __value, name AS __text FROM units ORDER BY created_at DESC",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
