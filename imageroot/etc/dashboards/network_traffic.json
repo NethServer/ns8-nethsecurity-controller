@@ -257,7 +257,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bucket, bytes FROM ca_dpi_stats_hourly_bytes \nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY bucket, bytes",
+          "rawSql": "SELECT bucket AS "time", SUM(bytes) AS "bytes" \nFROM ca_dpi_stats_hourly_bytes \nWHERE $__timeFilter(bucket) AND uuid = '$uuid' \nGROUP BY bucket \nORDER BY bucket ASC",
           "refId": "A",
           "sql": {
             "columns": [
