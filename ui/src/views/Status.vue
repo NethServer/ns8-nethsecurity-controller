@@ -59,6 +59,7 @@
           :completedLabel="core.$t('backup.completed')" :durationLabel="core.$t('backup.duration')"
           :totalSizeLabel="core.$t('backup.total_size')" :totalFileCountLabel="core.$t('backup.total_file_count')"
           :backupDisabledLabel="core.$t('common.disabled')" :showMoreLabel="core.$t('common.show_more')"
+          :multipleUncertainStatusLabel="core.$t('backup.some_backups_failed_or_are_pending')"
           :moduleId="instanceName" :moduleUiName="instanceLabel" :repositories="backupRepositories" :backups="backups"
           :loading="loading.listBackupRepositories || loading.listBackups" :coreContext="core" light />
       </cv-column>
