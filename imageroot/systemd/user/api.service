@@ -27,6 +27,7 @@ ExecStart=/usr/bin/podman run \
     --env-file=%S/state/promtail.env \
     --env-file=%S/state/subscription.env \
     --env-file=%S/state/db.env \
+    --env-file=%S/state/platform.env \
     --env 'GIN_MODE=release' \
     --env SECRETS_DIR=/nethsecurity-api/secrets \
     ${NETHSECURITY_API_IMAGE}
