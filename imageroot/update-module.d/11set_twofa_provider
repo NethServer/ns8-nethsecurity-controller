@@ -5,16 +5,29 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
+import secrets
+
 # sets a 2FA provider in the config.env file
-missing_config = True
+missing_2fa_config = True
+missing_2fa_encryption_key = True
 fqdn = ''
 with open('config.env', 'r') as file:
     while line := file.readline():
         if line.startswith('FQDN'):
             fqdn = line.split('=')[1].strip()
         if line.startswith('ISSUER_2FA'):
-            missing_config = False
+            missing_2fa_config = False
 
-if missing_config:
+if missing_2fa_config:
     with open('config.env', 'a') as file:
         file.write(f'ISSUER_2FA={fqdn}\n')
+
+with open('secret.env', 'r') as file:
+    for line in file:
+        if line.startswith('ENCRYPTION_KEY'):
+            missing_2fa_encryption_key = False
+
+if missing_2fa_encryption_key:
+    with open('secret.env', 'a') as file:
+        encryption_key = ''.join(secrets.choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for _ in range(32))
+        file.write(f'ENCRYPTION_KEY={encryption_key}\n')

@@ -26,6 +26,7 @@ num=$(echo $MODULE_ID | sed 's/nethsecurity\-controller//')
 jwt_secret=$(uuidgen | sha256sum | awk '{print $1}')
 reg_secret=$(uuidgen | sha256sum | awk '{print $1}')
 db_secret=$(uuidgen | sha256sum | awk '{print $1}')
+encryption_key=$(uuidgen | sha256sum | awk '{print substr($1,1,32)}')
 grafana_postgres_password=$(uuidgen | sha256sum | awk '{print $1}')
 
 cat << EOF > network.env
@@ -43,6 +44,7 @@ EOF
 
 cat << EOF > secret.env
 REGISTRATION_TOKEN=$reg_secret
+ENCRYPTION_KEY=$encryption_key
 EOF
 
 cat << EOF > db.env
