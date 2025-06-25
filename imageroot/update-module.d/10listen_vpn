@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2025 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Listen on VPN
+
+import os
+import agent
+
+(start,end) = os.environ["TCP_PORTS_RANGE"].split('-')
+ports = [*range(int(start), int(end)+1)]
+
+network = agent.read_envfile('network.env')
+config = agent.read_envfile('config.env')
+
+# Listen also on VPN server address
+server_address = config.get("OVPN_NETWORK", "").removesuffix('.0') + '.1'
+listen_address = network.get('LISTEN_ADDRESS', '')
+api_port = network.get('API_PORT', ports[1])
+if server_address not in listen_address:
+    network['LISTEN_ADDRESS'] = f'{listen_address},{server_address}:{api_port}'
+    agent.write_envfile('network.env', network)

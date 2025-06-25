@@ -199,6 +199,15 @@ with open('grafana.yml', 'w') as fp:
     fp.write('      timescaledb: true\n')
 
 network = agent.read_envfile('network.env')
+
+# Listen also on VPN server address
+listen_address = network.get('LISTEN_ADDRESS', '')
+api_port = network.get('API_PORT', ports[1])
+if server_address not in listen_address:
+    network['LISTEN_ADDRESS'] = f'{listen_address},{server_address}:{api_port}'
+    agent.write_envfile('network.env', network)
+
+# Setup firewall
 tun = network.get('OVPN_TUN')
 bits = sum(bin(int(x)).count('1') for x in request["ovpn_netmask"].split('.'))
 cidr = f'{request["ovpn_network"]}/{bits}'
