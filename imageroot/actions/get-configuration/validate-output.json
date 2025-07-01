@@ -12,7 +12,10 @@
             "ovpn_network": "127.2.10.0",
             "ovpn_netmask": "255.255.0.0",
             "ovpn_cn": "nethsec",
-            "loki_retention": 180
+            "loki_retention": 180,
+            "maxmind_license": "1234567890",
+            "allowed_ips": ["1.2.3.0/24"],
+            "public_endpoints": ["/api/ingest,/api/units/register"]
         }
     ],
     "type": "object"
