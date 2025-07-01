@@ -10,7 +10,6 @@ import sys
 import agent
 import agent.tasks
 import os
-import hashlib
 import uuid
 
 request = json.load(sys.stdin)
@@ -95,6 +94,9 @@ response = agent.tasks.run(
     },
 )
 agent.assert_exp(response['exit_code'] == 0)
+
+config["allowed_ips"] = request.get("allowed_ips", [])
+config["public_endpoints"] = request.get("public_endpoints", [])
 
 # Save configuration to JSON for later user and backup
 with open('config.json', 'w') as cfp:
@@ -206,6 +208,12 @@ api_port = network.get('API_PORT', ports[1])
 if server_address not in listen_address:
     network['LISTEN_ADDRESS'] = f'{listen_address},{server_address}:{api_port}'
     agent.write_envfile('network.env', network)
+
+# Setup allowed_ips and public_endpoints
+network['ALLOWED_IPS'] = ','.join(request.get('allowed_ips', []))
+network['PUBLIC_ENDPOINTS'] = ','.join(request.get('public_endpoints', []))
+# Write the updated network configuration
+agent.write_envfile('network.env', network)
 
 # Setup firewall
 tun = network.get('OVPN_TUN')
