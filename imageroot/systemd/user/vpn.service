@@ -22,6 +22,7 @@ ExecStart=/usr/bin/podman run \
     --network=host --device /dev/net/tun \
     --security-opt label=disable \
     ${NETHSECURITY_VPN_IMAGE}
+ExecStartPost=/bin/bash -c 'until /usr/bin/podman exec vpn pgrep openvpn > /dev/null; do sleep 1; done'
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/vpn.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/vpn.ctr-id
 PIDFile=%t/vpn.pid
