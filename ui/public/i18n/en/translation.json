@@ -57,7 +57,12 @@
     "password_information_description": "The default administrator password is displayed only once, please store it in a safe place",
     "vpn_port_description": "Units will connect to controller using a VPN connection. Make sure the units can reach the controller on UDP port {port}",
     "maxmind_license": "MaxMind license key",
-    "maxmind_license_helper": "The license key is required to use the MaxMind GeoIP2 database"
+    "maxmind_license_helper": "The license key is required to use the MaxMind GeoIP2 database",
+    "allowed_ips": "Allowed IPs",
+    "allowed_ips_helper": "Add one IPv4 or CIDR per line. Listed networks can access the controller. If empty, all IPs are allowed",
+    "public_endpoints": "API public endpoints",
+    "public_endpoints_helper": "Add one path per line. Listed endpoints will be always accessible despite the source IP address. Add at least /api/register to allow units to register",
+    "hardening_description": "To harden the controller, specify the allowed IPs that can access it. Ensure that the public_endpoints list contains at least /api/register. If your unit version is older than 1.7.0, also add /api/ingest. All other traffic will be routed through the VPN."
   },
   "about": {
     "title": "About"
@@ -96,6 +101,8 @@
     "loki_retention_max": "Logs retention must be less than 365 days",
     "loki_retention_min": "Logs retention must be greater than 1 day",
     "invalid_network": "Invalid network, it mus be a class C network like 192.168.200.0",
-    "invalid_netmask": "Invalid netmask, it must be a valid netmask like 255.255.255.0"
+    "invalid_netmask": "Invalid netmask, it must be a valid netmask like 255.255.255.0",
+    "invalid_allowed_ips": "Invalid allowed IPs, each entry must be a and IP or CIDR network. Both IPv4 and IPv6 are supported",
+    "invalid_public_endpoints": "Invalid public endpoints, each entry must be a valid path like /api/register or /api/ingest"
   }
 }
