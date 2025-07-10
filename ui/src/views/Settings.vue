@@ -111,6 +111,26 @@
                       :passwordShowLabel="$t('password.show_password')">
                     </NsTextInput>
                   </div>
+                  <div class="mg-top-xxlg">
+                    <cv-text-area
+                      v-model="allowed_ips" 
+                      ref="allowed_ips"
+                      :invalid-message="$t(error.allowed_ips)"
+                      :label="$t('settings.allowed_ips')"
+                      :helper-text="$t('settings.allowed_ips_helper')"
+                      :disabled="loading.configureModule"
+                      :rows="4">
+                    ></cv-text-area>
+                    <cv-text-area 
+                      v-model="public_endpoints" 
+                      ref="public_endpoints"
+                      :invalid-message="$t(error.public_endpoints)"
+                      :label="$t('settings.public_endpoints')"
+                      :helper-text="$t('settings.public_endpoints_helper')"
+                      :disabled="loading.configureModule"
+                      :rows="4">
+                    ></cv-text-area>
+                  </div>
                 </template>
               </cv-accordion-item>
             </cv-accordion>
@@ -166,6 +186,8 @@ export default {
       prometheus_retention: "15",
       maxmind_license: "",
       passwordPlaceholder: "",
+      allowed_ips: "",
+      public_endpoints: "",
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -183,6 +205,8 @@ export default {
         loki_retention: "",
         prometheus_retention: "",
         maxmind_license: "",
+        allowed_ips: "",
+        public_endpoints: "",
       },
     };
   },
@@ -266,7 +290,8 @@ export default {
       this.prometheus_retention = config.prometheus_retention.toString();
       this.maxmind_license = config.maxmind_license;
       this.vpn_port = config.vpn_port;
-
+      this.allowed_ips = config.allowed_ips.join("\n");
+      this.public_endpoints = config.public_endpoints.join("\n");
       this.focusElement("host");
     },
     validateConfigureModule() {
@@ -353,6 +378,42 @@ export default {
         isValidationOk = false;
       }
 
+      // validate allowed_ips: each line must be a valid IPv4 or IPv4/CIDR
+      const allowed_ips_arr = this.allowed_ips
+        .split("\n")
+        .map((ip) => ip.trim())
+        .filter((ip) => ip !== "");
+      if (allowed_ips_arr && allowed_ips_arr.length > 0) {
+        const ipv4CidrRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))?$/;
+        for (const ip of allowed_ips_arr) {
+          if (ip.trim() === "") continue;
+          const trimmedIp = ip.trim();
+          if (!ipv4CidrRe.test(trimmedIp)) {
+            this.error.allowed_ips = this.$t("error.invalid_allowed_ips");
+            this.focusElement("allowed_ips");
+            isValidationOk = false;
+            break;
+          }
+        }
+      }
+
+      // validate public_endpoints: each line must start with /api/
+      const public_endpoints_arr = this.public_endpoints
+        .split("\n")
+        .map((endpoint) => endpoint.trim())
+        .filter((endpoint) => endpoint !== "");
+      if (public_endpoints_arr && public_endpoints_arr.length > 0) {
+        for (const endpoint of public_endpoints_arr) {
+          if (endpoint.trim() === "") continue;
+          if (!endpoint.trim().startsWith("/api/")) {
+            this.error.public_endpoints = this.$t("error.invalid_public_endpoints");
+            this.focusElement("public_endpoints");
+            isValidationOk = false;
+            break;
+          }
+        }
+      }
+
       return isValidationOk;
     },
     configureModuleValidationFailed(validationErrors) {
@@ -403,6 +464,14 @@ export default {
         loki_retention: parseInt(this.loki_retention),
         prometheus_retention: parseInt(this.prometheus_retention),
         maxmind_license: this.maxmind_license,
+        allowed_ips: this.allowed_ips
+          .split("\n")
+          .map((ip) => ip.trim())
+          .filter((ip) => ip !== ""),
+        public_endpoints: this.public_endpoints
+          .split("\n")
+          .map((endpoint) => endpoint.trim())
+          .filter((endpoint) => endpoint !== "")
       };
       if (this.password) {
         params.api_password = this.password;
