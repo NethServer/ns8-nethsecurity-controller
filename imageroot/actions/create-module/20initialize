@@ -40,7 +40,7 @@ UI_BIND_IP=127.0.0.1
 PROXY_PORT=$proxy_port
 PROXY_BIND_UI=127.0.0.1
 WEBSSH_PORT=$webssh_port
-PUBLIC_ENDPOINTS=/api/register
+PUBLIC_ENDPOINTS=/api/units/register
 EOF
 
 cat << EOF > secret.env

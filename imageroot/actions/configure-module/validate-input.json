@@ -15,8 +15,7 @@
             "loki_retention": 180,
             "prometheus_retention": 15,
             "maxmind_license": "1234567890",
-            "allowed_ips": ["1.2.3.0/24"],
-            "public_endpoints": ["/api/ingest,/api/units/register"]
+            "allowed_ips": ["1.2.3.0/24"]
         }
     ],
     "type": "object",
@@ -78,15 +77,6 @@
             "items": {
                 "type": "string",
                "format": "cidr"
-            },
-            "minItems": 0
-        },
-        "public_endpoints": {
-            "type": "array",
-            "description": "List of public endpoints that should be always accessibile, despite allowed_ips restriction",
-            "items": {
-                "type": "string",
-                "pattern": "^/[^/]+(/[^/]+)*$"
             },
             "minItems": 0
         }
