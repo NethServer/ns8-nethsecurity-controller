@@ -112,21 +112,28 @@
                     </NsTextInput>
                   </div>
                   <div class="mg-top-xxlg">
+                    <label class="bx--label">
+                      <div class="label-and-tooltip">
+                        <span>
+                          {{ $t('settings.allowed_ips') }}
+                        </span>
+                        <!-- tooltip -->
+                        <cv-interactive-tooltip
+                          alignment="center"
+                          direction="right"
+                          class="info"
+                        >
+                          <template slot="content">
+                            {{ $t("settings.allowed_ips_tooltip") }}
+                          </template>
+                        </cv-interactive-tooltip>
+                      </div>
+                    </label>
                     <cv-text-area
                       v-model="allowed_ips" 
                       ref="allowed_ips"
                       :invalid-message="$t(error.allowed_ips)"
-                      :label="$t('settings.allowed_ips')"
                       :helper-text="$t('settings.allowed_ips_helper')"
-                      :disabled="loading.configureModule"
-                      :rows="4">
-                    ></cv-text-area>
-                    <cv-text-area 
-                      v-model="public_endpoints" 
-                      ref="public_endpoints"
-                      :invalid-message="$t(error.public_endpoints)"
-                      :label="$t('settings.public_endpoints')"
-                      :helper-text="$t('settings.public_endpoints_helper')"
                       :disabled="loading.configureModule"
                       :rows="4">
                     ></cv-text-area>
@@ -187,7 +194,6 @@ export default {
       maxmind_license: "",
       passwordPlaceholder: "",
       allowed_ips: "",
-      public_endpoints: "",
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -205,8 +211,7 @@ export default {
         loki_retention: "",
         prometheus_retention: "",
         maxmind_license: "",
-        allowed_ips: "",
-        public_endpoints: "",
+        allowed_ips: ""
       },
     };
   },
@@ -291,7 +296,6 @@ export default {
       this.maxmind_license = config.maxmind_license;
       this.vpn_port = config.vpn_port;
       this.allowed_ips = config.allowed_ips.join("\n");
-      this.public_endpoints = config.public_endpoints.join("\n");
       this.focusElement("host");
     },
     validateConfigureModule() {
@@ -397,23 +401,6 @@ export default {
         }
       }
 
-      // validate public_endpoints: each line must start with /api/
-      const public_endpoints_arr = this.public_endpoints
-        .split("\n")
-        .map((endpoint) => endpoint.trim())
-        .filter((endpoint) => endpoint !== "");
-      if (public_endpoints_arr && public_endpoints_arr.length > 0) {
-        for (const endpoint of public_endpoints_arr) {
-          if (endpoint.trim() === "") continue;
-          if (!endpoint.trim().startsWith("/api/")) {
-            this.error.public_endpoints = this.$t("error.invalid_public_endpoints");
-            this.focusElement("public_endpoints");
-            isValidationOk = false;
-            break;
-          }
-        }
-      }
-
       return isValidationOk;
     },
     configureModuleValidationFailed(validationErrors) {
@@ -467,11 +454,7 @@ export default {
         allowed_ips: this.allowed_ips
           .split("\n")
           .map((ip) => ip.trim())
-          .filter((ip) => ip !== ""),
-        public_endpoints: this.public_endpoints
-          .split("\n")
-          .map((endpoint) => endpoint.trim())
-          .filter((endpoint) => endpoint !== "")
+          .filter((ip) => ip !== "")
       };
       if (this.password) {
         params.api_password = this.password;
@@ -522,5 +505,12 @@ export default {
 
 .maxwidth {
   max-width: 38rem;
+}
+
+.label-and-tooltip {
+  display: flex;
+  gap: 0.25rem;
+  align-items: baseline;
+  margin-bottom: -8px;
 }
 </style>

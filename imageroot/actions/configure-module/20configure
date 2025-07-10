@@ -96,7 +96,6 @@ response = agent.tasks.run(
 agent.assert_exp(response['exit_code'] == 0)
 
 config["allowed_ips"] = request.get("allowed_ips", [])
-config["public_endpoints"] = request.get("public_endpoints", [])
 
 # Save configuration to JSON for later user and backup
 with open('config.json', 'w') as cfp:
@@ -209,9 +208,8 @@ if server_address not in listen_address:
     network['LISTEN_ADDRESS'] = f'{listen_address},{server_address}:{api_port}'
     agent.write_envfile('network.env', network)
 
-# Setup allowed_ips and public_endpoints
+# Setup allowed_ips
 network['ALLOWED_IPS'] = ','.join(request.get('allowed_ips', []))
-network['PUBLIC_ENDPOINTS'] = ','.join(request.get('public_endpoints', []))
 # Write the updated network configuration
 agent.write_envfile('network.env', network)
 
