@@ -187,6 +187,18 @@ runagent -m nethsecurity-controller1
 source db.env; podman exec -it timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}"
 ```
 
+## Development mode
+
+You can configure the API server to run in development mode, this will enable the debug mode and allow
+access from remote UI clients.
+
+Just set the `GIN_MODE` environment variable to `debug` in the `api.env` file and restart the controller:
+```
+runagent -m nethsecurity-controller1
+sed -i 's/GIN_MODE=release/GIN_MODE=debug/' api.env
+systemctl --user restart controller.service
+```
+
 ## Uninstall
 
 To uninstall the instance:

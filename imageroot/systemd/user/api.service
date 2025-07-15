@@ -28,8 +28,7 @@ ExecStart=/usr/bin/podman run \
     --env-file=%S/state/subscription.env \
     --env-file=%S/state/db.env \
     --env-file=%S/state/platform.env \
-    --env 'GIN_MODE=release' \
-    --env SECRETS_DIR=/nethsecurity-api/secrets \
+    --env-file=%S/state/api.env \
     ${NETHSECURITY_API_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/api.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/api.ctr-id
