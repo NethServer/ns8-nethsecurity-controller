@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2025 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Create api.env file if it does not exist
+if [ ! -f "api.env" ]; then
+    cat << EOF > api.env
+GIN_MODE=release
+SECRETS_DIR=/nethsecurity-api/secrets
+EOF
+fi
