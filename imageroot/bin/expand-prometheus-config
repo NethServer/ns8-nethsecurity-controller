@@ -1,0 +1,33 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2025 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import agent
+
+network = agent.read_envfile('network.env')
+api_port = network.get('API_PORT')
+
+secret = agent.read_envfile('secret.env')
+prometheus_user = secret.get('PROMETHEUS_AUTH_USERNAME', 'prometheus')
+prometheus_pass = secret.get('PROMETHEUS_AUTH_PASSWORD', 'prometheus')
+
+loki = agent.read_envfile('loki.env')
+loki_port = loki.get('LOKI_HTTP_PORT')
+
+with open('prometheus.yml', 'w') as f:
+    f.write('global:\n')
+    f.write('scrape_configs:\n')
+    f.write('  - job_name: "node"\n')
+    f.write('    http_sd_configs:\n')
+    f.write(f'      - url: "http://127.0.0.1:{api_port}/prometheus/targets"\n')
+    f.write('        refresh_interval: 60s\n')
+    f.write('        basic_auth:\n')
+    f.write(f'          username: "{prometheus_user}"\n')
+    f.write(f'          password: "{prometheus_pass}"\n')
+    f.write('  - job_name: "loki"\n')
+    f.write('    static_configs:\n')
+    f.write('      - targets:\n')
+    f.write(f'        - "127.0.0.1:{loki_port}"\n')

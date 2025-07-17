@@ -77,9 +77,7 @@ The module is composed by the following systemd units:
 - prometheus.service: runs the prometheus container
 - loki.service: runs the loki container
 - grafana.service: runs the grafana container
-- metrics-exporter.path: watch for vpn connections from vpn.service and start metrics-exporter.service; each time a new client connects, the vpn
   container creates a file inside the `prometheus.d/` directory
-- metrics-exporter.service: executes the `metrics_exporter_handler` script to create a new prometheus target for the connected machine
 - webssh.service: runs the webssh container
 
 ### API Server
@@ -114,9 +112,7 @@ Promtail sets the following labels:
 [Prometheus](https://prometheus.io/) is a metrics collector, it scrapes metrics from the connected machines. The configuration is available at `/home/nethsecurity-controller1/.config/state/prometheus.yml` and it's generated every time by the `configure-module` action.
 It has a the following targets:
 - static target with job_name `loki` that scrapes Loki metrics
-- dynamic targets with job_name `node` that scrapes metrics from the connected machines from the `prometheus.d/` directory under the state directory (eg. `/home/nethsecurity-controller1/.config/state/prometheus.d`)
-
-Each dynamic target is created by the `metrics-exporter` and has the following labels:
+- dynamic targets with job_name `node` that scrapes metrics from the connected machines from the API server `http://<prometheus_user>:<prometheus_pass>@127.0.0.1:<API_PORT/prometheus/targets`
 
 - `instance` the VPN IP of the connected machine with the netdata port (eg. `172.19.64.3:19999`)
 - `job` fixed to `node`

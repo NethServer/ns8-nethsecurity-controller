@@ -11,7 +11,7 @@ WorkingDirectory=%S/state
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/prometheus.pid %t/prometheus.ctr-id
-ExecStartPre=/usr/bin/mkdir -vp %S/state/prometheus.d
+ExecStartPre=runagent expand-prometheus-config
 ExecStart=/usr/bin/podman run \
     --conmon-pidfile %t/prometheus.pid \
     --cidfile %t/prometheus.ctr-id \

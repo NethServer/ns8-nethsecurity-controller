@@ -40,5 +40,3 @@ EOF
 # replace the ports in the db.env file
 sed -i "s/^POSTGRES_PORT=.*/POSTGRES_PORT=$db_port/" db.env
 sed -i "s|^\(REPORT_DB_URI=postgres://report:[^@]*@127.0.0.1:\)[0-9]\{1,\}|\1$db_port|" db.env
-
-mkdir -p clients

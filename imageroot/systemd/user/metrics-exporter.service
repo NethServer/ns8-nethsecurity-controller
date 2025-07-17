@@ -1,9 +1,0 @@
-[Unit]
-Description=Add client as service provider for prometheus
-BindsTo=controller.service
-After=vpn.service
-
-[Service]
-EnvironmentFile=%S/state/environment
-ExecStart=/usr/local/bin/runagent %S/bin/metrics_exporter_handler %S/state/clients
-Type=oneshot

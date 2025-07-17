@@ -26,6 +26,7 @@ num=$(echo $MODULE_ID | sed 's/nethsecurity\-controller//')
 jwt_secret=$(uuidgen | sha256sum | awk '{print $1}')
 reg_secret=$(uuidgen | sha256sum | awk '{print $1}')
 db_secret=$(uuidgen | sha256sum | awk '{print $1}')
+prometheus_secret=$(uuidgen | sha256sum | awk '{print $1}')
 encryption_key=$(uuidgen | sha256sum | awk '{print substr($1,1,32)}')
 grafana_postgres_password=$(uuidgen | sha256sum | awk '{print $1}')
 
@@ -46,6 +47,8 @@ EOF
 cat << EOF > secret.env
 REGISTRATION_TOKEN=$reg_secret
 ENCRYPTION_KEY=$encryption_key
+PROMETHEUS_AUTH_USERNAME=prometheus_$RANDOM
+PROMETHEUS_AUTH_PASSWORD=$prometheus_secret
 EOF
 
 cat << EOF > db.env
@@ -64,5 +67,3 @@ EOF
 
 # This will be compiled inside the configure-module
 touch platform.env
-
-mkdir -p clients

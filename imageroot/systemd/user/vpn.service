@@ -16,7 +16,6 @@ ExecStart=/usr/bin/podman run \
     --pod-id-file %t/controller.pod-id \
     --replace -d --name vpn \
     -v vpn-data:/etc/openvpn/:z \
-    --volume=%S/state/clients:/etc/openvpn/clients:z \
     --env-file=%S/state/network.env \
     --env-file=%S/state/config.env \
     --network=host --device /dev/net/tun \

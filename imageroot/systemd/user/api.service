@@ -2,7 +2,7 @@
 [Unit]
 Description=Podman api.service
 BindsTo=controller.service
-After=controller.service vpn.service
+After=controller.service vpn.service timescale.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n

@@ -153,18 +153,6 @@ with open('prometheus.env', 'w') as pfp:
     pfp.write(f"PROMETHEUS_PATH={config['prometheus_path']}\n")
     pfp.write(f"PROMETHEUS_RETENTION={metrics_retention_days}d\n")
 
-with open('prometheus.yml', 'w', encoding='utf-8') as fp:
-    fp.write("global:\n")
-    fp.write("scrape_configs:\n")
-    fp.write('  - job_name: "node"\n')
-    fp.write('    file_sd_configs:\n')
-    fp.write('      - files:\n')
-    fp.write('        - "/prometheus/prometheus.d/*.yml"\n')
-    fp.write('  - job_name: "loki"\n')
-    fp.write('    static_configs:\n')
-    fp.write('      - targets:\n')
-    fp.write(f'        - 127.0.0.1:{ports[5]}\n')
-
 # Grafana configuration
 db = agent.read_envfile('db.env')
 with open('grafana.yml', 'w') as fp:
