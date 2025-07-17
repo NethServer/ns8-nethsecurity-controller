@@ -38,6 +38,7 @@ query_range:
 
 limits_config:
   retention_period: ${LOKI_RETENTION}
+  volume_enabled: true
 
 compactor:
   working_directory: /loki/retention
