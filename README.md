@@ -77,7 +77,6 @@ The module is composed by the following systemd units:
 - prometheus.service: runs the prometheus container
 - loki.service: runs the loki container
 - grafana.service: runs the grafana container
-  container creates a file inside the `prometheus.d/` directory
 - webssh.service: runs the webssh container
 
 ### API Server

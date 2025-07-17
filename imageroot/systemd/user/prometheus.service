@@ -19,7 +19,6 @@ ExecStart=/usr/bin/podman run \
     --pod-id-file %t/controller.pod-id \
     --replace -d --name prometheus \
     --volume=%S/state/prometheus.yml:/prometheus/prometheus.yml:z \
-    --volume=./prometheus.d/:/prometheus/prometheus.d/:z \
     --volume=prometheus-data:/prometheus:z \
     --network=host \
     ${PROMETHEUS_IMAGE} --web.listen-address=127.0.0.1:${PROMETHEUS_PORT} --web.external-url=${PROMETHEUS_PATH} --storage.tsdb.retention.time=${PROMETHEUS_RETENTION}
