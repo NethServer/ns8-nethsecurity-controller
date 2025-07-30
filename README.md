@@ -194,6 +194,37 @@ sed -i 's/GIN_MODE=release/GIN_MODE=debug/' api.env
 systemctl --user restart controller.service
 ```
 
+## Troubleshooting
+
+### Logs
+
+To see al logs from the controller using the command line, execute this command con the node where the controller is running:
+```
+journalctl _UID=$(id -u nethsecurity-controller1)
+```
+
+To select only the logs about migrations, you can use the `--grep` option to filter the logs:
+```
+journalctl _UID=$(id -u nethsecurity-controller1) --grep 'MIGRATION'
+```
+
+### Deleting dangling units
+
+If the delete process of a unit fails, it's not possibile to delete the unit from the UI.
+You can delete dangling units using the command line, by accessing the database.
+
+To access the database, you need to run the following command on the node where the controller is running:
+```
+runagent -m nethsecurity-controller1
+source db.env; podman exec -it timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}"
+```
+
+Then delete the unit from the unit from `units` and `unit_credentials` tables:
+```
+DELETE FROM units WHERE id = '<unit_id>';
+DELETE FROM unit_credentials WHERE unit_id = '<unit_id>';
+```
+
 ## Uninstall
 
 To uninstall the instance:
