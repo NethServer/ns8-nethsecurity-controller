@@ -208,21 +208,86 @@ To select only the logs about migrations, you can use the `--grep` option to fil
 journalctl _UID=$(id -u nethsecurity-controller1) --grep 'MIGRATION'
 ```
 
-### Deleting dangling units
+### Database maintenance
 
-If the delete process of a unit fails, it's not possibile to delete the unit from the UI.
-You can delete dangling units using the command line, by accessing the database.
+The database is used to store configuration and metrics.
+See [Database design](https://github.com/NethServer/nethsecurity-controller/tree/main/api#database-design) for more details.
 
-To access the database, you need to run the following command on the node where the controller is running:
+#### DPI stats cleanup
+
+The Timescale database is used to store metrics, it can grow quickly.
+The `dpi_stats` can grow of millions of rows per day.
+On clean machines after version 2.0.0, the `dpi_stats` has an index on the `uuid` field to speedup cleanup queries.
+
+It's possible to manually create the index on upgraded machines, but it can take a long time to complete.
+To create the index, run the following command on the node where the controller is running:
 ```
 runagent -m nethsecurity-controller1
-source db.env; podman exec -it timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}"
+source db.env; podman exec -it timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -c 'CREATE INDEX IF NOT EXISTS idx_dpi_stats_uuid ON dpi_stats (uuid);'
+```
+If the dpi_stats table is too big to create an index, you can TRUNCATE it to remove all rows:
+```
+runagent -m nethsecurity-controller1
+source db.env; podman exec -it timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -c 'TRUNCATE TABLE dpi_stats;'
 ```
 
-Then delete the unit from the unit from `units` and `unit_credentials` tables:
+Removing data from the `dpi_stats` table can take a long time, depending on the number of rows.
+To speed up the cleanup process, you can run a batch deletion procedure that deletes rows in batches.
+This will prevent long locks on the table and allow other queries to run in parallel. It will also reduce the load on the database.
+To cleanup the `dpi_stats` table, you can run the following procedure to delete this rows older than 1 day.
+```sql
+DO $$
+DECLARE
+  batch_deleted INTEGER;
+  total_deleted INTEGER := 0;
+  batch_size INTEGER := 50000;
+  max_iterations INTEGER := 1000; -- Prevent infinite loops
+  iterations INTEGER := 0;
+BEGIN
+  RAISE NOTICE 'Starting batch deletion process at %', now();
+  
+  LOOP
+    DELETE FROM dpi_stats
+    WHERE (uuid, time) IN (
+      SELECT uuid, time
+      FROM dpi_stats
+      WHERE time < (NOW() - INTERVAL '1 days')
+      ORDER BY time
+      LIMIT batch_size
+    );
+    
+    GET DIAGNOSTICS batch_deleted = ROW_COUNT;
+    total_deleted := total_deleted + batch_deleted;
+    iterations := iterations + 1;
+    
+    RAISE NOTICE 'Batch %: Deleted % rows. Total deleted so far: %', 
+      iterations, batch_deleted, total_deleted;
+    
+    EXIT WHEN batch_deleted = 0 OR iterations >= max_iterations;
+    COMMIT;
+    
+  END LOOP;
+  
+  RAISE NOTICE 'Deletion complete at %. Total rows deleted: %', 
+    now(), total_deleted;
+END $$;
 ```
-DELETE FROM units WHERE id = '<unit_id>';
-DELETE FROM unit_credentials WHERE unit_id = '<unit_id>';
+
+#### Cleanup orphaned unit data
+
+To see if the cleanup job is scheduled, use this query:
+```
+SELECT * FROM timescaledb_information.jobs WHERE proc_name = 'cleanup_orphaned_unit_data';
+```
+
+To see the status of the cleanup job, use this query:
+```
+SELECT * FROM timescaledb_information.job_stats WHERE job_id = (SELECT job_id FROM timescaledb_information.jobs WHERE proc_name = 'cleanup_orphaned_unit_data');
+```
+
+You can run the cleanup job manually with the following query:
+```
+SELECT cleanup_orphaned_unit_data()'
 ```
 
 ## Uninstall
