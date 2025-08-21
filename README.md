@@ -290,6 +290,63 @@ You can run the cleanup job manually with the following query:
 SELECT cleanup_orphaned_unit_data()'
 ```
 
+### VPN
+
+If you need to know the VPN current status, execute the following:
+```
+runagent -m nethsecurity-controller1
+podman exec -ti vpn /bin/sh
+kill -SIGUSR2 1
+```
+
+OpenVPN will dump statistics inside the journalctl, something like:
+```
+...
+Aug 21 15:31:50 node1 vpn[1269361]: 2025-08-21 13:31:50 Virtual Address,Common Name,Real Address,Last Ref
+Aug 21 15:31:50 node1 vpn[1269361]: 2025-08-21 13:31:50 172.22.221.26,xxxxxx-xxx-xxx-xx-xxxxx,1.2.3.4:57292,2025-08-21 13:31:48
+Aug 21 15:31:50 node1 vpn[1269361]: 2025-08-21 13:31:50 172.22.221.147,xxxxxx-xxx-xxx-xx-xxxxx,1.2.3.4:44210,2025-08-21 13:31:47
+...
+```
+
+### Prometheus
+
+Prometheus has a useful dashboard to visualize the scrape targets and their status.
+Prometheus can automatically find units to scrape by calling the `http://127.0.0.1:<api_port>/prometheus/targets` URL
+every 60 seconds.
+
+To see the current status of the targets, you can access the Prometheus UI at `https://<controller_fqdn>/<prometheus_path>/targets`.
+
+You can find the the URL using this command:
+```
+runagent -m nethsecurity-controller1 cat config.json | jq -r '"https://\(.host)\(.prometheus_path)/targets"'
+```
+
+Looking into the target list you can find:
+
+- what targets are up or down
+- last scrape time
+- last scrape duration
+
+### Unit registration
+
+Sometime the unit registration process may fail or become stale.
+In such cases, you can check inside the log what is the reason of the failure.
+
+Execute:
+```sh
+journalctl | grep -A1 'RegisterUnit'
+```
+
+Output will look like this:
+
+```
+Aug 21 16:05:29 ns8hks02 api[1269474]: nethsecurity_controller 2025/08/21 14:05:29 unit.go:485: [ERROR][RegisterUnit] unit not allowed, no certificate found for: <UUID>
+Aug 21 16:05:29 ns8hks02 proxy[1269525]: <IP_ADDRESS> - - [21/Aug/2025:14:05:29 +0000] "POST /api/units/register HTTP/1.1" 403 91 "-" "-" 8723 "routerapi@file" "http://127.0.0.1:20030/" 0ms
+--
+Aug 21 16:05:32 ns8hks02 api[1269474]: nethsecurity_controller 2025/08/21 14:05:32 unit.go:369: [ERROR][RegisterUnit] unit subscription is required
+Aug 21 16:05:32 ns8hks02 proxy[1269525]: <IP_ADDRESS> - - [21/Aug/2025:14:05:32 +0000] "POST /api/units/register HTTP/1.1" 403 87 "-" "-" 8724 "routerapi@file" "http://127.0.0.1:20030/" 0ms
+```
+
 ## Uninstall
 
 To uninstall the instance:
