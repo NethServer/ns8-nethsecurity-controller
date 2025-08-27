@@ -295,8 +295,7 @@ SELECT cleanup_orphaned_unit_data()'
 If you need to know the VPN current status, execute the following:
 ```
 runagent -m nethsecurity-controller1
-podman exec -ti vpn /bin/sh
-kill -SIGUSR2 1
+podman kill --signal SIGUSR2 vpn
 ```
 
 OpenVPN will dump statistics inside the journalctl, something like:
