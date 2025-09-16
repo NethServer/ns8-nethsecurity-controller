@@ -346,6 +346,14 @@ Aug 21 16:05:32 ns8hks02 api[1269474]: nethsecurity_controller 2025/08/21 14:05:
 Aug 21 16:05:32 ns8hks02 proxy[1269525]: <IP_ADDRESS> - - [21/Aug/2025:14:05:32 +0000] "POST /api/units/register HTTP/1.1" 403 87 "-" "-" 8724 "routerapi@file" "http://127.0.0.1:20030/" 0ms
 ```
 
+### Upgrade from version 1.x
+
+When upgrading from version 1.x to 2.x, the database schema has changed and many data has been moved to the Timescale database.
+During the upgrade from version 1.x to 2.x, a backup of the data is automatically creates inside the
+state directory as `backup_old_version.tar.gz`.
+
+The file can be removed after the upgrade is completed and verified.
+
 ## Uninstall
 
 To uninstall the instance:
