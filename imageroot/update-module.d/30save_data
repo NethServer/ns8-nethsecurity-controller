@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2025 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Extract version numbers
+PREV_VERSION=$(echo "$PREV_IMAGE_URL" | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?')
+IMAGE_VERSION=$(echo "$IMAGE_URL" | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?')
+
+# Get major versions
+PREV_MAJOR=$(echo "$PREV_VERSION" | cut -d. -f1)
+IMAGE_MAJOR=$(echo "$IMAGE_VERSION" | cut -d. -f1)
+
+# Check that version extraction succeeded
+if [ -z "$PREV_VERSION" ] || [ -z "$IMAGE_VERSION" ]; then
+    echo "Warning: could not extract version number from PREV_IMAGE_URL or IMAGE_URL. Skipping backup." >&2
+    exit 0
+fi
+
+TMP_DIR="backup"
+
+# Run backup if upgrading from 1.x to 2.x
+if [ "$PREV_MAJOR" = "1" ] && [ "$IMAGE_MAJOR" = "2" ]; then
+    mkdir -p "$TMP_DIR"
+    # loki-data and prometheus-data excluded because too large
+    podman volume export vpn-data > "$TMP_DIR/vpn-data.tar"
+    podman volume export grafana-data > "$TMP_DIR/grafana-data.tar"
+    podman volume export api-credentials > "$TMP_DIR/api-credentials.tar"
+    podman volume export api-data > "$TMP_DIR/api-data.tar"
+    podman volume export timescale-data > "$TMP_DIR/timescale-data.tar"
+    podman volume export api-secrets > "$TMP_DIR/api-secrets.tar"
+    tar cvzf backup_old_version.tar.gz "$TMP_DIR"
+fi
+
+if [ -d "$TMP_DIR" ]; then
+    rm -rf "$TMP_DIR"
+fi
