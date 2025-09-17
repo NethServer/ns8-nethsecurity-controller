@@ -346,6 +346,20 @@ Aug 21 16:05:32 ns8hks02 api[1269474]: nethsecurity_controller 2025/08/21 14:05:
 Aug 21 16:05:32 ns8hks02 proxy[1269525]: <IP_ADDRESS> - - [21/Aug/2025:14:05:32 +0000] "POST /api/units/register HTTP/1.1" 403 87 "-" "-" 8724 "routerapi@file" "http://127.0.0.1:20030/" 0ms
 ```
 
+### User accounts
+
+To disable 2FA for a user, just wipe the `otp_secret` field in the `users` table. Example:
+```
+runagent -m nethsecurity-controller1
+source db.env; podman exec -it timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -c "UPDATE accounts SET otp_recovery_codes='', otp_secret='' WHERE username = 'admin';"
+```
+
+Reset password for admin user to `Nethesis,1234`:
+```
+runagent -m nethsecurity-controller1
+source db.env; podman exec -it timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -c "UPDATE accounts SET password='\$2a\$10\$EZ9SQp38QPUZGU2Zwe85pOeoto.r7hYMMwn0mpp/7616HdutBk9Rm' WHERE username = 'admin';"
+```
+
 ### Upgrade from version 1.x
 
 When upgrading from version 1.x to 2.x, the database schema has changed and many data has been moved to the Timescale database.
