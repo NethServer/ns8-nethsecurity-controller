@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2025 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+exec 1>&2
+set -e
+
+# Load DB environment if available.
+if [ -f ./db.env ]; then
+	. ./db.env
+fi
+
+read -r support_user session_id < <(jq -r '[.support_user, .session_id] | join("\t")')
+
+# Check if support_user and session_id arguments are provided
+if [ -z "$support_user" ] || [ -z "$session_id" ]; then
+	exit 1
+fi
+
+SQL=$(cat <<SQL
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Upsert support user with bcrypt password
+INSERT INTO accounts (username, password, admin, display_name)
+VALUES ('${support_user}', crypt('${session_id}', gen_salt('bf', 5)), true, 'Nethesis Support User')
+ON CONFLICT (username) DO UPDATE
+SET password = crypt('${session_id}', gen_salt('bf', 5));
+SQL
+)
+
+# Execute SQL and reload ACLs
+podman exec -i timescale psql  -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -c "$SQL"
+podman kill -s SIGUSR1 api
