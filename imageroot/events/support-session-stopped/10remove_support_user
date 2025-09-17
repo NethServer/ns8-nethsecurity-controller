@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2025 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+exec 1>&2
+set -e
+
+# Parse JSON and set variables
+read -r support_user < <(jq -r '.support_user')
+
+# Load DB environment if available.
+if [ -f ./db.env ]; then
+	. ./db.env
+fi
+
+# Check if support_user argument is provided
+if [ -z "$support_user" ]; then
+  echo "Error: missing support_user argument."
+  exit 1
+fi
+
+SQL=$(cat <<SQL
+-- Delete support user if exists
+DELETE FROM accounts WHERE username = '${support_user}';
+SQL
+)
+
+# Execute SQL and reload ACLs
+podman exec -i timescale psql  -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -c "$SQL"
+podman kill -s SIGUSR1 api > /dev/null
