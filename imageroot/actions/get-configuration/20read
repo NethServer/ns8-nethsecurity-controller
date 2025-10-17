@@ -23,6 +23,7 @@ if os.path.isfile('config.json'):
     config['api_password'] = ''
     network = agent.read_envfile('network.env')
     config['vpn_port'] = network['OVPN_UDP_PORT']
+    config["lets_encrypt"] = agent.get_route(os.environ['MODULE_ID']).get('lets_encrypt', False)
 else:
     # Prepare random values for first-configuration
     # Pick a newtork inside 172.16.0.0/12 (range 172.16.0.0-172.31.255.255)
