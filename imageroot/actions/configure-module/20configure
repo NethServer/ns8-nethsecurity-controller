@@ -28,72 +28,78 @@ for path in ['loki_path', 'prometheus_path', 'webssh_path']:
         config[path] = f'/{uuid.uuid4()}'
 
 # Configure Traefik to route requests to the nethsec-controller service
-response = agent.tasks.run(
-    agent_id=agent.resolve_agent_id('traefik@node'),
-    action='set-route',
-    data={
-        'instance': os.environ['MODULE_ID'],
-        'url':  f'http://127.0.0.1:{ports[3]}',
-        'http2https': True,
-        'lets_encrypt': request["lets_encrypt"],
-        'host': request["host"],
-    },
-)
-agent.assert_exp(response['exit_code'] == 0)
-response = agent.tasks.run(
-    agent_id=agent.resolve_agent_id('traefik@node'),
-    action='set-route',
-    data={
-        'instance': os.environ['MODULE_ID'] + '_grafana',
-        'url':  f'http://127.0.0.1:{ports[8]}',
-        'http2https': True,
-        'lets_encrypt': request["lets_encrypt"],
-        'host': request["host"],
-        'path': '/grafana'
-    },
-)
-agent.assert_exp(response['exit_code'] == 0)
-response = agent.tasks.run(
-    agent_id=agent.resolve_agent_id('traefik@node'),
-    action='set-route',
-    data={
-        'instance': os.environ['MODULE_ID'] + '_loki',
-        'url':  f'http://127.0.0.1:{ports[5]}',
-        'http2https': True,
-        'lets_encrypt': request["lets_encrypt"],
-        'host': request["host"],
-        'path': config['loki_path']
-    },
-)
-agent.assert_exp(response['exit_code'] == 0)
-response = agent.tasks.run(
-    agent_id=agent.resolve_agent_id('traefik@node'),
-    action='set-route',
-    data={
-        'instance': os.environ['MODULE_ID'] + '_prometheus',
-        'url':  f'http://127.0.0.1:{ports[7]}',
-        'http2https': True,
-        'lets_encrypt': request["lets_encrypt"],
-        'host': request["host"],
-        'path': config['prometheus_path']
-    },
-)
-agent.assert_exp(response['exit_code'] == 0)
+set_route_data = {
+    'instance': os.environ['MODULE_ID'],
+    'url':  f'http://127.0.0.1:{ports[3]}',
+    'http2https': True,
+    'host': request["host"],
+    'lets_encrypt_check': True,
+    'lets_encrypt_cleanup': True,
+}
+if 'lets_encrypt' in request:
+    set_route_data['lets_encrypt'] = request['lets_encrypt']
 
-response = agent.tasks.run(
-    agent_id=agent.resolve_agent_id('traefik@node'),
-    action='set-route',
-    data={
-        'instance': os.environ['MODULE_ID'] + '_webssh',
-        'url':  f'http://127.0.0.1:{ports[9]}',
-        'http2https': True,
-        'lets_encrypt': request["lets_encrypt"],
-        'host': request["host"],
-        'path': config['webssh_path'],
-        'strip_prefix': True
-    },
-)
-agent.assert_exp(response['exit_code'] == 0)
+agent.set_route(set_route_data)
+
+# Configure Traefik to route requests to the grafana service
+set_route_data = {
+    'instance': os.environ['MODULE_ID'] + '_grafana',
+    'url':  f'http://127.0.0.1:{ports[8]}',
+    'http2https': True,
+    'host': request["host"],
+    'path': '/grafana',
+    'lets_encrypt_check': True,
+    'lets_encrypt_cleanup': True,
+}
+if 'lets_encrypt' in request:
+    set_route_data['lets_encrypt'] = request['lets_encrypt']
+
+agent.set_route(set_route_data)
+
+# Configure Traefik to route requests to the loki service
+set_route_data = {
+    'instance': os.environ['MODULE_ID'] + '_loki',
+    'url':  f'http://127.0.0.1:{ports[5]}',
+    'http2https': True,
+    'host': request["host"],
+    'path': config['loki_path'],
+    'lets_encrypt_check': True,
+    'lets_encrypt_cleanup': True,
+}
+if 'lets_encrypt' in request:
+    set_route_data['lets_encrypt'] = request['lets_encrypt']
+
+agent.set_route(set_route_data)
+
+# Configure Traefik to route requests to the prometheus service
+set_route_data = {
+    'instance': os.environ['MODULE_ID'] + '_prometheus',
+    'url':  f'http://127.0.0.1:{ports[7]}',
+    'http2https': True,
+    'host': request["host"],
+    'path': config['prometheus_path'],
+    'lets_encrypt_check': True,
+    'lets_encrypt_cleanup': True,
+}
+if 'lets_encrypt' in request:
+    set_route_data['lets_encrypt'] = request['lets_encrypt']
+
+agent.set_route(set_route_data)
+
+# Configure Traefik to route requests to the webssh service
+set_route_data = {
+    'instance': os.environ['MODULE_ID'] + '_webssh',
+    'url':  f'http://127.0.0.1:{ports[9]}',
+    'http2https': True,
+    'lets_encrypt': request["lets_encrypt"],
+    'host': request["host"],
+    'path': config['webssh_path'],
+    'strip_prefix': True,
+    'lets_encrypt_check': True,
+    'lets_encrypt_cleanup': True,
+}
+if 'lets_encrypt' in request:
+    set_route_data['lets_encrypt'] = request['lets_encrypt']
 
 config["allowed_ips"] = request.get("allowed_ips", [])
 
