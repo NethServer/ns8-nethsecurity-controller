@@ -18,7 +18,7 @@
         }
     ],
     "type": "object",
-    "required": [ "host", "lets_encrypt", "api_user", "ovpn_network", "ovpn_netmask", "ovpn_cn" ],
+    "required": [ "host", "api_user", "ovpn_network", "ovpn_netmask", "ovpn_cn" ],
     "properties": {
         "host": {
             "type": "string",
