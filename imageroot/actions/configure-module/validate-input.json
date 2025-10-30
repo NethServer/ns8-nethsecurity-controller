@@ -8,7 +8,6 @@
             "api_user": "admin",
             "api_password": "admin",
             "host": "controller.nethserver.org",
-            "lets_encrypt": true,
             "ovpn_network": "127.2.10.0",
             "ovpn_netmask": "255.255.0.0",
             "ovpn_cn": "nethsec",
@@ -19,7 +18,7 @@
         }
     ],
     "type": "object",
-    "required": [ "host", "lets_encrypt", "api_user", "ovpn_network", "ovpn_netmask", "ovpn_cn" ],
+    "required": [ "host", "api_user", "ovpn_network", "ovpn_netmask", "ovpn_cn" ],
     "properties": {
         "host": {
             "type": "string",
