@@ -131,6 +131,11 @@ with open('config.env', 'w') as env:
     if 'maxmind_license' in request:
         env.write(f'MAXMIND_LICENSE={request["maxmind_license"]}\n')
     env.write(f'RETENTION_DAYS={metrics_retention_days}\n')
+    # OpenVPN MTU and MSSFIX settings
+    tun_mtu = request.get('tun_mtu', 1500)
+    mssfix = request.get('mssfix', 1450)
+    env.write(f'OVPN_TUN_MTU={tun_mtu}\n')
+    env.write(f'OVPN_MSSFIX={mssfix}\n')
 
 server_address = request["ovpn_network"].removesuffix('.0') + '.1'
 with open('promtail.env', 'w') as promtail:
