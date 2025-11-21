@@ -14,7 +14,11 @@
             "loki_retention": 180,
             "prometheus_retention": 15,
             "maxmind_license": "1234567890",
-            "allowed_ips": ["1.2.3.0/24"]
+            "allowed_ips": [
+                "1.2.3.0/24"
+            ],
+            "tun_mtu": 1500,
+            "mssfix": 1450
         }
     ],
     "type": "object",
@@ -75,9 +79,21 @@
             "description": "List of allowed IPs for the controller",
             "items": {
                 "type": "string",
-               "format": "cidr"
+                "format": "cidr"
             },
             "minItems": 0
+        },
+        "tun_mtu": {
+            "type": "integer",
+            "description": "OpenVPN TUN interface MTU size, default is 1500",
+            "minimum": 576,
+            "default": 1500
+        },
+        "mssfix": {
+            "type": "integer",
+            "description": "OpenVPN MSSFIX value, default is 1450",
+            "minimum": 0,
+            "default": 1450
         }
     }
 }
