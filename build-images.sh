@@ -13,7 +13,7 @@ controller_version="2.1.1"
 promtail_image="docker.io/grafana/promtail:3.5.6"
 loki_image="docker.io/grafana/loki:2.9.17"
 prometheus_image="docker.io/prom/prometheus:v3.5.0"
-grafana_image="docker.io/grafana/grafana:12.2.0"
+grafana_image="docker.io/grafana/grafana:12.3.0"
 timescale_image="docker.io/timescale/timescaledb:2.22.1-pg16"
 webssh_version=1.6.2
 
