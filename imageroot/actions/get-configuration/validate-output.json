@@ -14,7 +14,11 @@
             "ovpn_cn": "nethsec",
             "loki_retention": 180,
             "maxmind_license": "1234567890",
-            "allowed_ips": ["1.2.3.0/24"]
+            "allowed_ips": [
+                "1.2.3.0/24"
+            ],
+            "tun_mtu": 1500,
+            "mssfix": 1450
         }
     ],
     "type": "object"
