@@ -207,6 +207,20 @@
                       :passwordShowLabel="$t('password.show_password')"
                     >
                     </NsTextInput>
+                    <NsTextInput v-model.trim="tun_mtu" ref="tun_mtu"
+                      :invalid-message="$t(error.tun_mtu)" type="number" :label="$t('settings.tun_mtu')"
+                      :helper-text="$t('settings.tun_mtu_helper')" :disabled="loading.configureModule">
+                      <template #tooltip>{{
+                          $t("settings.tun_mtu_tooltip")
+                        }}</template>
+                    </NsTextInput>
+                    <NsTextInput v-model.trim="mssfix" ref="mssfix"
+                      :invalid-message="$t(error.mssfix)" type="number" :label="$t('settings.mssfix')"
+                      :helper-text="$t('settings.mssfix_helper')" :disabled="loading.configureModule">
+                      <template #tooltip>{{
+                          $t("settings.mssfix_tooltip")
+                        }}</template>
+                    </NsTextInput>
                   </div>
                   <div class="mg-top-xxlg">
                     <label class="bx--label">
@@ -335,6 +349,8 @@ export default {
       loki_retention: "180",
       prometheus_retention: "15",
       maxmind_license: "",
+      tun_mtu: "1500",
+      mssfix: "1450",
       passwordPlaceholder: "",
       allowed_ips: "",
       loading: {
@@ -355,8 +371,9 @@ export default {
         loki_retention: "",
         prometheus_retention: "",
         maxmind_license: "",
-        allowed_ips: "",
-        getStatus: "",
+        tun_mtu: "",
+        mssfix: "",
+        allowed_ips: ""
       },
     };
   },
@@ -493,6 +510,8 @@ export default {
       this.loki_retention = config.loki_retention.toString();
       this.prometheus_retention = config.prometheus_retention.toString();
       this.maxmind_license = config.maxmind_license;
+      this.tun_mtu = config.tun_mtu ? config.tun_mtu.toString() : "1500";
+      this.mssfix = config.mssfix ? config.mssfix.toString() : "1450";
       this.vpn_port = config.vpn_port;
       this.allowed_ips = config.allowed_ips.join("\n");
       this.focusElement("host");
@@ -501,15 +520,7 @@ export default {
       this.clearErrors(this);
       this.validationErrorDetails = [];
       let isValidationOk = true;
-      let fields = [
-        "host",
-        "cn",
-        "network",
-        "netmask",
-        "user",
-        "loki_retention",
-        "prometheus_retention",
-      ];
+      let fields = ["host", "cn", "network", "netmask", "user", "loki_retention", "prometheus_retention", "tun_mtu", "mssfix"];
 
       // On first config the password must be non-empty
       if (this.firstConfig) {
@@ -571,6 +582,20 @@ export default {
           "error.prometheus_retention_min"
         );
         this.focusElement("prometheus_retention");
+        isValidationOk = false;
+      }
+
+      // validate tun_mtu: minimum 576
+      if (parseInt(this.tun_mtu) < 576) {
+        this.error.tun_mtu = this.$t("error.tun_mtu_min");
+        this.focusElement("tun_mtu");
+        isValidationOk = false;
+      }
+
+      // validate mssfix: minimum 0
+      if (parseInt(this.mssfix) < 0) {
+        this.error.mssfix = this.$t("error.mssfix_min");
+        this.focusElement("mssfix");
         isValidationOk = false;
       }
 
@@ -674,6 +699,8 @@ export default {
         loki_retention: parseInt(this.loki_retention),
         prometheus_retention: parseInt(this.prometheus_retention),
         maxmind_license: this.maxmind_license,
+        tun_mtu: parseInt(this.tun_mtu),
+        mssfix: parseInt(this.mssfix),
         allowed_ips: this.allowed_ips
           .split("\n")
           .map((ip) => ip.trim())
