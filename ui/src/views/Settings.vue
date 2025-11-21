@@ -7,72 +7,149 @@
     </cv-row>
     <cv-row v-if="error.getConfiguration">
       <cv-column>
-        <NsInlineNotification kind="error" :title="$t('action.get-configuration')" :description="error.getConfiguration"
-          :showCloseButton="false" />
+        <NsInlineNotification
+          kind="error"
+          :title="$t('action.get-configuration')"
+          :description="error.getConfiguration"
+          :showCloseButton="false"
+        />
       </cv-column>
     </cv-row>
     <cv-row>
       <cv-column>
         <cv-tile light>
-          <NsInlineNotification v-if="!loading.getConfiguration" class="mg-bottom-xlg maxwidth" kind="info"
-            :description="$t('settings.vpn_port_description', { port: vpn_port })
-              " :showCloseButton="false">
+          <NsInlineNotification
+            v-if="!loading.getConfiguration"
+            class="mg-bottom-xlg maxwidth"
+            kind="info"
+            :description="
+              $t('settings.vpn_port_description', { port: vpn_port })
+            "
+            :showCloseButton="false"
+          >
             <NsButton></NsButton>
           </NsInlineNotification>
           <cv-form @submit.prevent="configureModule">
-            <NsTextInput :label="$t('settings.network')" v-model="network" :placeholder="$t('settings.network')"
-              :disabled="loading.getConfiguration ||
-                loading.configureModule ||
-                !firstConfig
-                " :invalid-message="error.network" ref="network" :helper-text="$t('settings.network_helper')">
-              <template #tooltip>{{
-                $t("settings.network_tooltip")
-              }}</template>
+            <NsTextInput
+              :label="$t('settings.network')"
+              v-model="network"
+              :placeholder="$t('settings.network')"
+              :disabled="stillLoading || !firstConfig"
+              :invalid-message="error.network"
+              ref="network"
+              :helper-text="$t('settings.network_helper')"
+            >
+              <template #tooltip>{{ $t("settings.network_tooltip") }}</template>
             </NsTextInput>
-            <NsTextInput :label="$t('settings.netmask')" v-model="netmask" :placeholder="$t('settings.netmask')"
-              :helper-text="$t('settings.netmask_helper')" :disabled="loading.getConfiguration ||
-                loading.configureModule ||
-                !firstConfig
-                " :invalid-message="error.netmask" ref="netmask" class="mg-bottom-xlg">
-              <template #tooltip>{{
-                $t("settings.netmask_tooltip")
-              }}</template>
+            <NsTextInput
+              :label="$t('settings.netmask')"
+              v-model="netmask"
+              :placeholder="$t('settings.netmask')"
+              :helper-text="$t('settings.netmask_helper')"
+              :disabled="stillLoading || !firstConfig"
+              :invalid-message="error.netmask"
+              ref="netmask"
+              class="mg-bottom-xlg"
+            >
+              <template #tooltip>{{ $t("settings.netmask_tooltip") }}</template>
             </NsTextInput>
             <div class="mg-top-xxlg">
-              <NsTextInput :label="$t('settings.user')" v-model="user" :placeholder="$t('settings.user')"
-                :disabled="loading.getConfiguration || loading.configureModule || !firstConfig"
-                :invalid-message="error.user" ref="user" :helper-text="$t('settings.user_helper')">
+              <NsTextInput
+                :label="$t('settings.user')"
+                v-model="user"
+                :placeholder="$t('settings.user')"
+                :disabled="stillLoading || !firstConfig"
+                :invalid-message="error.user"
+                ref="user"
+                :helper-text="$t('settings.user_helper')"
+              >
                 <template #tooltip>{{ $t("settings.user_tooltip") }}</template>
               </NsTextInput>
               <cv-row v-if="firstConfig">
                 <cv-column>
-                  <NsInlineNotification class="mg-bottom-xlg maxwidth" kind="info"
-                    :title="$t('settings.password_information_title')" :description="$t('settings.password_information_description')
-                      " :showCloseButton="false">
+                  <NsInlineNotification
+                    class="mg-bottom-xlg maxwidth"
+                    kind="info"
+                    :title="$t('settings.password_information_title')"
+                    :description="
+                      $t('settings.password_information_description')
+                    "
+                    :showCloseButton="false"
+                  >
                     <NsButton></NsButton>
                   </NsInlineNotification>
                 </cv-column>
               </cv-row>
-              <NsTextInput :label="$t('settings.password')" v-model="password"
-                :disabled="loading.getConfiguration || loading.configureModule || !firstConfig"
-                :invalid-message="error.password" :placeholder="passwordPlaceholder" ref="password"
-                class="mg-bottom-xlg" :helper-text="$t('settings.password_helper')">
-                <template #tooltip>{{ $t("settings.password_tooltip") }}</template>
+              <NsTextInput
+                :label="$t('settings.password')"
+                v-model="password"
+                :disabled="stillLoading || !firstConfig"
+                :invalid-message="error.password"
+                :placeholder="passwordPlaceholder"
+                ref="password"
+                class="mg-bottom-xlg"
+                :helper-text="$t('settings.password_helper')"
+              >
+                <template #tooltip>{{
+                  $t("settings.password_tooltip")
+                }}</template>
               </NsTextInput>
             </div>
             <div class="mg-top-xxlg">
-              <NsTextInput :label="$t('settings.host')" v-model="host" placeholder="controller.mydomain.org"
-                :disabled="loading.getConfiguration || loading.configureModule" :invalid-message="error.host" ref="host"
-                :helper-text="$t('settings.host_helper')"></NsTextInput>
-              <cv-toggle value="letsEncrypt" :label="$t('settings.lets_encrypt')" v-model="lets_encrypt"
-                :disabled="loading.getConfiguration || loading.configureModule" class="mg-bottom">
+              <NsTextInput
+                :label="$t('settings.host')"
+                v-model="host"
+                placeholder="controller.mydomain.org"
+                :disabled="stillLoading"
+                :invalid-message="error.host"
+                ref="host"
+                :helper-text="$t('settings.host_helper')"
+              ></NsTextInput>
+              <NsToggle
+                value="letsEncrypt"
+                :label="core.$t('apps_lets_encrypt.request_https_certificate')"
+                v-model="lets_encrypt"
+                :disabled="stillLoading"
+                class="mg-bottom"
+              >
+                <template #tooltip>
+                  <div class="mg-bottom-sm">
+                    {{ core.$t("apps_lets_encrypt.lets_encrypt_tips") }}
+                  </div>
+                  <div class="mg-bottom-sm">
+                    <cv-link @click="goToCertificates">
+                      {{ core.$t("apps_lets_encrypt.go_to_tls_certificates") }}
+                    </cv-link>
+                  </div>
+                </template>
                 <template slot="text-left">{{
                   $t("settings.disabled")
                 }}</template>
                 <template slot="text-right">{{
                   $t("settings.enabled")
                 }}</template>
-              </cv-toggle>
+              </NsToggle>
+              <cv-row v-if="isLetsEncryptCurrentlyEnabled && !lets_encrypt">
+                <cv-column>
+                  <NsInlineNotification
+                    kind="warning"
+                    :title="
+                      core.$t('apps_lets_encrypt.lets_encrypt_disabled_warning')
+                    "
+                    :description="
+                      core.$t(
+                        'apps_lets_encrypt.lets_encrypt_disabled_warning_description',
+                        {
+                          node: this.status.node_ui_name
+                            ? this.status.node_ui_name
+                            : this.status.node,
+                        }
+                      )
+                    "
+                    :showCloseButton="false"
+                  />
+                </cv-column>
+              </cv-row>
             </div>
             <!-- advanced options -->
             <cv-accordion ref="accordion" class="maxwidth mg-bottom">
@@ -80,42 +157,62 @@
                 <template slot="title">{{ $t("settings.advanced") }}</template>
                 <template slot="content">
                   <div class="mg-top-xxlg">
-                    <NsTextInput :label="$t('settings.cn')" v-model="cn" :placeholder="$t('settings.cn')" :disabled="loading.getConfiguration ||
-                      loading.configureModule ||
-                      !firstConfig" :helper-text="$t('settings.cn_helper')" tooltipAlignment="end"
-                      tooltipDirection="right" ref="cn" :invalid-message="$t(error.cn)">
+                    <NsTextInput
+                      :label="$t('settings.cn')"
+                      v-model="cn"
+                      :placeholder="$t('settings.cn')"
+                      :disabled="stillLoading || !firstConfig"
+                      :helper-text="$t('settings.cn_helper')"
+                      tooltipAlignment="end"
+                      tooltipDirection="right"
+                      ref="cn"
+                      :invalid-message="$t(error.cn)"
+                    >
                       <template #tooltip>{{
                         $t("settings.cn_tooltip")
                       }}</template>
                     </NsTextInput>
-                    <NsTextInput v-model.trim="loki_retention" ref="loki_retention"
-                      :invalid-message="$t(error.loki_retention)" type="number" :label="$t('settings.loki_retention')"
-                      :helper-text="$t('settings.loki_retention_helper')" :disabled="loading.configureModule">
+                    <NsTextInput
+                      v-model.trim="loki_retention"
+                      ref="loki_retention"
+                      :invalid-message="$t(error.loki_retention)"
+                      type="number"
+                      :label="$t('settings.loki_retention')"
+                      :helper-text="$t('settings.loki_retention_helper')"
+                      :disabled="stillLoading"
+                    >
                     </NsTextInput>
-                    <NsTextInput v-model.trim="prometheus_retention" ref="prometheus_retention"
-                      :invalid-message="$t(error.prometheus_retention)" type="number"
+                    <NsTextInput
+                      v-model.trim="prometheus_retention"
+                      ref="prometheus_retention"
+                      :invalid-message="$t(error.prometheus_retention)"
+                      type="number"
                       :label="$t('settings.prometheus_retention')"
-                      :helper-text="$t('settings.prometheus_retention_helper')" :disabled="loading.configureModule">
+                      :helper-text="$t('settings.prometheus_retention_helper')"
+                      :disabled="stillLoading"
+                    >
                       <template #tooltip>{{
-                          $t("settings.prometheus_retention_tooltip")
-                        }}</template>
+                        $t("settings.prometheus_retention_tooltip")
+                      }}</template>
                     </NsTextInput>
-                    <NsTextInput v-model.trim="maxmind_license"
+                    <NsTextInput
+                      v-model.trim="maxmind_license"
                       ref="maxmind_license"
                       :invalid-message="$t(error.maxmind_license)"
                       type="password"
                       :label="$t('settings.maxmind_license')"
                       :helper-text="$t('settings.maxmind_license_helper')"
-                      :disabled="loading.configureModule"
+                      :disabled="stillLoading"
                       :passwordHideLabel="$t('password.hide_password')"
-                      :passwordShowLabel="$t('password.show_password')">
+                      :passwordShowLabel="$t('password.show_password')"
+                    >
                     </NsTextInput>
                   </div>
                   <div class="mg-top-xxlg">
                     <label class="bx--label">
                       <div class="label-and-tooltip">
                         <span>
-                          {{ $t('settings.allowed_ips') }}
+                          {{ $t("settings.allowed_ips") }}
                         </span>
                         <!-- tooltip -->
                         <cv-interactive-tooltip
@@ -130,13 +227,15 @@
                       </div>
                     </label>
                     <cv-text-area
-                      v-model="allowed_ips" 
+                      v-model="allowed_ips"
                       ref="allowed_ips"
                       :invalid-message="$t(error.allowed_ips)"
                       :helper-text="$t('settings.allowed_ips_helper')"
                       :disabled="loading.configureModule"
-                      :rows="4">
-                    ></cv-text-area>
+                      :rows="4"
+                    >
+                      ></cv-text-area
+                    >
                   </div>
                 </template>
               </cv-accordion-item>
@@ -145,12 +244,53 @@
 
             <cv-row v-if="error.configureModule">
               <cv-column>
-                <NsInlineNotification kind="error" :title="$t('action.configure-module')"
-                  :description="error.configureModule" :showCloseButton="false" />
+                <NsInlineNotification
+                  kind="error"
+                  :title="$t('action.configure-module')"
+                  :description="error.configureModule"
+                  :showCloseButton="false"
+                />
               </cv-column>
             </cv-row>
-            <NsButton kind="primary" :icon="Save20" :loading="loading.configureModule"
-              :disabled="loading.getConfiguration || loading.configureModule">{{ $t("settings.save") }}</NsButton>
+            <cv-row v-if="error.getStatus">
+              <cv-column>
+                <NsInlineNotification
+                  kind="error"
+                  :title="$t('action.get-status')"
+                  :description="error.getStatus"
+                  :showCloseButton="false"
+                />
+              </cv-column>
+            </cv-row>
+            <cv-row v-if="validationErrorDetails.length">
+              <cv-column>
+                <NsInlineNotification
+                  kind="error"
+                  :title="
+                    core.$t('apps_lets_encrypt.cannot_obtain_certificate')
+                  "
+                  :showCloseButton="false"
+                >
+                  <template #description>
+                    <div class="flex flex-col gap-2">
+                      <div
+                        v-for="(detail, index) in validationErrorDetails"
+                        :key="index"
+                      >
+                        {{ detail }}
+                      </div>
+                    </div>
+                  </template>
+                </NsInlineNotification>
+              </cv-column>
+            </cv-row>
+            <NsButton
+              kind="primary"
+              :icon="Save20"
+              :loading="loading.configureModule"
+              :disabled="stillLoading"
+              >{{ $t("settings.save") }}</NsButton
+            >
           </cv-form>
         </cv-tile>
       </cv-column>
@@ -179,9 +319,12 @@ export default {
       q: {
         page: "settings",
       },
+      status: {},
+      validationErrorDetails: [],
       urlCheckInterval: null,
       host: "",
       lets_encrypt: false,
+      isLetsEncryptCurrentlyEnabled: false,
       user: "",
       password: "",
       network: "",
@@ -197,6 +340,7 @@ export default {
       loading: {
         getConfiguration: false,
         configureModule: false,
+        getStatus: false,
       },
       error: {
         getConfiguration: "",
@@ -211,12 +355,20 @@ export default {
         loki_retention: "",
         prometheus_retention: "",
         maxmind_license: "",
-        allowed_ips: ""
+        allowed_ips: "",
+        getStatus: "",
       },
     };
   },
   computed: {
     ...mapState(["instanceName", "core", "appName"]),
+    stillLoading() {
+      return (
+        this.loading.getConfiguration ||
+        this.loading.configureModule ||
+        this.loading.getStatus
+      );
+    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -230,8 +382,54 @@ export default {
   },
   created() {
     this.getConfiguration();
+    this.getStatus();
   },
   methods: {
+    goToCertificates() {
+      this.core.$router.push("/settings/tls-certificates");
+    },
+    async getStatus() {
+      this.loading.getStatus = true;
+      this.error.getStatus = "";
+      const taskAction = "get-status";
+      const eventId = this.getUuid();
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.getStatusAborted
+      );
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.getStatusCompleted
+      );
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.getStatus = this.getErrorMessage(err);
+        this.loading.getStatus = false;
+        return;
+      }
+    },
+    getStatusAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.getStatus = this.$t("error.generic_error");
+      this.loading.getStatus = false;
+    },
+    getStatusCompleted(taskContext, taskResult) {
+      this.status = taskResult.output;
+      this.loading.getStatus = false;
+    },
     async getConfiguration() {
       this.loading.getConfiguration = true;
       this.error.getConfiguration = "";
@@ -287,6 +485,7 @@ export default {
       }
       this.cn = config.ovpn_cn;
       this.lets_encrypt = config.lets_encrypt;
+      this.isLetsEncryptCurrentlyEnabled = config.lets_encrypt;
       this.network = config.ovpn_network;
       this.netmask = config.ovpn_netmask;
       this.user = config.api_user;
@@ -300,8 +499,17 @@ export default {
     },
     validateConfigureModule() {
       this.clearErrors(this);
+      this.validationErrorDetails = [];
       let isValidationOk = true;
-      let fields = ["host", "cn", "network", "netmask", "user", "loki_retention", "prometheus_retention"];
+      let fields = [
+        "host",
+        "cn",
+        "network",
+        "netmask",
+        "user",
+        "loki_retention",
+        "prometheus_retention",
+      ];
 
       // On first config the password must be non-empty
       if (this.firstConfig) {
@@ -352,12 +560,16 @@ export default {
 
       // validate prometheus_retention: minumum 1 day, maximum 365 days
       if (parseInt(this.prometheus_retention) > 365) {
-        this.error.prometheus_retention = this.$t("error.prometheus_retention_max");
+        this.error.prometheus_retention = this.$t(
+          "error.prometheus_retention_max"
+        );
         this.focusElement("prometheus_retention");
         isValidationOk = false;
       }
       if (parseInt(this.prometheus_retention) < 1) {
-        this.error.prometheus_retention = this.$t("error.prometheus_retention_min");
+        this.error.prometheus_retention = this.$t(
+          "error.prometheus_retention_min"
+        );
         this.focusElement("prometheus_retention");
         isValidationOk = false;
       }
@@ -388,7 +600,8 @@ export default {
         .map((ip) => ip.trim())
         .filter((ip) => ip !== "");
       if (allowed_ips_arr && allowed_ips_arr.length > 0) {
-        const ipv4CidrRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))?$/;
+        const ipv4CidrRe =
+          /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/([0-9]|[1-2][0-9]|3[0-2]))?$/;
         for (const ip of allowed_ips_arr) {
           if (ip.trim() === "") continue;
           const trimmedIp = ip.trim();
@@ -405,12 +618,22 @@ export default {
     },
     configureModuleValidationFailed(validationErrors) {
       this.loading.configureModule = false;
-
+      let focusAlreadySet = false;
       for (const validationError of validationErrors) {
         const param = validationError.parameter;
-
-        // set i18n error message
-        this.error[param] = this.$t("settings." + validationError.error);
+        if (validationError.details) {
+          // show inline error notification with details
+          this.validationErrorDetails = validationError.details
+            .split("\n")
+            .filter((detail) => detail.trim() !== "");
+        } else {
+          // set i18n error message
+          this.error[param] = this.$t("settings." + validationError.error);
+          if (!focusAlreadySet) {
+            this.focusElement(param);
+            focusAlreadySet = true;
+          }
+        }
       }
     },
     async configureModule() {
@@ -454,7 +677,7 @@ export default {
         allowed_ips: this.allowed_ips
           .split("\n")
           .map((ip) => ip.trim())
-          .filter((ip) => ip !== "")
+          .filter((ip) => ip !== ""),
       };
       if (this.password) {
         params.api_password = this.password;
