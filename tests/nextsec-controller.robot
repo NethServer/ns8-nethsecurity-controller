@@ -26,6 +26,30 @@ Check if loki is running
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${output}    active
 
+Check if prometheus is running
+    ${output}  ${rc} =    Execute Command    runagent -m ${module_id} systemctl --user is-active prometheus.service
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    active
+
+Check if promtail is running
+    ${output}  ${rc} =    Execute Command    runagent -m ${module_id} systemctl --user is-active promtail.service
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    active
+
+Check if webssh is running
+    ${output}  ${rc} =    Execute Command    runagent -m ${module_id} systemctl --user is-active webssh.service
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    active
+
+Check if timescale is running
+    ${output}  ${rc} =    Execute Command    runagent -m ${module_id} systemctl --user is-active timescale.service
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    active
+
 Check health endpoint
     Wait Until Keyword Succeeds    60 times    10 seconds    Check API Health
 
