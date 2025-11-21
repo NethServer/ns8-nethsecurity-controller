@@ -60,7 +60,13 @@
     "maxmind_license_helper": "The license key is required to use the MaxMind GeoIP2 database",
     "allowed_ips": "Allowed IPs",
     "allowed_ips_helper": "One IPv4 or CIDR per line. Leave empty to allow all IPs",
-    "allowed_ips_tooltip": "Required unit version: 8.6 or above. This field is used to restrict the access to the controller. When the access is restriced, units will contact the public register endpoint, then all traffic will go through the VPN."
+    "allowed_ips_tooltip": "Required unit version: 8.6 or above. This field is used to restrict the access to the controller. When the access is restriced, units will contact the public register endpoint, then all traffic will go through the VPN.",
+    "tun_mtu": "TUN MTU",
+    "tun_mtu_helper": "Maximum Transmission Unit for the VPN TUN interface",
+    "tun_mtu_tooltip": "Lower this value if you experience connectivity issues with units",
+    "mssfix": "MSS Fix",
+    "mssfix_helper": "Maximum Segment Size fix for the VPN connections",
+    "mssfix_tooltip": "Change only if you have troubles connecting to units"
   },
   "about": {
     "title": "About"
