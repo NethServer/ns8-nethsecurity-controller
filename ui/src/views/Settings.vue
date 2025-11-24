@@ -212,14 +212,14 @@
                     </NsTextInput>
                     <NsTextInput v-model.trim="tun_mtu" ref="tun_mtu"
                       :invalid-message="$t(error.tun_mtu)" type="number" :label="$t('settings.tun_mtu')"
-                      :helper-text="$t('settings.tun_mtu_helper')" :disabled="loading.configureModule">
+                      :helper-text="$t('settings.tun_mtu_helper')" :disabled="stillLoading">
                       <template #tooltip>{{
                           $t("settings.tun_mtu_tooltip")
                         }}</template>
                     </NsTextInput>
                     <NsTextInput v-model.trim="mssfix" ref="mssfix"
                       :invalid-message="$t(error.mssfix)" type="number" :label="$t('settings.mssfix')"
-                      :helper-text="$t('settings.mssfix_helper')" :disabled="loading.configureModule">
+                      :helper-text="$t('settings.mssfix_helper')" :disabled="stillLoading">
                       <template #tooltip>{{
                           $t("settings.mssfix_tooltip")
                         }}</template>
