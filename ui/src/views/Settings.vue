@@ -704,7 +704,7 @@ export default {
         loki_retention: parseInt(this.loki_retention, 180),
         prometheus_retention: parseInt(this.prometheus_retention, 10),
         maxmind_license: this.maxmind_license,
-        tun_mtu: parseInt(this.tun_mtu, 10),
+        tun_mtu: parseInt(this.tun_mtu, 1500),
         mssfix: parseInt(this.mssfix, 1455),
         allowed_ips: this.allowed_ips
           .split("\n")
