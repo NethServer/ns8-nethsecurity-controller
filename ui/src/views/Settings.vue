@@ -701,7 +701,7 @@ export default {
         ovpn_netmask: this.netmask,
         ovpn_cn: this.cn,
         api_user: this.user,
-        loki_retention: parseInt(this.loki_retention, 10),
+        loki_retention: parseInt(this.loki_retention, 180),
         prometheus_retention: parseInt(this.prometheus_retention, 10),
         maxmind_license: this.maxmind_license,
         tun_mtu: parseInt(this.tun_mtu, 10),
