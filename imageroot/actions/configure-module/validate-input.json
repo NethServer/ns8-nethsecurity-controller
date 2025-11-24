@@ -86,7 +86,7 @@
         "tun_mtu": {
             "type": "integer",
             "description": "OpenVPN TUN interface MTU size, default is 1500",
-            "minimum": 0,
+            "minimum": 576,
             "default": 1500
         },
         "mssfix": {
