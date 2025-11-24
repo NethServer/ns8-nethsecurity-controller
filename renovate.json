@@ -2,7 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>NethServer/.github:ns8",
-    "config:automergePatch"
+    ":automergePatch"
   ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 5,
