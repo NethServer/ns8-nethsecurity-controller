@@ -206,6 +206,9 @@
                       :passwordHideLabel="$t('password.hide_password')"
                       :passwordShowLabel="$t('password.show_password')"
                     >
+                      <template #tooltip>{{
+                        $t("settings.maxmind_license_tooltip")
+                      }}</template>
                     </NsTextInput>
                     <NsTextInput v-model.trim="tun_mtu" ref="tun_mtu"
                       :invalid-message="$t(error.tun_mtu)" type="number" :label="$t('settings.tun_mtu')"
