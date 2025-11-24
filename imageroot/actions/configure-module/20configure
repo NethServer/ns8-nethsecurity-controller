@@ -101,6 +101,8 @@ set_route_data = {
 if 'lets_encrypt' in request:
     set_route_data['lets_encrypt'] = request['lets_encrypt']
 
+agent.set_route(set_route_data)
+
 config["allowed_ips"] = request.get("allowed_ips", [])
 
 # Save configuration to JSON for later user and backup
