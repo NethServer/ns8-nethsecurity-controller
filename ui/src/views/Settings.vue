@@ -705,7 +705,7 @@ export default {
         prometheus_retention: parseInt(this.prometheus_retention, 10),
         maxmind_license: this.maxmind_license,
         tun_mtu: parseInt(this.tun_mtu, 10),
-        mssfix: parseInt(this.mssfix, 10),
+        mssfix: parseInt(this.mssfix, 1455),
         allowed_ips: this.allowed_ips
           .split("\n")
           .map((ip) => ip.trim())
