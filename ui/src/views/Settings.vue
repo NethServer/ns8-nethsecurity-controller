@@ -589,14 +589,14 @@ export default {
       }
 
       // validate tun_mtu: minimum 576
-      if (parseInt(this.tun_mtu) < 576) {
+      if (isNaN(parseInt(this.tun_mtu)) || parseInt(this.tun_mtu) < 576) {
         this.error.tun_mtu = this.$t("error.tun_mtu_min");
         this.focusElement("tun_mtu");
         isValidationOk = false;
       }
 
       // validate mssfix: minimum 0
-      if (parseInt(this.mssfix) < 0) {
+      if (isNaN(parseInt(this.mssfix)) || parseInt(this.mssfix) < 0) {
         this.error.mssfix = this.$t("error.mssfix_min");
         this.focusElement("mssfix");
         isValidationOk = false;
