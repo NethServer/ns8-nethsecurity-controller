@@ -248,7 +248,7 @@
                       ref="allowed_ips"
                       :invalid-message="$t(error.allowed_ips)"
                       :helper-text="$t('settings.allowed_ips_helper')"
-                      :disabled="loading.configureModule"
+                      :disabled="stillLoading"
                       :rows="4"
                     >
                       ></cv-text-area
