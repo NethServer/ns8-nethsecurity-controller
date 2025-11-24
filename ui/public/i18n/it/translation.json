@@ -12,7 +12,9 @@
         "403": "Operazione non autorizzata",
         "invalid_cn": "Nome controller non valido: deve contenere solo lettere e numeri",
         "invalid_user": "Nome utente non valido: deve contenere solo lettere e numeri",
-        "invalid_host": "Nome host non valido: deve essere un FQDN valido"
+        "invalid_host": "Nome host non valido: deve essere un FQDN valido",
+        "tun_mtu_min": "TUN MTU deve essere almeno 576",
+        "mssfix_min": "MSS Fix deve essere almeno 0"
     },
     "settings": {
         "title": "Impostazioni",
