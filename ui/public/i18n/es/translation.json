@@ -14,7 +14,16 @@
         "network_error": "Error de red",
         "validation_error": "Error de validación",
         "tun_mtu_min": "TUN MTU debe ser al menos 576",
-        "mssfix_min": "MSS Fix debe ser al menos 0"
+        "mssfix_min": "MSS Fix debe ser al menos 0",
+        "invalid_allowed_ips": "",
+        "invalid_netmask": "",
+        "prometheus_rention_max": "",
+        "loki_retention": "",
+        "loki_retention_max": "",
+        "prometheus_rention_min": "",
+        "prometheus_retention": "",
+        "invalid_network": "",
+        "loki_retention_min": ""
     },
     "settings": {
         "user": "Usuario administrador",
@@ -28,7 +37,33 @@
         "network": "Red VPN",
         "title": "Ajustes",
         "cn": "Nombre del controlador",
-        "password": "Contraseña de administrador"
+        "password": "Contraseña de administrador",
+        "cn_tooltip": "",
+        "prometheus_retention_tooltip": "",
+        "prometheus_retention_helper": "",
+        "advanced": "",
+        "network_tooltip": "",
+        "user_tooltip": "",
+        "netmask_tooltip": "",
+        "netmask_helper": "",
+        "password_information_description": "",
+        "loki_retention": "",
+        "host_helper": "",
+        "maxmind_license": "",
+        "maxmind_license_helper": "",
+        "allowed_ips_tooltip": "",
+        "password_information_title": "",
+        "prometheus_retention": "",
+        "vpn_port_description": "",
+        "user_helper": "",
+        "password_tooltip": "",
+        "password_helper": "",
+        "cn_helper": "",
+        "loki_retention_helper": "",
+        "allowed_ips_helper": "",
+        "allowed_ips": "",
+        "network_helper": "",
+        "password_placeholder": ""
     },
     "common": {
         "required": "Obligatorio",
@@ -49,7 +84,9 @@
         "title": "Estado",
         "installation_node": "Nodo de instalación",
         "node": "Nodo",
-        "no_volumes": "Sin volúmenes"
+        "no_volumes": "Sin volúmenes",
+        "open_controller": "",
+        "ovpn_udp_port": ""
     },
     "about": {
         "title": "Acerca de"

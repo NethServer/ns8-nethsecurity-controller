@@ -14,7 +14,16 @@
         "invalid_user": "Nome utente non valido: deve contenere solo lettere e numeri",
         "invalid_host": "Nome host non valido: deve essere un FQDN valido",
         "tun_mtu_min": "TUN MTU deve essere almeno 576",
-        "mssfix_min": "MSS Fix deve essere almeno 0"
+        "mssfix_min": "MSS Fix deve essere almeno 0",
+        "invalid_netmask": "Netmask non valida, deve essere una netmask valida come 255.255.255.0",
+        "prometheus_rention_max": "La retention delle metriche deve essere inferiore a 365 giorni",
+        "loki_retention": "Retention dei log non valida",
+        "loki_retention_max": "La retention dei log deve essere inferiore a 365 giorni",
+        "prometheus_rention_min": "La retention delle metriche deve essere maggiore di 1 giorno",
+        "prometheus_retention": "Retention metriche non valida",
+        "invalid_network": "Rete non valida, deve essere una rete di classe C come 192.168.200.0",
+        "loki_retention_min": "La retention dei log deve essere maggiore di 1 giorno",
+        "invalid_allowed_ips": "IP non validi, ogni voce deve essere una rete IP o CIDR."
     },
     "settings": {
         "title": "Impostazioni",
@@ -28,7 +37,40 @@
         "lets_encrypt": "Richiedi certificato Let's Encrypt",
         "enabled": "Abilitato",
         "user": "Utente amministratore",
-        "network": "Rete VPN"
+        "network": "Rete VPN",
+        "cn_tooltip": "Il campo sarà di sola lettura dopo la prima configurazione",
+        "prometheus_retention_tooltip": "Timescale è un database di serie temporali utilizzato per memorizzare le metriche. Viene utilizzato dal controller per memorizzare e aggregare metriche in aggiunta alle metriche fornite da Prometheus.",
+        "prometheus_retention_helper": "Numero di giorni di metriche da preservare in Prometheus e Timescale",
+        "advanced": "Avanzate",
+        "network_tooltip": "Assicurarsi che questa rete non si sovrapponga alle reti delle unità. Il campo sarà in sola lettura dopo la prima configurazione",
+        "user_tooltip": "Il nome utente garantisce l'accesso all'interfaccia utente del controller e anche a Grafana. Una volta configurato, non può essere cambiato",
+        "netmask_tooltip": "Non cambiare questo valore a meno che tu non sappia cosa stai facendo. Il campo sarà di sola lettura dopo la prima configurazione",
+        "netmask_helper": "La netmask determina le dimensioni della rete VPN. Utilizzare solo reti di classe C",
+        "password_information_description": "La password dell'amministratore predefinito viene visualizzata solo una volta, si prega di memorizzarla in un luogo sicuro",
+        "loki_retention": "Retention log",
+        "host_helper": "FQDN del controller, deve essere raggiungibile dalle unità",
+        "maxmind_license": "Chiave di licenza MaxMind",
+        "maxmind_license_helper": "La chiave di licenza è necessaria per utilizzare il database MaxMind GeoIP2",
+        "password_information_title": "Password predefinita",
+        "prometheus_retention": "Retention metriche",
+        "vpn_port_description": "Le unità si collegheranno al controller utilizzando una connessione VPN. Assicurarsi che le unità possono raggiungere il controller sulla porta UDP {port}",
+        "user_helper": "Questo è l'unico utente che può creare e gestire altri utenti all'interno del controller",
+        "password_tooltip": "La password garantisce l'accesso sia all'interfaccia utente del controller che anche a Grafana. Per motivi di sicurezza, si dovrebbe cambiare dopo il primo login",
+        "password_helper": "La password dell'amministratore può essere impostata solo durante la prima configurazione",
+        "cn_helper": "Il nome del controller, utilizzato per creare l'autorità di certificazione VPN",
+        "loki_retention_helper": "Numero di giorni di log da preservare in Loki",
+        "network_helper": "La rete VPN utilizzata per collegare le unità al controller.",
+        "password_placeholder": "La password può essere modificata dalla webapp del controller",
+        "allowed_ips_tooltip": "Versione unità richiesta: 8.6 o superiore. Questo campo viene utilizzato per limitare l'accesso al controller. Quando l'accesso è limitato, le unità contatteranno l'endpoint pubblico, poi tutto il traffico passerà attraverso la VPN.",
+        "allowed_ips_helper": "Un IPv4 o CIDR per linea. Lasciare vuoto per consentire tutti gli IP",
+        "allowed_ips": "IP consentiti",
+        "maxmind_license_tooltip": "Abilita la geolocalizzazione degli IP all'interno delle dashboard di Grafana",
+        "tun_mtu": "MTU TUN",
+        "tun_mtu_helper": "Maximum Transmission Unit per l'interfaccia TUN della VPN",
+        "tun_mtu_tooltip": "Abbassare questo valore se si verificano problemi di connettività con le unità",
+        "mssfix": "Fix MSS",
+        "mssfix_helper": "Maximum Segment Size per le connessioni VPN",
+        "mssfix_tooltip": "Cambiare solo se si hanno problemi di connessione alle unità"
     },
     "status": {
         "no_services": "Nessun servizio",
@@ -44,12 +86,14 @@
         "app_images": "Immagine app|Immagini app",
         "app_volumes": "Volume app|Volumi app",
         "installation_node": "Nodo",
-        "mount": "Percorso di mount"
+        "mount": "Percorso di mount",
+        "open_controller": "Apri Controller",
+        "ovpn_udp_port": "Porta UDP OpenVPN"
     },
     "common": {
         "required": "Obbligatorio",
         "work_in_progress": "In lavorazione",
-        "processing": "Elaborazione in corso..."
+        "processing": "Elaborazione in corso…"
     },
     "action": {
         "configure-module": "Configura modulo",
