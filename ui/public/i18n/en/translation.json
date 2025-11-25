@@ -105,7 +105,7 @@
     "prometheus_rention_min": "Metrics retention must be greater than 1 day",
     "loki_retention_max": "Logs retention must be less than 365 days",
     "loki_retention_min": "Logs retention must be greater than 1 day",
-    "invalid_network": "Invalid network, it mus be a class C network like 192.168.200.0",
+    "invalid_network": "Invalid network, it must be a class C network like 192.168.200.0",
     "invalid_netmask": "Invalid netmask, it must be a valid netmask like 255.255.255.0",
     "invalid_allowed_ips": "Invalid allowed IPs, each entry must be a and IP or CIDR network.",
     "tun_mtu_min": "TUN MTU must be at least 576",
