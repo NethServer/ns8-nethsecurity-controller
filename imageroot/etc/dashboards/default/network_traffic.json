@@ -433,7 +433,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT client_name, sum(bytes) FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY client_name",
+          "rawSql": "SELECT client_name, sum(bytes) AS bytes FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY client_name\nORDER BY bytes DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -900,7 +900,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT client_address, client_name, bytes FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nORDER BY bytes DESC\n",
+          "rawSql": "SELECT\n  client_address,\n  client_name,\n  SUM(bytes) AS bytes\nFROM\n  ca_dpi_stats_hourly_client\nWHERE\n  $__timeFilter(bucket)\n  AND uuid = '$uuid'\nGROUP BY\n  client_address,\n  client_name\nORDER BY\n  bytes DESC\n",
           "refId": "A",
           "sql": {
             "columns": [
