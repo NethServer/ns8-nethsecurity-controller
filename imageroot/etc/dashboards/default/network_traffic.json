@@ -1082,7 +1082,7 @@
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now/d",
     "to": "now"
   },
   "timepicker": {},
