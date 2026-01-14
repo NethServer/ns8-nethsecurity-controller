@@ -1570,7 +1570,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now/d",
     "to": "now"
   },
   "timepicker": {},

@@ -1,7 +1,7 @@
 {
   "__inputs": [
     {
-      "name": "DS_TIMESCALE",
+      "name": "DS_LOCAL_TIMESCALE",
       "label": "Local Timescale",
       "description": "",
       "type": "datasource",
@@ -21,13 +21,13 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "11.2.0"
+      "version": "12.3.0"
     },
     {
       "type": "datasource",
       "id": "grafana-postgresql-datasource",
       "name": "PostgreSQL",
-      "version": "1.0.0"
+      "version": "12.3.0"
     },
     {
       "type": "panel",
@@ -64,7 +64,7 @@
       }
     ]
   },
-  "editable": false,
+  "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
@@ -84,7 +84,6 @@
       "url": ""
     }
   ],
-  "liveNow": false,
   "panels": [
     {
       "datasource": {
@@ -103,11 +102,11 @@
             "steps": [
               {
                 "color": "#73BF69",
-                "value": null
+                "value": 0
               }
             ]
           },
-          "unit": "decbytes"
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -135,7 +134,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -207,7 +206,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -215,7 +214,7 @@
               }
             ]
           },
-          "unit": "decbytes"
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -241,13 +240,14 @@
         "showValue": "always",
         "stacking": "none",
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         },
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 100
       },
-      "pluginVersion": "11.2.0",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -283,7 +283,6 @@
     },
     {
       "datasource": {
-        "default": false,
         "type": "grafana-postgresql-datasource",
         "uid": "${DS_TIMESCALE}"
       },
@@ -301,7 +300,7 @@
             }
           },
           "mappings": [],
-          "unit": "decbytes"
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -309,94 +308,6 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 8
-      },
-      "id": 11,
-      "options": {
-        "displayLabels": [],
-        "legend": {
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true,
-          "values": [
-            "value"
-          ]
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "limit": 10,
-          "values": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_TIMESCALE}"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n    CASE\n        WHEN application_rank <= 10 THEN application\n        ELSE 'Other'\n    END AS application,\n    SUM(bytes) AS total_bytes\nFROM (\n    SELECT\n        replace(application, 'netify.', '') AS application,\n        SUM(bytes) AS bytes,\n        ROW_NUMBER() OVER (ORDER BY SUM(bytes) DESC) AS application_rank\n    FROM\n        ca_dpi_stats_hourly_application\n    WHERE\n        $__timeFilter(bucket) AND uuid = '$uuid'\n    GROUP BY\n        application\n) AS ranked_applications\nGROUP BY\n    CASE\n        WHEN application_rank <= 10 THEN application\n        ELSE 'Other'\n    END\nORDER BY\n    total_bytes DESC;\n",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Top 10 applications",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "default": false,
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": [],
-          "unit": "decbytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
         "y": 8
       },
       "id": 13,
@@ -415,17 +326,21 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/^bytes$/",
           "limit": 10,
           "values": true
         },
+        "sort": "desc",
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.3.0",
       "targets": [
         {
+          "dataset": "report",
           "datasource": {
             "type": "grafana-postgresql-datasource",
             "uid": "${DS_TIMESCALE}"
@@ -433,7 +348,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT client_name, sum(bytes) FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY client_name",
+          "rawSql": "SELECT client_address, SUM(bytes) AS bytes FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY client_address\nORDER BY bytes DESC\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -459,9 +374,8 @@
     },
     {
       "datasource": {
-        "default": false,
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
+        "type": "datasource",
+        "uid": "-- Dashboard --"
       },
       "description": "",
       "fieldConfig": {
@@ -477,17 +391,17 @@
             }
           },
           "mappings": [],
-          "unit": "decbytes"
+          "unit": "bytes"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 10,
         "w": 12,
-        "x": 0,
-        "y": 18
+        "x": 12,
+        "y": 8
       },
-      "id": 12,
+      "id": 20,
       "options": {
         "displayLabels": [],
         "legend": {
@@ -507,42 +421,25 @@
           "limit": 10,
           "values": true
         },
+        "sort": "desc",
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_TIMESCALE}"
+            "type": "datasource",
+            "uid": "-- Dashboard --"
           },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n    CASE\n        WHEN protocol_rank <= 10 THEN protocol\n        ELSE 'Other'\n    END AS protocol,\n    SUM(bytes) AS total_bytes\nFROM (\n    SELECT\n        protocol,\n        SUM(bytes) AS bytes,\n        ROW_NUMBER() OVER (ORDER BY SUM(bytes) DESC) AS protocol_rank\n    FROM\n        ca_dpi_stats_hourly_protocol\n    WHERE\n        $__timeFilter(bucket) AND uuid = '$uuid'\n    GROUP BY\n        protocol\n) AS ranked_protocols\nGROUP BY\n    CASE\n        WHEN protocol_rank <= 10 THEN protocol\n        ELSE 'Other'\n    END\nORDER BY\n    total_bytes DESC;\n",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
+          "panelId": 16,
+          "refId": "A"
         }
       ],
-      "title": "Top 10 protocols",
+      "title": "Top 10 applications",
       "type": "piechart"
     },
     {
@@ -551,95 +448,6 @@
         "type": "grafana-postgresql-datasource",
         "uid": "${DS_TIMESCALE}"
       },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": [],
-          "unit": "decbytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 18
-      },
-      "id": 14,
-      "options": {
-        "displayLabels": [],
-        "legend": {
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true,
-          "values": [
-            "value"
-          ]
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "limit": 10,
-          "values": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_TIMESCALE}"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n    CASE\n        WHEN host_rank <= 10 THEN host\n        ELSE 'Other'\n    END AS host,\n    SUM(bytes) AS total_bytes\nFROM (\n    SELECT\n        host,\n        SUM(bytes) AS bytes,\n        ROW_NUMBER() OVER (ORDER BY SUM(bytes) DESC) AS host_rank\n    FROM\n        ca_dpi_stats_hourly_host\n    WHERE\n        $__timeFilter(bucket) AND uuid = '$uuid'\n    GROUP BY\n        host\n) AS ranked_hosts\nGROUP BY\n    CASE\n        WHEN host_rank <= 10 THEN host\n        ELSE 'Other'\n    END\nORDER BY\n    total_bytes DESC;\n",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Top 10 remote hosts",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "default": false,
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
-      },
-      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -651,187 +459,11 @@
               "type": "auto"
             },
             "filterable": true,
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "decbytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 15,
-        "w": 12,
-        "x": 0,
-        "y": 28
-      },
-      "id": 18,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": true
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "11.2.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_TIMESCALE}"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT protocol, sum(bytes) as bytes FROM ca_dpi_stats_hourly_protocol\nWHERE $__timeFilter(bucket) AND  uuid = '$uuid'\nGROUP BY protocol\nORDER BY bytes DESC",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Protocols",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "default": false,
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
+            "footer": {
+              "reducers": [
+                "sum"
+              ]
             },
-            "filterable": true,
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "decbytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 15,
-        "w": 12,
-        "x": 12,
-        "y": 28
-      },
-      "id": 16,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": true
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "11.2.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_TIMESCALE}"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT replace(application, 'netify.', '') AS application, sum(bytes) as bytes FROM ca_dpi_stats_hourly_application\nWHERE $__timeFilter(bucket) AND  uuid = '$uuid'\nGROUP BY application\nORDER BY bytes DESC",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Applications",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "default": false,
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_TIMESCALE}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
             "inspect": false
           },
           "links": [],
@@ -840,7 +472,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "red",
@@ -871,26 +504,19 @@
         ]
       },
       "gridPos": {
-        "h": 17,
+        "h": 14,
         "w": 12,
         "x": 0,
-        "y": 43
+        "y": 18
       },
       "id": 5,
       "options": {
         "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": true
-        },
-        "showHeader": true
+        "enablePagination": true,
+        "showHeader": true,
+        "sortBy": []
       },
-      "pluginVersion": "11.2.0",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -900,7 +526,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT client_address, client_name, bytes FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nORDER BY bytes DESC\n",
+          "rawSql": "SELECT client_address, client_name, SUM(bytes) AS bytes FROM ca_dpi_stats_hourly_client\nWHERE $__timeFilter(bucket) AND uuid = '$uuid'\nGROUP BY client_address, client_name\nORDER BY bytes DESC\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -942,6 +568,11 @@
               "type": "auto"
             },
             "filterable": true,
+            "footer": {
+              "reducers": [
+                "sum"
+              ]
+            },
             "inspect": false
           },
           "mappings": [],
@@ -949,7 +580,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "red",
@@ -957,7 +589,236 @@
               }
             ]
           },
-          "unit": "decbytes"
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 12,
+        "y": 18
+      },
+      "id": 16,
+      "options": {
+        "cellHeight": "sm",
+        "enablePagination": true,
+        "showHeader": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_TIMESCALE}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT replace(application, 'netify.', '') AS application, sum(bytes) as bytes FROM ca_dpi_stats_hourly_application\nWHERE $__timeFilter(bucket) AND  uuid = '$uuid'\nGROUP BY application\nORDER BY bytes DESC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Applications",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Dashboard --"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "id": 14,
+      "options": {
+        "displayLabels": [],
+        "legend": {
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "limit": 10,
+          "values": true
+        },
+        "sort": "desc",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Dashboard --"
+          },
+          "panelId": 19,
+          "refId": "A"
+        }
+      ],
+      "title": "Top 10 remote hosts",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Dashboard --"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "id": 12,
+      "options": {
+        "displayLabels": [],
+        "legend": {
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "limit": 10,
+          "values": true
+        },
+        "sort": "desc",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Dashboard --"
+          },
+          "panelId": 18,
+          "refId": "A"
+        }
+      ],
+      "title": "Top 10 protocols",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_TIMESCALE}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "footer": {
+              "reducers": [
+                "sum"
+              ]
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
         },
         "overrides": [
           {
@@ -980,26 +841,18 @@
         ]
       },
       "gridPos": {
-        "h": 17,
+        "h": 13,
         "w": 12,
-        "x": 12,
-        "y": 43
+        "x": 0,
+        "y": 42
       },
       "id": 19,
       "options": {
         "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": true
-        },
+        "enablePagination": true,
         "showHeader": true
       },
-      "pluginVersion": "11.2.0",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -1032,10 +885,100 @@
       ],
       "title": "Remote hosts",
       "type": "table"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_TIMESCALE}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "footer": {
+              "reducers": [
+                "sum"
+              ]
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 12,
+        "x": 12,
+        "y": 42
+      },
+      "id": 18,
+      "options": {
+        "cellHeight": "sm",
+        "enablePagination": true,
+        "showHeader": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_TIMESCALE}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT protocol, sum(bytes) as bytes FROM ca_dpi_stats_hourly_protocol\nWHERE $__timeFilter(bucket) AND  uuid = '$uuid'\nGROUP BY protocol\nORDER BY bytes DESC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Protocols",
+      "type": "table"
     }
   ],
+  "preload": false,
   "refresh": "",
-  "schemaVersion": 39,
+  "schemaVersion": 42,
   "tags": [
     "unit",
     "timescale",
@@ -1051,44 +994,41 @@
         },
         "definition": "SELECT uuid AS __value, name AS __text FROM units ORDER BY created_at DESC",
         "description": "",
-        "hide": 0,
         "includeAll": false,
         "label": "Unit",
-        "multi": false,
         "name": "uuid",
         "options": [],
         "query": "SELECT uuid AS __value, name AS __text FROM units ORDER BY created_at DESC",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "text": "",
+          "value": "${DS_LOCAL_TIMESCALE}",
+          "selected": true
+        },
         "hide": 2,
         "includeAll": false,
         "label": "Local Timescale",
-        "multi": false,
         "name": "DS_TIMESCALE",
         "options": [],
         "query": "grafana-postgresql-datasource",
-        "queryValue": "",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       }
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now/d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Network traffic",
   "uid": "fe0af3cb-9be0-4b2a-8ccb-86704956cf2e",
-  "version": 32,
+  "version": 4,
   "weekStart": ""
 }

@@ -8583,7 +8583,7 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now/d",
     "to": "now"
   },
   "timepicker": {
