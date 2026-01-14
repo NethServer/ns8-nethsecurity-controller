@@ -1,47 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_TIMESCALE",
-      "label": "Local Timescale",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "grafana-postgresql-datasource",
-      "pluginName": "PostgreSQL"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "barchart",
-      "name": "Bar chart",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "11.2.0"
-    },
-    {
-      "type": "datasource",
-      "id": "grafana-postgresql-datasource",
-      "name": "PostgreSQL",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -61,7 +18,7 @@
   "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 10,
   "links": [
     {
       "asDropdown": false,
@@ -78,7 +35,6 @@
       "url": ""
     }
   ],
-  "liveNow": false,
   "panels": [
     {
       "datasource": {
@@ -97,7 +53,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -120,7 +76,7 @@
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -129,7 +85,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -201,7 +157,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -235,13 +191,14 @@
         "showValue": "always",
         "stacking": "none",
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         },
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 100
       },
-      "pluginVersion": "11.2.0",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -313,7 +270,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -347,13 +304,14 @@
         "showValue": "always",
         "stacking": "none",
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         },
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 100
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -392,6 +350,7 @@
             "fields": [
               "client"
             ],
+            "keepFields": false,
             "naming": {
               "asLabels": true
             }
@@ -414,6 +373,11 @@
               "type": "auto"
             },
             "filterable": true,
+            "footer": {
+              "reducers": [
+                "sum"
+              ]
+            },
             "inspect": false
           },
           "mappings": [],
@@ -422,7 +386,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -443,18 +407,10 @@
       "id": 4,
       "options": {
         "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": true
-        },
+        "enablePagination": true,
         "showHeader": true
       },
-      "pluginVersion": "11.2.0",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -489,8 +445,9 @@
       "type": "table"
     }
   ],
+  "preload": false,
   "refresh": "",
-  "schemaVersion": 39,
+  "schemaVersion": 42,
   "tags": [
     "monitoring",
     "timescale",
@@ -505,30 +462,23 @@
           "uid": "${DS_TIMESCALE}"
         },
         "definition": "SELECT uuid AS __value, name  AS __text FROM units",
-        "hide": 0,
         "includeAll": false,
         "label": "Unit",
-        "multi": false,
         "name": "uuid",
         "options": [],
         "query": "SELECT uuid AS __value, name  AS __text FROM units",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
         "current": {
-          "selected": false,
           "text": "pod-031-2010-09.backblaze.com",
           "value": "pod-031-2010-09.backblaze.com"
         },
-        "hide": 0,
         "name": "host",
         "options": [],
         "query": "%",
-        "skipUrlSync": false,
         "type": "textbox"
       },
       {
@@ -536,25 +486,22 @@
         "hide": 2,
         "includeAll": false,
         "label": "Local Timescale",
-        "multi": false,
         "name": "DS_TIMESCALE",
         "options": [],
         "query": "grafana-postgresql-datasource",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       }
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now/d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Network traffic by remote host",
   "uid": "c8d43e5f-068e-4cac-9283-2318d9e1911b",
-  "version": 19,
-  "weekStart": ""
+  "version": 3
 }
