@@ -1,7 +1,7 @@
 {
   "__inputs": [
     {
-      "name": "DS_LOCAL_TIMESCALE",
+      "name": "DS_TIMESCALE",
       "label": "Local Timescale",
       "description": "",
       "type": "datasource",
@@ -64,7 +64,7 @@
       }
     ]
   },
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
@@ -1006,7 +1006,7 @@
       {
         "current": {
           "text": "",
-          "value": "${DS_LOCAL_TIMESCALE}",
+          "value": "${DS_TIMESCALE}",
           "selected": true
         },
         "hide": 2,
