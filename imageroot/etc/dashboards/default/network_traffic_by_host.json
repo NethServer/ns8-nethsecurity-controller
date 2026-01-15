@@ -113,7 +113,7 @@
       "id": 2,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
@@ -138,7 +138,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT bytes FROM ca_dpi_stats_hourly_host\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND host like '$host'",
+          "rawSql": "SELECT SUM(bytes) FROM ca_dpi_stats_hourly_host\nWHERE $__timeFilter(bucket) AND uuid = '$uuid' AND host like '$host'",
           "refId": "A",
           "sql": {
             "columns": [
@@ -556,6 +556,5 @@
   "timezone": "",
   "title": "Network traffic by remote host",
   "uid": "c8d43e5f-068e-4cac-9283-2318d9e1911b",
-  "version": 4,
-  "weekStart": ""
+  "version": 5
 }
