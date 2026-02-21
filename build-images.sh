@@ -24,7 +24,7 @@ pushd webssh_tmp
 wget https://github.com/huashengdun/webssh/archive/refs/tags/v${webssh_version}.tar.gz -O webssh.tar.gz
 tar xvzf webssh.tar.gz -C build --strip-components=1
 pushd build
-webssh=$(buildah from docker.io/python:3.13.12-alpine)
+webssh=$(buildah from docker.io/python:3.14.3-alpine)
 buildah add "${webssh}" . /code
 buildah run \
     --workingdir '/code' \
