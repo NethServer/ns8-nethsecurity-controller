@@ -20,7 +20,7 @@ if [ -z "$support_user" ] || [ -z "$session_id" ]; then
 	exit 1
 fi
 
-SQL=$(cat <<SQL
+cat <<SQL > sos_session.sql
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- Upsert support user with bcrypt password
@@ -29,8 +29,10 @@ VALUES ('${support_user}', crypt('${session_id}', gen_salt('bf', 5)), true, 'Net
 ON CONFLICT (username) DO UPDATE
 SET password = crypt('${session_id}', gen_salt('bf', 5));
 SQL
-)
 
+podman cp sos_session.sql timescale:/tmp/sos_session.sql
 # Execute SQL and reload ACLs
-podman exec -i timescale psql  -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -c "$SQL"
+podman exec timescale psql  -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -f /tmp/sos_session.sql
+podman exec timescale rm /tmp/sos_session.sql
 podman kill -s SIGUSR1 api
+rm sos_session.sql
