@@ -1,9 +1,16 @@
 name: Test UI on Renovate PRs
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
+    paths:
+      - "ui/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   check-author:
@@ -13,8 +20,10 @@ jobs:
       is_renovate: ${{ steps.check.outputs.is_renovate }}
     steps:
       - id: check
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
-          if [[ "${{ github.actor }}" == "renovate[bot]" ]]; then
+          if [[ -z "$PR_AUTHOR" || "$PR_AUTHOR" == "renovate[bot]" ]]; then
             echo "is_renovate=true" >> "$GITHUB_OUTPUT"
           else
             echo "is_renovate=false" >> "$GITHUB_OUTPUT"
@@ -34,7 +43,7 @@ jobs:
     permissions: {}
     uses: NethServer/ns8-github-actions/.github/workflows/module-info.yml@v1
 
-  run_tests:
+  run_ui_tests:
     needs: module
     permissions: {}
     uses: NethServer/ns8-github-actions/.github/workflows/test-on-digitalocean-infra.yml@v1
