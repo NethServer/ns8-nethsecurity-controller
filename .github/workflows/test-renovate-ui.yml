@@ -1,0 +1,48 @@
+name: Test UI on Renovate PRs
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-author:
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      is_renovate: ${{ steps.check.outputs.is_renovate }}
+    steps:
+      - id: check
+        run: |
+          if [[ "${{ github.actor }}" == "renovate[bot]" ]]; then
+            echo "is_renovate=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_renovate=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  publish-images:
+    needs: check-author
+    if: needs.check-author.outputs.is_renovate == 'true'
+    uses: NethServer/ns8-github-actions/.github/workflows/publish-branch.yml@v1
+    permissions:
+      packages: write
+      actions: read
+      contents: write
+
+  module:
+    needs: publish-images
+    permissions: {}
+    uses: NethServer/ns8-github-actions/.github/workflows/module-info.yml@v1
+
+  run_tests:
+    needs: module
+    permissions: {}
+    uses: NethServer/ns8-github-actions/.github/workflows/test-on-digitalocean-infra.yml@v1
+    with:
+      script: test-ui.sh
+      path: ui
+      args: "ghcr.io/${{needs.module.outputs.owner}}/${{needs.module.outputs.name}}:${{needs.module.outputs.tag}}"
+      repo_ref: ${{needs.module.outputs.sha}}
+      debug_shell: false
+    secrets:
+      do_token: ${{ secrets.do_token }}
