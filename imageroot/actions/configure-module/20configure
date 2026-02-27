@@ -218,10 +218,12 @@ agent.write_envfile('network.env', network)
 tun = network.get('OVPN_TUN')
 bits = sum(bin(int(x)).count('1') for x in request["ovpn_netmask"].split('.'))
 cidr = f'{request["ovpn_network"]}/{bits}'
+# Allow access only on Promtail and API ports, reject everything else
 rules = [
     f'rule family=ipv4 priority=-100 source address={server_address} destination address={cidr} accept',
-    f'rule family=ipv4 priority=-99 source address={cidr} destination address={server_address} accept',
-    f'rule family=ipv4 priority=-98 source address={cidr} destination address={cidr} reject'
+    f'rule family=ipv4 priority=-99 source address={cidr} destination address={server_address} port port={ports[4]} protocol=tcp accept',
+    f'rule family=ipv4 priority=-98 source address={cidr} destination address={server_address} port port={ports[1]} protocol=tcp accept',
+    f'rule family=ipv4 priority=-97 source address={cidr} reject'
 ]
 ports = [f"{ports[4]}/tcp"] # promtail port
 agent.add_custom_zone(tun, tun, ports, rules)
