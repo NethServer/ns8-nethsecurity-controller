@@ -97,6 +97,9 @@ set_route_data = {
     'strip_prefix': True,
     'lets_encrypt_check': True,
     'lets_encrypt_cleanup': True,
+    'forward_auth': {
+        'address': f'http://127.0.0.1:{ports[3]}/api/auth',
+    },
 }
 if 'lets_encrypt' in request:
     set_route_data['lets_encrypt'] = request['lets_encrypt']

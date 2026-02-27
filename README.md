@@ -177,6 +177,8 @@ Grafana is accessible at `https://<controller-host>/grafana/`, default credentia
 
 Access to WebSSH is protected using a random generated URL, you can find it inside the module configuration file at `/home/nethsecurity-controller1/.config/state/config.json`.
 
+Authentication is enforced via Traefik forward auth: every request to the WebSSH path is validated by the controller API (`/api/auth`) before being proxied to the WebSSH backend. The API checks for a valid `ns_jwt` session cookie (set at login, `HttpOnly; Secure; SameSite=Lax`) and falls back to HTTP Basic Auth. Unauthenticated or expired-cookie requests receive a 401; the stale cookie is also cleared.
+
 ### Timescale
 
 [Timescale](https://docs.timescale.com/latest/main) is a time-series database for storing metrics. It's configured via environment variables and the configuration is available at `/home/nethsecurity-controller1/.config/state/db.env`.
