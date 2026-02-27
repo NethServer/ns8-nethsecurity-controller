@@ -111,14 +111,19 @@ Promtail sets the following labels:
 [Prometheus](https://prometheus.io/) is a metrics collector, it scrapes metrics from the connected machines. The configuration is available at `/home/nethsecurity-controller1/.config/state/prometheus.yml` and it's generated every time by the `configure-module` action.
 It has a the following targets:
 - static target with job_name `loki` that scrapes Loki metrics
-- dynamic targets with job_name `node` that scrapes metrics from the connected machines from the API server `http://<prometheus_user>:<prometheus_pass>@127.0.0.1:<API_PORT/prometheus/targets`
+- dynamic targets with job_name `node` that scrapes metrics from the connected machines from the API server `http://<prometheus_user>:<prometheus_pass>@127.0.0.1:<API_PORT>/prometheus/targets`
 
 - `instance` the VPN IP of the connected machine with the netdata port (eg. `172.19.64.3:19999`)
 - `job` fixed to `node`
 - `node` the VPN IP of the connected machine
 - `unit` the unit unique name of the connected machine
 
-Access to Prometheus web interface is protected using a random generated URL, you can find it inside the module configuration file at `/home/nethsecurity-controller1/.config/state/config.json`.
+Access to Prometheus web interface is protected by HTTP basic authentication using the same
+credentials of the API server, that are randomly generated during the module configuration: `PROMETHEUS_AUTH_USERNAME` and `PROMETHEUS_AUTH_PASSWORD`.
+
+Grafana is configured to use these same credentials when querying the Prometheus datasource internally.
+
+The Prometheus URL is also protected using a random generated path (`prometheus_path`), which can be found in the module configuration file at `/home/nethsecurity-controller1/.config/state/config.json`.
 
 ### Loki
 
