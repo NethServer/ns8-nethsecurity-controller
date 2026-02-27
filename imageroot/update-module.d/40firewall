@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Update firewall configuration on update
+
+import json
+import sys
+import agent
+import os
+
+(start,end) = os.environ["TCP_PORTS_RANGE"].split('-')
+ports = [*range(int(start), int(end)+1)]
+
+try:
+    with open('config.json', 'r') as tmp:
+        config = json.load(tmp)
+except:
+    sys.exit(0) # No config, nothing to do
+
+server_address = config["ovpn_network"].removesuffix('.0') + '.1'
+
+network = agent.read_envfile('network.env')
+
+tun = network.get('OVPN_TUN')
+bits = sum(bin(int(x)).count('1') for x in config["ovpn_netmask"].split('.'))
+cidr = f'{config["ovpn_network"]}/{bits}'
+rules = [
+    f'rule family=ipv4 priority=-100 source address={server_address} destination address={cidr} accept',
+    f'rule family=ipv4 priority=-99 source address={cidr} destination address={server_address} port port={ports[4]} protocol=tcp accept',
+    f'rule family=ipv4 priority=-98 source address={cidr} destination address={server_address} port port={ports[1]} protocol=tcp accept',
+    f'rule family=ipv4 priority=-97 source address={cidr} reject'
+]
+ports = [f"{ports[4]}/tcp", f"{ports[1]}/tcp"] # promtail and API ports (this should not be needed)
+agent.add_custom_zone(tun, tun, ports, rules)
