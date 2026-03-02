@@ -6,8 +6,7 @@ Suite Setup       Connect to the node
 *** Variables ***
 ${SSH_KEYFILE}    %{HOME}/.ssh/id_ecdsa
 ${ADMIN_USER}    admin
-#  //// change password to Nethesis,1234
-${ADMIN_PASSWORD}    Nethesis,12345
+${ADMIN_PASSWORD}    Nethesis,1234
 
 *** Keywords ***
 Connect to the node
