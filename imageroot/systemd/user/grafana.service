@@ -10,6 +10,7 @@ EnvironmentFile=%S/state/environment
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/grafana.pid %t/grafana.ctr-id
+ExecStartPre=runagent expand-grafana-config
 ExecStart=/usr/bin/podman run \
     --conmon-pidfile %t/grafana.pid \
     --cidfile %t/grafana.ctr-id \

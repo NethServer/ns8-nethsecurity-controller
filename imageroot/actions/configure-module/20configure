@@ -8,7 +8,6 @@
 import json
 import sys
 import agent
-import agent.tasks
 import os
 import uuid
 
@@ -168,47 +167,6 @@ with open('prometheus.env', 'w') as pfp:
     pfp.write(f"PROMETHEUS_PORT={ports[7]}\n")
     pfp.write(f"PROMETHEUS_PATH={config['prometheus_path']}\n")
     pfp.write(f"PROMETHEUS_RETENTION={metrics_retention_days}d\n")
-
-# Grafana configuration
-db = agent.read_envfile('db.env')
-secret = agent.read_envfile('secret.env')
-prometheus_user = secret.get('PROMETHEUS_AUTH_USERNAME', 'prometheus')
-prometheus_pass = secret.get('PROMETHEUS_AUTH_PASSWORD', 'prometheus')
-with open('grafana.yml', 'w') as fp:
-    fp.write("apiVersion: 1\n")
-    fp.write("datasources:\n")
-    fp.write('  - name: Local Promethus\n')
-    fp.write('    type: prometheus\n')
-    fp.write('    uid: prometheus\n')
-    fp.write('    access: proxy\n')
-    fp.write(f'    url: http://127.0.0.1:{ports[7]}{config["prometheus_path"]}\n')
-    fp.write('    basicAuth: true\n')
-    fp.write(f'    basicAuthUser: {prometheus_user}\n')
-    fp.write('    secureJsonData:\n')
-    fp.write(f'      basicAuthPassword: {prometheus_pass}\n')
-
-    fp.write('  - name: Local Loki\n')
-    fp.write('    type: loki\n')
-    fp.write('    uid: loki\n')
-    fp.write('    access: proxy\n')
-    fp.write(f'    url: http://127.0.0.1:{ports[5]}\n')
-
-    fp.write('  - name: Local Timescale\n')
-    fp.write('    type: postgres\n')
-    fp.write('    uid: timescale\n')
-    fp.write(f'    url: 127.0.0.1:{db.get("POSTGRES_PORT")}\n')
-    fp.write(f'    user: grafana\n')
-    fp.write('    secureJsonData:\n')
-    fp.write(f'      password: {db.get("GRAFANA_POSTGRES_PASSWORD")}\n')
-    fp.write('    jsonData:\n')
-    fp.write('      database: report\n')
-    fp.write('      sslmode: disable\n')
-    fp.write('      maxOpenConns: 100\n')
-    fp.write('      maxIdleConns: 100\n')
-    fp.write('      maxIdleConnsAuto: true\n')
-    fp.write('      connMaxLifetime: 14400\n')
-    fp.write('      postgresVersion: 1500\n')
-    fp.write('      timescaledb: true\n')
 
 network = agent.read_envfile('network.env')
 
