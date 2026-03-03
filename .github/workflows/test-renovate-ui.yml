@@ -29,6 +29,8 @@ jobs:
         env:
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
+          # On workflow_dispatch, PR_AUTHOR is empty — allow the run.
+          # On pull_request, only allow renovate[bot].
           if [[ -z "$PR_AUTHOR" || "$PR_AUTHOR" == "renovate[bot]" ]]; then
             echo "is_renovate=true" >> "$GITHUB_OUTPUT"
           else
@@ -50,7 +52,10 @@ jobs:
     uses: NethServer/ns8-github-actions/.github/workflows/module-info.yml@v1
 
   chooser:
+    needs: check-author
+    if: needs.check-author.outputs.is_renovate == 'true'
     runs-on: ubuntu-latest
+    permissions: {}
     outputs:
       node_a: ${{ steps.pick.outputs.node_a }}
       node_b: ${{ steps.pick.outputs.node_b }}
@@ -68,6 +73,7 @@ jobs:
   run_ui_tests:
     needs: [module, chooser]
     permissions: {}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
