@@ -97,6 +97,9 @@ set_route_data = {
     'strip_prefix': True,
     'lets_encrypt_check': True,
     'lets_encrypt_cleanup': True,
+    'forward_auth': {
+        'address': f'http://127.0.0.1:{ports[3]}/api/auth',
+    },
 }
 if 'lets_encrypt' in request:
     set_route_data['lets_encrypt'] = request['lets_encrypt']
@@ -168,6 +171,9 @@ with open('prometheus.env', 'w') as pfp:
 
 # Grafana configuration
 db = agent.read_envfile('db.env')
+secret = agent.read_envfile('secret.env')
+prometheus_user = secret.get('PROMETHEUS_AUTH_USERNAME', 'prometheus')
+prometheus_pass = secret.get('PROMETHEUS_AUTH_PASSWORD', 'prometheus')
 with open('grafana.yml', 'w') as fp:
     fp.write("apiVersion: 1\n")
     fp.write("datasources:\n")
@@ -176,6 +182,10 @@ with open('grafana.yml', 'w') as fp:
     fp.write('    uid: prometheus\n')
     fp.write('    access: proxy\n')
     fp.write(f'    url: http://127.0.0.1:{ports[7]}{config["prometheus_path"]}\n')
+    fp.write('    basicAuth: true\n')
+    fp.write(f'    basicAuthUser: {prometheus_user}\n')
+    fp.write('    secureJsonData:\n')
+    fp.write(f'      basicAuthPassword: {prometheus_pass}\n')
 
     fp.write('  - name: Local Loki\n')
     fp.write('    type: loki\n')

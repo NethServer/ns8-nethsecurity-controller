@@ -13,6 +13,7 @@ api_port = network.get('API_PORT')
 secret = agent.read_envfile('secret.env')
 prometheus_user = secret.get('PROMETHEUS_AUTH_USERNAME', 'prometheus')
 prometheus_pass = secret.get('PROMETHEUS_AUTH_PASSWORD', 'prometheus')
+prometheus_pass_hash = secret.get('PROMETHEUS_AUTH_HASHED_PASSWORD', '')
 
 loki = agent.read_envfile('loki.env')
 loki_port = loki.get('LOKI_HTTP_PORT')
@@ -31,3 +32,8 @@ with open('prometheus.yml', 'w') as f:
     f.write('    static_configs:\n')
     f.write('      - targets:\n')
     f.write(f'        - "127.0.0.1:{loki_port}"\n')
+
+# Generate web.yml for Prometheus basic auth (--web.config.file)
+with open('web.yml', 'w') as f:
+    f.write('basic_auth_users:\n')
+    f.write(f'  {prometheus_user}: "{prometheus_pass_hash}"\n')
