@@ -31,11 +31,12 @@ podman run -i \
 set -e
 echo "$ssh_key" > /home/pwuser/ns8-key
 pip install -q -r /home/pwuser/ns8-module/tests/pythonreq.txt
-mkdir ~/outputs
-cd /home/pwuser/ns8-module
+cd /home/pwuser/ns8-module/ui
+mkdir -vp tests/outputs
 exec robot \
     -v NODE_ADDR:${LEADER_NODE} \
     -v IMAGE_URL:${IMAGE_URL} \
     -v SSH_KEYFILE:/home/pwuser/ns8-key \
-    -d ~/outputs /home/pwuser/ns8-module/tests/test_ui.robot
+    --name ui-tests \
+    -d tests/outputs tests/
 EOF
