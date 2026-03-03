@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import agent
+import os
+
+(start,end) = os.environ["TCP_PORTS_RANGE"].split('-')
+ports = [*range(int(start), int(end)+1)]
+
+try:
+    with open('config.json', 'r') as tmp:
+        config = json.load(tmp)
+except:
+    sys.exit(0)
+
+# Exit if not configured
+if not config.get('webssh_path'):
+    sys.exit(0)
+
+try:
+    network = agent.read_envfile('network.env')
+    webssh_port = network.get('WEBSSH_PORT')
+except:
+    sys.exit(0)
+
+# Configure Traefik to route requests to the webssh service with forward_auth
+set_route_data = {
+    'instance': os.environ['MODULE_ID'] + '_webssh',
+    'url':  f'http://127.0.0.1:{webssh_port}',
+    'http2https': True,
+    'host': config.get('host', ''),
+    'path': config['webssh_path'],
+    'strip_prefix': True,
+    'lets_encrypt_check': True,
+    'lets_encrypt_cleanup': True,
+    'forward_auth': {
+        'address': f'http://127.0.0.1:{ports[3]}/api/auth',
+    },
+}
+if config.get('lets_encrypt'):
+    set_route_data['lets_encrypt'] = config['lets_encrypt']
+
+agent.set_route(set_route_data)
