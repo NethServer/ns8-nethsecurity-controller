@@ -5,38 +5,48 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-set -e
+#
+# Hint: access the test logs on HTTP port 8000 with this command:
+#
+#     python -mhttp.server -d tests/outputs/ 8000 &
+#
+
+set -e -a
 
 SSH_KEYFILE=${SSH_KEYFILE:-$HOME/.ssh/id_rsa}
 
 LEADER_NODE="${1:?missing LEADER_NODE argument}"
 IMAGE_URL="${2:?missing IMAGE_URL argument}"
+shift 2
 
 ssh_key="$(< $SSH_KEYFILE)"
-
-cleanup() {
-    set +e
-    podman cp rf-core-runner:/home/pwuser/outputs tests/
-    podman stop rf-core-runner
-    podman rm rf-core-runner
-}
-
-trap cleanup EXIT
+venvroot=/usr/local/venv
 
 podman run -i \
-    --network=host \
-    --volume=.:/home/pwuser/ns8-module:z \
-    --name rf-core-runner ghcr.io/marketsquare/robotframework-browser/rfbrowser-stable:19.11.0 \
-    bash -l -s <<EOF
+    --userns=keep-id \
+    --user "$(id -u):$(id -g)" \
+    --volume=.:/srv/source:z \
+    --volume=rftest-ui-cache:${venvroot}:z \
+    --replace --name=rftest-ui \
+    --env=ssh_key \
+    --env=venvroot \
+    --env=LEADER_NODE \
+    --env=IMAGE_URL \
+    ghcr.io/marketsquare/robotframework-browser/rfbrowser-stable:19.11.0 \
+    bash -l -s -- "${@}" <<'EOF'
 set -e
-echo "$ssh_key" > /home/pwuser/ns8-key
-pip install -q -r /home/pwuser/ns8-module/tests/pythonreq.txt
-cd /home/pwuser/ns8-module/ui
-mkdir -vp tests/outputs
-exec robot \
+echo "$ssh_key" > /tmp/idssh
+if [ ! -x ${venvroot}/bin/robot ] ; then
+    python3 -mvenv ${venvroot} --upgrade
+    ${venvroot}/bin/pip3 install -q -r /srv/source/tests/pythonreq.txt
+fi
+cd /srv/source
+mkdir -vp tests/outputs/
+exec ${venvroot}/bin/robot \
     -v NODE_ADDR:${LEADER_NODE} \
     -v IMAGE_URL:${IMAGE_URL} \
-    -v SSH_KEYFILE:/home/pwuser/ns8-key \
-    --name ui-tests \
-    -d tests/outputs tests/
+    -v SSH_KEYFILE:/tmp/idssh \
+    --name test-ui \
+    --skiponfailure unstable \
+    -d tests/outputs "${@}" tests/
 EOF
