@@ -20,33 +20,28 @@ IMAGE_URL="${2:?missing IMAGE_URL argument}"
 shift 2
 
 ssh_key="$(< $SSH_KEYFILE)"
-venvroot=/usr/local/venv
 
+mkdir -vp tests/outputs/
+trap 'podman cp --overwrite rftest-ui:/home/pwuser/outputs/ tests/' EXIT
 podman run -i \
-    --userns=keep-id \
-    --user "$(id -u):$(id -g)" \
-    --volume=.:/srv/source:z \
-    --volume=rftest-ui-cache:${venvroot}:z \
+    --network=host \
+    --volume=.:/home/pwuser/source:z \
     --replace --name=rftest-ui \
     --env=ssh_key \
-    --env=venvroot \
     --env=LEADER_NODE \
     --env=IMAGE_URL \
     ghcr.io/marketsquare/robotframework-browser/rfbrowser-stable:19.11.0 \
     bash -l -s -- "${@}" <<'EOF'
 set -e
 echo "$ssh_key" > /tmp/idssh
-if [ ! -x ${venvroot}/bin/robot ] ; then
-    python3 -mvenv ${venvroot} --upgrade
-    ${venvroot}/bin/pip3 install -q -r /srv/source/tests/pythonreq.txt
-fi
-cd /srv/source
-mkdir -vp tests/outputs/
-exec ${venvroot}/bin/robot \
+mkdir -vp ~/outputs
+cd /home/pwuser/source # ui/ is the base dir
+pip3 install -q -r tests/pythonreq.txt
+exec robot \
     -v NODE_ADDR:${LEADER_NODE} \
     -v IMAGE_URL:${IMAGE_URL} \
     -v SSH_KEYFILE:/tmp/idssh \
     --name test-ui \
     --skiponfailure unstable \
-    -d tests/outputs "${@}" tests/
+    -d /home/pwuser/outputs "${@}" tests/
 EOF
