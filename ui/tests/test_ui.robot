@@ -1,7 +1,10 @@
 *** Settings ***
 Library           SSHLibrary
 Library           Browser
-Suite Setup       Connect to the node
+Suite Setup       Run Keywords
+...    Connect to the node
+...    Install module
+Suite Teardown    Remove module
 
 *** Variables ***
 ${SSH_KEYFILE}    %{HOME}/.ssh/id_ecdsa
@@ -15,6 +18,17 @@ Connect to the node
     ${output} =    Execute Command    systemctl is-system-running --wait
     Should Be True    '${output}' == 'running' or '${output}' == 'degraded'
 
+Install module
+    IF    '${MODULE_ID}' == ''
+        ${output}    ${rc} =    Execute Command    add-module ${IMAGE_URL} 1
+        ...    return_rc=True
+        Should Be Equal As Integers    ${rc}    0
+        &{output} =    Evaluate    ${output}
+        Set Suite Variable    ${module_id}    ${output.module_id}
+    ELSE
+        Set Suite Variable    ${module_id}    ${MODULE_ID}
+    END
+
 Login to cluster-admin
     New Page    https://${NODE_ADDR}/cluster-admin/
     Fill Text    text="Username"    ${ADMIN_USER}
@@ -23,13 +37,14 @@ Login to cluster-admin
     Click    button >> text="Log in"
     Wait For Elements State    css=#main-content    visible    timeout=10s
 
+Remove module
+    IF    '${MODULE_ID}' == ''
+        ${rc} =    Execute Command    remove-module --no-preserve ${module_id}
+        ...    return_rc=True    return_stdout=False
+        Should Be Equal As Integers    ${rc}    0
+    END
+
 *** Test Cases ***
-Install module
-    ${output}    ${rc} =    Execute Command    add-module ${IMAGE_URL} 1
-    ...    return_rc=True
-    Should Be Equal As Integers    ${rc}    0
-    &{output} =    Evaluate    ${output}
-    Set Suite Variable    ${module_id}    ${output.module_id}
 
 Take screenshots
     New Browser    chromium    headless=True
@@ -44,8 +59,3 @@ Take screenshots
     Sleep    5s
     Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/settings.png
     Close Browser
-
-Remove module
-    ${rc} =    Execute Command    remove-module --no-preserve ${module_id}
-    ...    return_rc=True    return_stdout=False
-    Should Be Equal As Integers    ${rc}    0
