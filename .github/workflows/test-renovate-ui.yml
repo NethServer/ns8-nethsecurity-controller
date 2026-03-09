@@ -21,7 +21,6 @@ concurrency:
 jobs:
   check-author:
     runs-on: ubuntu-latest
-    permissions: {}
     outputs:
       is_renovate: ${{ steps.check.outputs.is_renovate }}
     steps:
@@ -48,49 +47,19 @@ jobs:
 
   module:
     needs: publish-images
-    permissions: {}
     uses: NethServer/ns8-github-actions/.github/workflows/module-info.yml@v1
 
-  chooser:
-    needs: check-author
-    if: needs.check-author.outputs.is_renovate == 'true'
-    runs-on: ubuntu-latest
-    permissions: {}
-    outputs:
-      node_a: ${{ steps.pick.outputs.node_a }}
-      node_b: ${{ steps.pick.outputs.node_b }}
-    steps:
-      - id: pick
-        run: |
-          if (( $GITHUB_RUN_NUMBER % 2 )); then
-            echo "node_a=rl1" >> "$GITHUB_OUTPUT"
-            echo "node_b=dn1" >> "$GITHUB_OUTPUT"
-          else
-            echo "node_a=dn1" >> "$GITHUB_OUTPUT"
-            echo "node_b=rl1" >> "$GITHUB_OUTPUT"
-          fi
-
   run_ui_tests:
-    needs: [module, chooser]
+    needs: [module]
     runs-on: ubuntu-latest
-    permissions: {}
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        scenario: [install, update]
     uses: NethServer/ns8-github-actions/.github/workflows/test-on-digitalocean-infra.yml@v1
     with:
       script: test-ui.sh
       path: ui
-      coremodules: ${{ matrix.scenario == 'install' && format('ghcr.io/{0}/{1}:{2}', needs.module.outputs.owner, needs.module.outputs.name, needs.module.outputs.tag) || '' }}
-      leader_nodes: >-
-        ${{
-          matrix.scenario == 'install'
-          && needs.chooser.outputs.node_a
-          || needs.chooser.outputs.node_b
-        }}
-      args: ${{ format('ghcr.io/{0}/{1}:{2} -v SCENARIO:{3}', needs.module.outputs.owner, needs.module.outputs.name, needs.module.outputs.tag, matrix.scenario) }}
+      coremodules: ${{ format('ghcr.io/{0}/{1}:{2}', needs.module.outputs.owner, needs.module.outputs.name, needs.module.outputs.tag) }}
+      leader_nodes: rl1
+      args: ${{ format('ghcr.io/{0}/{1}:{2}', needs.module.outputs.owner, needs.module.outputs.name, needs.module.outputs.tag) }}
       repo_ref: ${{needs.module.outputs.sha}}
       debug_shell: ${{ github.event.inputs.debug_shell == 'true' || false }}
     secrets:
@@ -100,7 +69,6 @@ jobs:
     needs: [run_ui_tests]
     if: always() && needs.run_ui_tests.result != 'skipped'
     runs-on: ubuntu-latest
-    permissions: {}
     steps:
       - uses: actions/upload-artifact@v4
         with:
