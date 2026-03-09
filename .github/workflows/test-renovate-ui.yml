@@ -72,6 +72,7 @@ jobs:
 
   run_ui_tests:
     needs: [module, chooser]
+    runs-on: ubuntu-latest
     permissions: {}
     timeout-minutes: 30
     strategy:
@@ -94,3 +95,15 @@ jobs:
       debug_shell: ${{ github.event.inputs.debug_shell == 'true' || false }}
     secrets:
       do_token: ${{ secrets.do_token }}
+
+  upload_test_results:
+    needs: [run_ui_tests]
+    if: always() && needs.run_ui_tests.result != 'skipped'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-outputs
+          path: ui/tests/outputs/
+          if-no-files-found: ignore
