@@ -73,3 +73,50 @@ jobs:
           name: test-outputs
           path: ui/tests/outputs/
           if-no-files-found: ignore
+
+  comment_screenshots:
+    needs: [upload_test_results]
+    if: always() && needs.upload_test_results.result != 'skipped' && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Download test outputs
+        id: download
+        uses: actions/download-artifact@v4
+        with:
+          name: test-outputs
+          path: test-outputs
+        continue-on-error: true
+
+      - name: Setup CML
+        if: steps.download.outcome == 'success'
+        uses: iterative/setup-cml@v3
+
+      - name: Post screenshots to PR
+        if: steps.download.outcome == 'success'
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          shopt -s nullglob
+          screenshots=(test-outputs/browser/screenshot/*.png)
+
+          if [ ${#screenshots[@]} -eq 0 ]; then
+            echo "No screenshots found, skipping comment."
+            exit 0
+          fi
+
+          echo "## UI Test Screenshots" >> comment.md
+          echo "" >> comment.md
+
+          for img in "${screenshots[@]}"; do
+            name=$(basename "$img" .png)
+            echo "### ${name}" >> comment.md
+            echo "" >> comment.md
+            cml asset publish "$img" --md >> comment.md
+            echo "" >> comment.md
+          done
+
+          cml comment update comment.md
