@@ -10,6 +10,7 @@ Suite Teardown    Remove module
 ${SSH_KEYFILE}    %{HOME}/.ssh/id_ecdsa
 ${ADMIN_USER}    admin
 ${ADMIN_PASSWORD}    Nethesis,1234
+${MODULE_ID}    ${EMPTY}
 
 *** Keywords ***
 Connect to the node
