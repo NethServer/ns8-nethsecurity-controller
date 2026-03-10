@@ -62,20 +62,9 @@ jobs:
     secrets:
       do_token: ${{ secrets.do_token }}
 
-  upload_test_results:
-    needs: [run_ui_tests]
-    if: always() && needs.run_ui_tests.result != 'skipped'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/upload-artifact@v4
-        with:
-          name: test-outputs
-          path: ui/tests/outputs/
-          if-no-files-found: ignore
-
   comment_screenshots:
-    needs: [upload_test_results]
-    if: always() && needs.upload_test_results.result != 'skipped' && github.event_name == 'pull_request'
+    needs: [run_ui_tests]
+    if: always() && needs.run_ui_tests.result != 'skipped' && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -86,8 +75,7 @@ jobs:
         id: download
         uses: actions/download-artifact@v4
         with:
-          name: test-outputs
-          path: test-outputs
+          name: tests-logs-rl1
         continue-on-error: true
 
       - name: Setup CML
@@ -100,7 +88,7 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           shopt -s nullglob
-          screenshots=(test-outputs/browser/screenshot/*.png)
+          screenshots=(tests-logs-rl1/browser/screenshot/*.png)
 
           if [ ${#screenshots[@]} -eq 0 ]; then
             echo "No screenshots found, skipping comment."
