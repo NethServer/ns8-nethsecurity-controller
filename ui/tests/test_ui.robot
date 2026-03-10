@@ -20,7 +20,7 @@ Connect to the node
     Should Be True    '${output}' == 'running' or '${output}' == 'degraded'
 
 Install module
-    IF    '${MODULE_ID}' == ''
+    IF    not $MODULE_ID
         ${output}    ${rc} =    Execute Command    add-module ${IMAGE_URL} 1
         ...    return_rc=True
         Should Be Equal As Integers    ${rc}    0
@@ -39,7 +39,7 @@ Login to cluster-admin
     Wait For Elements State    css=#main-content    visible    timeout=10s
 
 Remove module
-    IF    '${MODULE_ID}' == ''
+    IF    not $MODULE_ID
         ${rc} =    Execute Command    remove-module --no-preserve ${module_id}
         ...    return_rc=True    return_stdout=False
         Should Be Equal As Integers    ${rc}    0
