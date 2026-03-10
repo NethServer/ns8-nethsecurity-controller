@@ -76,6 +76,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tests-logs-rl1
+          path: tests-logs-rl1
         continue-on-error: true
 
       - name: Setup CML
