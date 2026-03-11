@@ -80,14 +80,11 @@ jobs:
         with:
           name: tests-logs-rl1
           path: tests-logs-rl1
-        continue-on-error: true
 
       - name: Setup CML
-        if: steps.download.outcome == 'success'
         uses: iterative/setup-cml@v3
 
       - name: Post screenshots to PR
-        if: steps.download.outcome == 'success'
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
