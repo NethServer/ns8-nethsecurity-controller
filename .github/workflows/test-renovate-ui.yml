@@ -65,7 +65,7 @@ jobs:
   comment_screenshots:
     needs: [run_ui_tests]
     if: always() && needs.run_ui_tests.result != 'skipped' && github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       pull-requests: write
