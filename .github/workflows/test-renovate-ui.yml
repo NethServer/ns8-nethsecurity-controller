@@ -19,25 +19,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # check-author: //// uncomment
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     is_renovate: ${{ steps.check.outputs.is_renovate }}
-  #   steps:
-  #     - id: check
-  #       env:
-  #         PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-  #       run: |
-  #         # On workflow_dispatch, PR_AUTHOR is empty — allow the run.
-  #         # On pull_request, only allow renovate[bot].
-  #         if [[ -z "$PR_AUTHOR" || "$PR_AUTHOR" == "renovate[bot]" ]]; then
-  #           echo "is_renovate=true" >> "$GITHUB_OUTPUT"
-  #         else
-  #           echo "is_renovate=false" >> "$GITHUB_OUTPUT"
-  #         fi
+  check-author:
+    runs-on: ubuntu-24.04
+    outputs:
+      is_renovate: ${{ steps.check.outputs.is_renovate }}
+    steps:
+      - id: check
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          # On workflow_dispatch, PR_AUTHOR is empty — allow the run.
+          # On pull_request, only allow renovate[bot].
+          if [[ -z "$PR_AUTHOR" || "$PR_AUTHOR" == "renovate[bot]" ]]; then
+            echo "is_renovate=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_renovate=false" >> "$GITHUB_OUTPUT"
+          fi
   publish-images:
-    # needs: check-author //// uncomment
-    # if: needs.check-author.outputs.is_renovate == 'true' //// uncomment
+    needs: check-author
+    if: needs.check-author.outputs.is_renovate == 'true'
     uses: NethServer/ns8-github-actions/.github/workflows/publish-branch.yml@v1
     permissions:
       packages: write
