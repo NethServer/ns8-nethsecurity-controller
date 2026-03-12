@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   check-author:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       is_renovate: ${{ steps.check.outputs.is_renovate }}
     steps:
@@ -35,7 +35,6 @@ jobs:
           else
             echo "is_renovate=false" >> "$GITHUB_OUTPUT"
           fi
-
   publish-images:
     needs: check-author
     if: needs.check-author.outputs.is_renovate == 'true'
@@ -63,13 +62,49 @@ jobs:
     secrets:
       do_token: ${{ secrets.do_token }}
 
-  upload_test_results:
+  comment_screenshots:
     needs: [run_ui_tests]
-    if: always() && needs.run_ui_tests.result != 'skipped'
-    runs-on: ubuntu-latest
+    if: always() && needs.run_ui_tests.result != 'skipped' && github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
     steps:
-      - uses: actions/upload-artifact@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download test outputs
+        id: download
+        uses: actions/download-artifact@v4
         with:
-          name: test-outputs
-          path: ui/tests/outputs/
-          if-no-files-found: ignore
+          name: tests-logs-rl1
+          path: tests-logs-rl1
+
+      - name: Setup CML
+        uses: iterative/setup-cml@v3
+
+      - name: Post screenshots to PR
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          shopt -s nullglob
+          screenshots=(tests-logs-rl1/browser/screenshot/*.png)
+
+          if [ ${#screenshots[@]} -eq 0 ]; then
+            echo "No screenshots found, skipping comment."
+            exit 0
+          fi
+
+          echo "## UI Test Screenshots" >> comment.md
+          echo "" >> comment.md
+
+          for img in "${screenshots[@]}"; do
+            name=$(basename "$img" .png)
+            echo "### ${name}" >> comment.md
+            echo "" >> comment.md
+            cml asset publish "$img" --md >> comment.md
+            echo "" >> comment.md
+          done
+
+          cml comment update comment.md
