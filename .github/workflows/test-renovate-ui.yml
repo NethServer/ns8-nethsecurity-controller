@@ -76,7 +76,7 @@ jobs:
 
       - name: Download test outputs
         id: download
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: tests-logs-rl1
           path: tests-logs-rl1
