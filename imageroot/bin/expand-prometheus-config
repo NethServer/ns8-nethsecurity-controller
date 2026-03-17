@@ -36,4 +36,4 @@ with open('prometheus.yml', 'w') as f:
 # Generate web.yml for Prometheus basic auth (--web.config.file)
 with open('web.yml', 'w') as f:
     f.write('basic_auth_users:\n')
-    f.write(f'  {prometheus_user}: "{prometheus_pass_hash}"\n')
+    f.write(f"  {prometheus_user}: '{prometheus_pass_hash}'\n")
