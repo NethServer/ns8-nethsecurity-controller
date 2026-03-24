@@ -14,7 +14,7 @@ promtail_image="docker.io/grafana/promtail:3.6.7"
 loki_image="docker.io/grafana/loki:2.9.17"
 prometheus_image="docker.io/prom/prometheus:v3.10.0"
 grafana_image="docker.io/grafana/grafana:12.4.1"
-timescale_image="docker.io/timescale/timescaledb:2.23.1-pg16"
+timescale_image="docker.io/timescale/timescaledb:2.26.0-pg16"
 webssh_version=1.6.2
 
 # Create a new empty container for webssh
