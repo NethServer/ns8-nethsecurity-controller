@@ -399,3 +399,7 @@ The file can be removed after the upgrade is completed and verified.
 To uninstall the instance:
 
     remove-module --no-preserve nethsecurity-controller1
+
+## Running tests locally
+
+This module uses the NS8 standard testing infrastructure. For instructions on how to run the test suite locally, refer to the [Running tests locally](https://github.com/NethServer/ns8-github-actions/blob/v1/README.md#running-tests-locally) section of the ns8-github-actions repository.
