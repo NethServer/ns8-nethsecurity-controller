@@ -15,7 +15,7 @@ ExecStart=/usr/bin/podman run \
     --cgroups=no-conmon \
     --pod-id-file %t/controller.pod-id \
     --replace -d --name loki \
-    --volume=loki-data:/loki:z \
+    --volume=loki-data:/loki \
     --volume %S/etc/loki.yaml:/etc/loki/local-config.yaml:z \
     --network=host \
     --env-file=%S/state/loki.env \

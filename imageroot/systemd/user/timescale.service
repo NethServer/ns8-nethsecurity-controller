@@ -18,7 +18,7 @@ ExecStart=/usr/bin/podman run \
     --cgroups=no-conmon \
     --pod-id-file %t/controller.pod-id \
     --replace -d --name timescale \
-    --volume=timescale-data:/var/lib/postgresql/data:z \
+    --volume=timescale-data:/var/lib/postgresql/data \
     --env-file=%S/state/db.env \
     --network=host \
     ${TIMESCALEDB_IMAGE} -p ${POSTGRES_PORT} -h 127.0.0.1
