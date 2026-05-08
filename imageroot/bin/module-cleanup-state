@@ -2,4 +2,4 @@
 
 set -e
 
-rm -f backup.sql
+rm -f backup.dump

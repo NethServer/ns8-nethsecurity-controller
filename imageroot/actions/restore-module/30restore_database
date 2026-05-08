@@ -10,5 +10,5 @@ done
 
 # Load dump avoiding issues on timescaledb hypertables
 podman exec timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -d "${POSTGRES_DB}" -c "CREATE EXTENSION IF NOT EXISTS timescaledb; SELECT timescaledb_pre_restore();"
-podman exec timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" < backup.sql
+cat backup.dump | podman exec -i timescale pg_restore  -Fc -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}"  -d "${POSTGRES_DB}"
 podman exec timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -d "${POSTGRES_DB}" -c "SELECT timescaledb_post_restore();"
