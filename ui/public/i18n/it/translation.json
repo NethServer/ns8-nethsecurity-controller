@@ -1,7 +1,7 @@
 {
     "error": {
         "404": "Risorsa non trovata",
-        "network_error": "Errore di rete",
+        "network_error": "Errore di rete. Controlla la connessione e ricarica la pagina.",
         "error": "Errore",
         "validation_error": "Errore di validazione",
         "cannot_retrieve_installed_modules": "Impossibile elencare moduli installati",
@@ -101,7 +101,7 @@
         "get-module-info": "Visualizza info modulo",
         "get-name": "Visualizza nome",
         "get-status": "Visualizza stato",
-        "list-backup-repositories": "Elenca repository di backup",
+        "list-backup-repositories": "Elenca i repository di backup",
         "list-installed-modules": "Elenco moduli installati",
         "list-backups": "Elenca backup"
     },
