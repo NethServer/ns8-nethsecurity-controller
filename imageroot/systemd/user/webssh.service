@@ -1,7 +1,7 @@
 
 [Unit]
 Description=Podman webssh.service
-BindsTo=controller.service
+Wants=controller.service
 After=vpn.service
 
 [Service]

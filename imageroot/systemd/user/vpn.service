@@ -1,6 +1,6 @@
 [Unit]
 Description=Podman vpn.service
-BindsTo=controller.service
+Wants=controller.service
 After=controller.service
 
 [Service]

@@ -1,7 +1,7 @@
 [Unit]
 Description=Podman timescale.service
-BindsTo=controller.service
 Before=api.service
+Wants=controller.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n

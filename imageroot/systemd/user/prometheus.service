@@ -1,6 +1,6 @@
 [Unit]
 Description=Podman prometheus.service
-BindsTo=controller.service
+Wants=controller.service
 After=vpn.service
 
 [Service]

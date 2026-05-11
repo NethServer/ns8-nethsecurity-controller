@@ -8,4 +8,5 @@
 exec 1>&2 # Send any output to stderr, to not alter the action response protocol
 
 # Stop the controller to free the tun device
+systemctl --user disable --now timescale api grafana loki prometheus promtail proxy ui vpn webssh
 systemctl --user disable --now controller.service

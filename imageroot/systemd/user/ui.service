@@ -1,7 +1,7 @@
 
 [Unit]
 Description=Podman ui.service
-BindsTo=controller.service
+Wants=controller.service
 After=api.service
 Requires=api.service
 
