@@ -1,6 +1,6 @@
 [Unit]
 Description=Podman loki.service
-BindsTo=controller.service
+Wants=controller.service
 Before=promtail.service
 
 [Service]

@@ -203,6 +203,31 @@ systemctl --user restart controller.service
 
 ## Troubleshooting
 
+### Restarting the controller
+
+The controller runs as a systemd user unit (controller.service) that creates the Podman pod hosting the other containers. The controller unit Requires and is ordered Before the following services: vpn.service, api.service, ui.service, proxy.service, promtail.service, loki.service, prometheus.service, grafana.service, webssh.service and timescale.service.
+
+Quick restart, recommended for support operations:
+
+    runagent -m nethsecurity-controller1
+    systemctl --user restart controller.service
+
+This will stop and recreate the Podman pod and will trigger the dependent services to be (re)started.
+
+To pause the service, proceed with an ordered stop of the dependent services, then stop the controller:
+
+    runagent -m nethsecurity-controller1
+    systemctl --user disable --now timescale api grafana loki prometheus promtail proxy ui vpn webssh
+    systemctl --user disable --now controller.service
+
+You can resume the service with an ordered start of the controller and dependent services:
+
+    runagent -m nethsecurity-controller1
+    systemctl --user enable controller.service
+    systemctl --user restart controller.service
+
+Replace 'nethsecurity-controller1' with your instance name.
+
 ### Logs
 
 To see al logs from the controller using the command line, execute this command con the node where the controller is running:

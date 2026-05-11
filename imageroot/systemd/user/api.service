@@ -1,7 +1,7 @@
 
 [Unit]
 Description=Podman api.service
-BindsTo=controller.service
+Wants=controller.service
 After=controller.service vpn.service timescale.service
 
 [Service]

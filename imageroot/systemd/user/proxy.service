@@ -1,7 +1,7 @@
 
 [Unit]
 Description=Podman proxy.service
-BindsTo=controller.service
+Wants=controller.service
 After=api.service vpn.service 
 Requires=api.service vpn.service
 
