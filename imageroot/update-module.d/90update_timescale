@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Upgrade TimescaleDB in place after the module image restart.
+
+set -e
+
+if [ ! -f "./db.env" ]; then
+    exit 0
+fi
+
+. ./db.env
+
+if [ -z "${REPORT_DB_URI}" ]; then
+    echo "REPORT_DB_URI is missing, skipping TimescaleDB update" >&2
+    exit 0
+fi
+
+until podman exec timescale pg_isready -d "${REPORT_DB_URI}"; do
+    sleep 5
+done
+
+podman exec timescale psql "${REPORT_DB_URI}" -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS timescaledb;"
+
+current_version=$(podman exec timescale psql "${REPORT_DB_URI}" -Atqc "SELECT COALESCE((SELECT extversion FROM pg_extension WHERE extname = 'timescaledb'), '');")
+target_version=$(podman exec timescale psql "${REPORT_DB_URI}" -Atqc "SELECT default_version FROM pg_available_extensions WHERE name = 'timescaledb';")
+
+if [ -z "${target_version}" ]; then
+    echo "Unable to read the installed TimescaleDB default version" >&2
+    exit 1
+fi
+
+if [ "${current_version}" != "${target_version}" ]; then
+    podman exec timescale psql "${REPORT_DB_URI}" -v ON_ERROR_STOP=1 -c "ALTER EXTENSION timescaledb UPDATE TO '${target_version}';"
+fi
+
+podman exec timescale psql "${REPORT_DB_URI}" -v ON_ERROR_STOP=1 -c "\dx timescaledb;"
