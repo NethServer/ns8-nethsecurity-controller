@@ -1,6 +1,5 @@
 *** Settings ***
 Library    SSHLibrary
-Library    Browser
 
 *** Variables ***
 ${ADMIN_USER}    admin
@@ -21,6 +20,7 @@ Check if nethsecurity-controller can be configured
 
 Take screenshots
     [Tags]    ui
+    Import Library    Browser
     New Browser    chromium    headless=True
     New Context    ignoreHTTPSErrors=True
     Login to cluster-admin
