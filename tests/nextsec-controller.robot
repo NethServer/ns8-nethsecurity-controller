@@ -1,6 +1,10 @@
 *** Settings ***
 Library    SSHLibrary
 
+*** Variables ***
+${ADMIN_USER}    admin
+${ADMIN_PASSWORD}    Nethesis,1234
+
 *** Test Cases ***
 Check if nethsecurity-controller is installed correctly
     ${output}  ${rc} =    Execute Command    add-module ${IMAGE_URL} 1
@@ -13,6 +17,22 @@ Check if nethsecurity-controller can be configured
     ${out}  ${err}  ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host": "controller.dom.test", "lets_encrypt": false, "api_user": "admin", "api_password": "Nethesis,1234", "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.255.0", "ovpn_cn": "nethsec", "loki_retention": 180, "prometheus_retention": 15}'
     ...    return_rc=True  return_stdout=True  return_stderr=True
     Should Be Equal As Integers    ${rc}  0
+
+Take screenshots
+    [Tags]    ui
+    Import Library    Browser
+    New Browser    chromium    headless=True
+    New Context    ignoreHTTPSErrors=True
+    Login to cluster-admin
+    Go To    https://${NODE_ADDR}/cluster-admin/#/apps/${module_id}
+    Wait For Elements State    iframe >>> h2 >> text="Status"    visible    timeout=10s
+    Sleep    5s
+    Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/1._Status.png
+    Go To    https://${NODE_ADDR}/cluster-admin/#/apps/${module_id}?page=settings
+    Wait For Elements State    iframe >>> h2 >> text="Settings"    visible    timeout=10s
+    Sleep    5s
+    Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/2._Settings.png
+    Close Browser
 
 Check if admin interface is accessible
     Wait Until Keyword Succeeds    60 times    10 seconds    Access Admin Interface
@@ -105,3 +125,11 @@ Create Unit
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${out}    "code":200
     Should Contain    ${out}    "join_code"
+
+Login to cluster-admin
+    New Page    https://${NODE_ADDR}/cluster-admin/
+    Fill Text    text="Username"    ${ADMIN_USER}
+    Click    button >> text="Continue"
+    Fill Text    text="Password"    ${ADMIN_PASSWORD}
+    Click    button >> text="Log in"
+    Wait For Elements State    css=#main-content    visible    timeout=10s
