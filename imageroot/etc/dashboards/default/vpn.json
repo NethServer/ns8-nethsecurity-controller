@@ -529,11 +529,23 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "netdata_net_net_kilobits_persec_average{unit=~'$uuid',chart=~'net.$rwinterface'}",
+          "expr": "rate(net_bytes_recv{unit=~'$uuid',interface=~'$rwinterface'}[2m])*8/1000",
           "instant": false,
-          "legendFormat": "{{dimension}}",
+          "legendFormat": "received",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "rate(net_bytes_sent{unit=~'$uuid',interface=~'$rwinterface'}[2m])*8/1000",
+          "instant": false,
+          "legendFormat": "sent",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Interface $rwinterface traffic",
@@ -1131,11 +1143,23 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "netdata_net_net_kilobits_persec_average{unit=~'$uuid',chart=~'net.$tuninterface'}",
+          "expr": "rate(net_bytes_recv{unit=~'$uuid',interface=~'$tuninterface'}[2m])*8/1000",
           "instant": false,
-          "legendFormat": "{{dimension}}",
+          "legendFormat": "received",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "rate(net_bytes_sent{unit=~'$uuid',interface=~'$tuninterface'}[2m])*8/1000",
+          "instant": false,
+          "legendFormat": "sent",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Interface $tuninterface traffic",

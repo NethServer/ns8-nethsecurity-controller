@@ -485,11 +485,23 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "netdata_net_net_kilobits_persec_average{unit=~'$uuid',chart='net.$wan'}",
+          "expr": "rate(net_bytes_recv{unit=~\"$uuid\",interface=\"$wan\"}[2m])*8/1000",
           "instant": false,
-          "legendFormat": "{{dimension}}",
+          "legendFormat": "received",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "rate(net_bytes_sent{unit=~\"$uuid\",interface=\"$wan\"}[2m])*8/1000",
+          "instant": false,
+          "legendFormat": "sent",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Interface $wan traffic",
@@ -605,9 +617,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "netdata_fping_latency_ms_average{unit=~'$uuid'}",
+          "expr": "ping_average_response_ms{unit=~'$uuid'}",
           "instant": false,
-          "legendFormat": "{{dimension}}-{{family}}",
+          "legendFormat": "{{url}}",
           "range": true,
           "refId": "A"
         }
@@ -702,11 +714,23 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "netdata_fping_packets_packets_average{unit=~'$uuid'}",
+          "expr": "ping_packets_transmitted{unit=~'$uuid'}",
           "instant": false,
-          "legendFormat": "{{dimension}}-{{family}}",
+          "legendFormat": "tx {{url}}",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "ping_packets_received{unit=~'$uuid'}",
+          "instant": false,
+          "legendFormat": "rx {{url}}",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Packets",
@@ -799,9 +823,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "netdata_fping_quality_percentage_average{unit=~'$uuid'}",
+          "expr": "100 - ping_percent_packet_loss{unit=~'$uuid'}",
           "instant": false,
-          "legendFormat": "{{dimension}}-{{family}}",
+          "legendFormat": "{{url}}",
           "range": true,
           "refId": "A"
         }

@@ -203,11 +203,11 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "netdata_system_load_load_average{dimension!=\"load15\", unit=~\"$unit\"}",
+          "expr": "system_load1{unit=~\"$unit\"}",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
-          "legendFormat": "{{dimension}}",
+          "legendFormat": "load1",
           "refId": "A"
         },
         {
@@ -216,12 +216,25 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "netdata_system_load_load_average{dimension=\"load15\", unit=~\"$unit\"}",
+          "expr": "system_load5{unit=~\"$unit\"}",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "load5",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "system_load15{unit=~\"$unit\"}",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{dimension}}",
+          "legendFormat": "load15",
           "range": true,
-          "refId": "B"
+          "refId": "C"
         }
       ],
       "title": "System load average",
@@ -371,11 +384,11 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "netdata_system_cpu_percentage_average{dimension!=\"idle\", unit=~\"$unit\"}",
+          "expr": "100 - cpu_usage_idle{cpu=\"cpu-total\",unit=~\"$unit\"}",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
-          "legendFormat": "{{dimension}}",
+          "legendFormat": "CPU %",
           "refId": "A"
         }
       ],
@@ -492,11 +505,11 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "netdata_system_ip_kilobits_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_IpExtInOctets{unit=~\"$unit\",name=\"netstat\"}[2m])*8/1000 + rate(nstat_IpExtOutOctets{unit=~\"$unit\",name=\"netstat\"}[2m])*8/1000",
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "Kbits/s",
               "range": true,
               "refId": "A"
             }
@@ -599,10 +612,10 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_system_ipv6_kilobits_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Ip6InOctets{unit=~\"$unit\",name=\"snmp6\"}[2m])*8/1000 + rate(nstat_Ip6OutOctets{unit=~\"$unit\",name=\"snmp6\"}[2m])*8/1000",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "Kbits/s",
               "range": true,
               "refId": "A"
             }
@@ -731,10 +744,10 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_system_ram_MiB_average{dimension!=\"free\", unit=~\"$unit\"}",
+              "expr": "mem_used{unit=~\"$unit\"}/1048576",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "used",
               "range": true,
               "refId": "A"
             },
@@ -744,12 +757,38 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_system_ram_MiB_average{dimension=\"free\", unit=~\"$unit\"}",
+              "expr": "mem_buffered{unit=~\"$unit\"}/1048576",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "buffered",
               "range": true,
               "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "mem_cached{unit=~\"$unit\"}/1048576",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "cached",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "mem_free{unit=~\"$unit\"}/1048576",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "free",
+              "range": true,
+              "refId": "D"
             }
           ],
           "title": "System RAM",
@@ -869,9 +908,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_net_net_kilobits_persec_average{unit=~\"$unit\",dimension=\"received\"}",
+              "expr": "sum(rate(net_bytes_recv{unit=~\"$unit\"}[2m]))*8/1000",
               "instant": false,
-              "legendFormat": "{{family}}",
+              "legendFormat": "recv",
               "range": true,
               "refId": "A"
             }
@@ -966,9 +1005,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "abs(netdata_net_net_kilobits_persec_average{unit=~\"$unit\",dimension=\"sent\"})",
+              "expr": "sum(rate(net_bytes_sent{unit=~\"$unit\"}[2m]))*8/1000",
               "instant": false,
-              "legendFormat": "{{family}}",
+              "legendFormat": "sent",
               "range": true,
               "refId": "A"
             }
@@ -1063,9 +1102,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_net_packets_packets_persec_average{unit=~\"$unit\", dimension=~\"received\"}",
+              "expr": "sum(rate(net_packets_recv{unit=~\"$unit\"}[2m]))",
               "instant": false,
-              "legendFormat": "{{family}}",
+              "legendFormat": "packets/s",
               "range": true,
               "refId": "A"
             }
@@ -1160,9 +1199,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "abs(netdata_net_packets_packets_persec_average{unit=~\"$unit\", dimension=~\"sent\"})",
+              "expr": "sum(rate(net_packets_sent{unit=~\"$unit\"}[2m]))",
               "instant": false,
-              "legendFormat": "{{family}}",
+              "legendFormat": "packets/s",
               "range": true,
               "refId": "A"
             }
@@ -1295,124 +1334,15 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_system_io_KiB_persec_average{unit=~\"$unit\"}",
+              "expr": "sum(rate(diskio_read_bytes{unit=~\"$unit\"}[2m]))/1024 + sum(rate(diskio_write_bytes{unit=~\"$unit\"}[2m]))/1024",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "KiB/s",
               "range": true,
               "refId": "A"
             }
           ],
           "title": "Disk I/O",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Memory paged from/to disk. This is usually the total disk I/O of the system.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "KBs",
-              "unitScale": true
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 40
-          },
-          "id": 14,
-          "links": [],
-          "options": {
-            "legend": {
-              "calcs": [
-                "mean",
-                "lastNotNull",
-                "max",
-                "min",
-                "sum"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "10.3.3",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "exemplar": true,
-              "expr": "netdata_system_pgpgio_KiB_persec_average{unit=~\"$unit\"}",
-              "format": "time_series",
-              "interval": "",
-              "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Memory paged from/to disk",
           "transparent": true,
           "type": "timeseries"
         }
@@ -1535,116 +1465,15 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_system_processes_processes_average{unit=~\"$unit\"}",
+              "expr": "processes_total{unit=~\"$unit\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "total",
               "range": true,
               "refId": "A"
             }
           ],
           "title": "System processes",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Number of new processes created.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "processes/s",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short",
-              "unitScale": true
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 30
-          },
-          "id": 31,
-          "links": [],
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": false
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "10.3.3",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "netdata_system_forks_processes_persec_average{unit=~\"$unit\"}",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Started processes",
           "transparent": true,
           "type": "timeseries"
         },
@@ -1737,116 +1566,15 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_system_active_processes_processes_average{unit=~\"$unit\"}",
+              "expr": "processes_running{unit=~\"$unit\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "running",
               "range": true,
               "refId": "A"
             }
           ],
           "title": "System active processes",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "[Context Switches](https://en.wikipedia.org/wiki/Context_switch), is the switching of the CPU from one process, task or thread to another. If there are many processes or threads willing to execute and very few CPU cores available to handle them, the system is making more context switching to balance the CPU resources among them. The whole process is computationally intensive. The more the context switches, the slower the system gets.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "context switches/s",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short",
-              "unitScale": true
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 37
-          },
-          "id": 35,
-          "links": [],
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": false
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "10.3.3",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "netdata_system_ctxt_context_switches_persec_average{unit=~\"$unit\"}",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "CPU context switches",
           "transparent": true,
           "type": "timeseries"
         }
@@ -1861,139 +1589,6 @@
         }
       ],
       "title": "System overview: processes",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "datasource": {
-        "type": "datasource",
-        "uid": "grafana"
-      },
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 19
-      },
-      "id": 49,
-      "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Idle jitter is calculated by netdata. A thread is spawned that requests to sleep for a few microseconds. When the system wakes it up, it measures how many microseconds have passed. The difference between the requested and the actual duration of the sleep, is the idle jitter. This number is useful in real-time environments, where CPU jitter can affect the quality of the service (like VoIP media gateways).",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "µs",
-              "unitScale": true
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 6,
-            "w": 24,
-            "x": 0,
-            "y": 31
-          },
-          "id": 51,
-          "links": [],
-          "options": {
-            "legend": {
-              "calcs": [
-                "mean",
-                "lastNotNull",
-                "max",
-                "min"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "10.3.3",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "netdata_system_idlejitter_microseconds_lost_persec_average{unit=~\"$unit\"}",
-              "format": "time_series",
-              "instant": false,
-              "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
-              "refId": "A"
-            }
-          ],
-          "title": "CPU idle jitter",
-          "transparent": true,
-          "type": "timeseries"
-        }
-      ],
-      "targets": [
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "grafana"
-          },
-          "refId": "A"
-        }
-      ],
-      "title": "System overview: idle jitter",
       "type": "row"
     },
     {
@@ -2100,10 +1695,10 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_system_intr_interrupts_persec_average{unit=~\"$unit\"}",
+              "expr": "cpu_usage_irq{cpu=\"cpu-total\",unit=~\"$unit\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "IRQ %",
               "range": true,
               "refId": "A"
             }
@@ -2225,10 +1820,10 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_system_interrupts_interrupts_persec_average{unit=~\"$unit\"}",
+              "expr": "cpu_usage_irq{cpu=\"cpu-total\",unit=~\"$unit\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "IRQ %",
               "range": true,
               "refId": "A"
             }
@@ -2376,10 +1971,10 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_system_softirqs_softirqs_persec_average{unit=~\"$unit\"}",
+              "expr": "cpu_usage_softirq{cpu=\"cpu-total\",unit=~\"$unit\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "softirq %",
               "range": true,
               "refId": "A"
             }
@@ -2506,11 +2101,11 @@
               },
               "disableTextWrap": false,
               "editorMode": "code",
-              "expr": "netdata_system_uptime_seconds_average{dimension=\"uptime\", unit=~\"$unit\"}",
+              "expr": "system_uptime{unit=~\"$unit\"}",
               "fullMetaSearch": false,
               "includeNullMetadata": true,
               "instant": false,
-              "legendFormat": "uptime",
+              "legendFormat": "uptime (s)",
               "range": true,
               "refId": "A",
               "useBackend": false
@@ -2641,12 +2236,38 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_system_swap_MiB_average{unit=~\"$unit\"}",
+              "expr": "mem_swap_used{unit=~\"$unit\"}/1048576",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "used",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "mem_swap_free{unit=~\"$unit\"}/1048576",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "free",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "mem_swap_cached{unit=~\"$unit\"}/1048576",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "cached",
+              "range": true,
+              "refId": "C"
             }
           ],
           "title": "System swap",
@@ -2777,9 +2398,9 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "netdata_mem_available_MiB_average{unit=~\"$unit\"}",
+              "expr": "mem_available{unit=~\"$unit\"}/1048576",
               "instant": false,
-              "legendFormat": "Available",
+              "legendFormat": "available",
               "range": true,
               "refId": "A"
             }
@@ -2884,120 +2505,14 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_mem_committed_MiB_average{unit=~\"$unit\"}",
+              "expr": "mem_committed_as{unit=~\"$unit\"}/1048576",
               "instant": false,
-              "legendFormat": "Allocated",
+              "legendFormat": "committed",
               "range": true,
               "refId": "A"
             }
           ],
           "title": "Committed (allocated) memory",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "A [page fault](https://en.wikipedia.org/wiki/Page_fault) is a type of interrupt, called trap, raised by computer hardware when a running program accesses a memory page that is mapped into the virtual address space, but not actually loaded into main memory.\n\nIf the page is loaded in memory at the time the fault is generated, but is not marked in the memory management unit as being loaded in memory, then it is called a minor or soft page fault.\n\nA major page fault is generated when the system needs to load the memory page from disk or swap memory.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "page faults",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none",
-              "unitScale": true
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 24,
-            "x": 0,
-            "y": 55
-          },
-          "id": 144,
-          "links": [],
-          "options": {
-            "legend": {
-              "calcs": [
-                "mean",
-                "lastNotNull",
-                "max",
-                "min",
-                "sum"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "10.3.3",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "netdata_mem_pgfaults_faults_persec_average{unit=~\"$unit\"}",
-              "instant": false,
-              "legendFormat": "{{dimension}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Memory page faults",
           "transparent": true,
           "type": "timeseries"
         }
@@ -3145,9 +2660,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_mem_writeback_MiB_average{unit=~\"$unit\"}",
+              "expr": "mem_write_back{unit=~\"$unit\"}/1048576",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "writeback",
               "range": true,
               "refId": "A"
             }
@@ -3216,9 +2731,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_mem_kernel_MiB_average{unit=~\"$unit\"}",
+              "expr": "(mem_slab{unit=~\"$unit\"} + mem_page_tables{unit=~\"$unit\"})/1048576",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "kernel (slab+pagetables)",
               "range": true,
               "refId": "A"
             }
@@ -3377,11 +2892,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_disk_ops_operations_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(diskio_reads{unit=~\"$unit\"}[2m])",
               "instant": false,
-              "legendFormat": "{{family}}",
+              "legendFormat": "reads/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(diskio_writes{unit=~\"$unit\"}[2m])",
+              "instant": false,
+              "legendFormat": "writes/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "Disk I/O bandwidth",
@@ -3482,9 +3009,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_disk_util___of_time_working_average{unit=~\"$unit\"}",
+              "expr": "rate(diskio_io_time{unit=~\"$unit\"}[2m])",
               "instant": false,
-              "legendFormat": "{{family}}",
+              "legendFormat": "io_time ms/s",
               "range": true,
               "refId": "A"
             }
@@ -3587,9 +3114,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_disk_backlog_milliseconds_average{unit=~\"$unit\"}",
+              "expr": "diskio_iops_in_progress{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "{{family}}",
+              "legendFormat": "{{name}} iops in progress",
               "range": true,
               "refId": "A"
             }
@@ -3692,11 +3219,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_disk_mops_merged_operations_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(diskio_merged_reads{unit=~\"$unit\"}[2m])",
               "instant": false,
-              "legendFormat": "{{family}}",
+              "legendFormat": "{{name}} merged reads/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(diskio_merged_writes{unit=~\"$unit\"}[2m])",
+              "instant": false,
+              "legendFormat": "{{name}} merged writes/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "Average service time",
@@ -3796,119 +3335,14 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_disk_await_milliseconds_operation_average{unit=~\"$unit\"}",
+              "expr": "diskio_io_util{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "{{family}}",
+              "legendFormat": "{{name}} utilization %",
               "range": true,
               "refId": "A"
             }
           ],
           "title": "Disk utilization time",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "The sum of the duration of all completed I/O operations. This number can exceed the interval if the disk is able to execute I/O operations in parallel.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "ms",
-              "unitScale": true
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 37
-          },
-          "id": 176,
-          "options": {
-            "legend": {
-              "calcs": [
-                "mean",
-                "lastNotNull",
-                "max",
-                "min",
-                "sum"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "10.3.3",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "netdata_disk_space_GiB_average{unit=~\"$unit\"}",
-              "instant": false,
-              "legendFormat": "{{family}}-{{dimension}} ",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Disk total I/O time",
           "transparent": true,
           "type": "timeseries"
         }
@@ -3999,7 +3433,7 @@
                   }
                 ]
               },
-              "unit": "kbytes"
+              "unit": "decbytes"
             },
             "overrides": []
           },
@@ -4036,9 +3470,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_disk_inodes_inodes_average{unit=~\"$unit\"}",
+              "expr": "disk_used{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "{{family}}-{{dimension}}",
+              "legendFormat": "{{device}} used",
               "range": true,
               "refId": "A"
             }
@@ -4162,11 +3596,24 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "netdata_net_net_kilobits_persec_average{unit=~\"$unit\",chart=~\"$vpninterface\"}",
+              "expr": "rate(net_bytes_recv{unit=~\"$unit\",interface=~\"$vpninterface\"}[2m])*8/1000",
               "instant": true,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "recv",
               "range": false,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "rate(net_bytes_sent{unit=~\"$unit\",interface=~\"$vpninterface\"}[2m])*8/1000",
+              "instant": true,
+              "legendFormat": "sent",
+              "range": false,
+              "refId": "B"
             }
           ],
           "title": "VPN interface: $vpninterface",
@@ -4284,9 +3731,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_sockstat_sockets_sockets_average{unit=~\"$unit\"}",
+              "expr": "conntrack_ip_conntrack_count{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "conntrack entries",
               "range": true,
               "refId": "A"
             }
@@ -4437,11 +3884,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_packets_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_IpInReceives{unit=~\"$unit\",name=\"snmp\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in packets/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_IpOutRequests{unit=~\"$unit\",name=\"snmp\"}[2m])",
+              "instant": false,
+              "legendFormat": "out packets/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 packets",
@@ -4570,11 +4029,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_errors_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_IpInHdrErrors{unit=~\"$unit\",name=\"snmp\"}[2m]) + rate(nstat_IpInAddrErrors{unit=~\"$unit\",name=\"snmp\"}[2m]) + rate(nstat_IpInDiscards{unit=~\"$unit\",name=\"snmp\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in errors/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_IpOutDiscards{unit=~\"$unit\",name=\"snmp\"}[2m]) + rate(nstat_IpOutNoRoutes{unit=~\"$unit\",name=\"snmp\"}[2m])",
+              "instant": false,
+              "legendFormat": "out errors/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 errors",
@@ -4702,11 +4173,35 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_sockstat_tcp_sockets_sockets_average{unit=~\"$unit\"}",
+              "expr": "nstat_TcpCurrEstab{unit=~\"$unit\",name=\"snmp\"}",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "established",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "netstat_tcp_listen{unit=~\"$unit\"}",
+              "instant": false,
+              "legendFormat": "listening",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "netstat_tcp_time_wait{unit=~\"$unit\"}",
+              "instant": false,
+              "legendFormat": "time_wait",
+              "range": true,
+              "refId": "C"
             }
           ],
           "title": "IPv4 TCP sockets",
@@ -4808,9 +4303,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_tcpsock_active_connections_average{unit=~\"$unit\"}",
+              "expr": "nstat_TcpCurrEstab{unit=~\"$unit\",name=\"snmp\"}",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "established",
               "range": true,
               "refId": "A"
             }
@@ -4914,11 +4409,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_tcpopens_connections_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_TcpActiveOpens{unit=~\"$unit\",name=\"snmp\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "active opens/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_TcpPassiveOpens{unit=~\"$unit\",name=\"snmp\"}[2m])",
+              "instant": false,
+              "legendFormat": "passive opens/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 TCP opens",
@@ -5019,11 +4526,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_tcppackets_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_TcpInSegs{unit=~\"$unit\",name=\"snmp\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in segs/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_TcpOutSegs{unit=~\"$unit\",name=\"snmp\"}[2m])",
+              "instant": false,
+              "legendFormat": "out segs/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 TCP packets",
@@ -5126,11 +4645,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_tcppackets_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_TcpInErrs{unit=~\"$unit\",name=\"snmp\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in errs/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_TcpRetransSegs{unit=~\"$unit\",name=\"snmp\"}[2m])",
+              "instant": false,
+              "legendFormat": "retrans/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 TCP errors",
@@ -5233,11 +4764,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ip_tcpconnaborts_connections_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_TcpExtTCPAbortOnData{unit=~\"$unit\",name=\"netstat\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "on data/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_TcpExtTCPAbortOnTimeout{unit=~\"$unit\",name=\"netstat\"}[2m])",
+              "instant": false,
+              "legendFormat": "on timeout/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "TCP connection aborts",
@@ -5340,11 +4883,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_tcphandshake_events_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_TcpExtListenDrops{unit=~\"$unit\",name=\"netstat\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "listen drops/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_TcpExtListenOverflows{unit=~\"$unit\",name=\"netstat\"}[2m])",
+              "instant": false,
+              "legendFormat": "overflows/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 TCP handshake issues",
@@ -5445,9 +5000,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_sockstat_tcp_mem_KiB_average{unit=~\"$unit\"}",
+              "expr": "netstat_tcp_established{unit=~\"$unit\"} + netstat_tcp_close_wait{unit=~\"$unit\"} + netstat_tcp_time_wait{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "tcp sockets",
               "range": true,
               "refId": "A"
             }
@@ -5577,9 +5132,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_sockstat_udp_sockets_sockets_average{unit=~\"$unit\"}",
+              "expr": "netstat_udp_socket{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "udp sockets",
               "range": true,
               "refId": "A"
             }
@@ -5682,11 +5237,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_udppackets_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_UdpInDatagrams{unit=~\"$unit\",name=\"snmp\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_UdpOutDatagrams{unit=~\"$unit\",name=\"snmp\"}[2m])",
+              "instant": false,
+              "legendFormat": "out/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 UDP packets",
@@ -5787,9 +5354,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_sockstat_udp_mem_KiB_average{unit=~\"$unit\"}",
+              "expr": "netstat_udp_socket{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "udp sockets",
               "range": true,
               "refId": "A"
             }
@@ -5913,9 +5480,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_udperrors_events_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_UdpInErrors{unit=~\"$unit\",name=\"snmp\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "errors/s",
               "range": true,
               "refId": "A"
             }
@@ -6045,11 +5612,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_icmp_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_IcmpInMsgs{unit=~\"$unit\",name=\"snmp\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_IcmpOutMsgs{unit=~\"$unit\",name=\"snmp\"}[2m])",
+              "instant": false,
+              "legendFormat": "out/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 ICMP packets",
@@ -6151,9 +5730,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv4_icmp_errors_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_IcmpInErrors{unit=~\"$unit\",name=\"snmp\"}[2m]) + rate(nstat_IcmpOutErrors{unit=~\"$unit\",name=\"snmp\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "errors/s",
               "range": true,
               "refId": "A"
             }
@@ -6277,11 +5856,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_icmp_messages_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_IcmpInEchos{unit=~\"$unit\",name=\"snmp\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "echo req/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_IcmpInEchoReps{unit=~\"$unit\",name=\"snmp\"}[2m])",
+              "instant": false,
+              "legendFormat": "echo rep/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 ICMP messages",
@@ -6408,11 +5999,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ip_bcast_kilobits_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_IpExtInBcastOctets{unit=~\"$unit\",name=\"netstat\"}[2m])*8/1000",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in Kbits/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_IpExtOutBcastOctets{unit=~\"$unit\",name=\"netstat\"}[2m])*8/1000",
+              "instant": false,
+              "legendFormat": "out Kbits/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 broadcast bandwidth",
@@ -6513,11 +6116,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ip_bcastpkts_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_IpExtInBcastPkts{unit=~\"$unit\",name=\"netstat\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_IpExtOutBcastPkts{unit=~\"$unit\",name=\"netstat\"}[2m])",
+              "instant": false,
+              "legendFormat": "out/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 broadcast packets",
@@ -6646,11 +6261,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ip_ecnpkts_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_IpExtInCEPkts{unit=~\"$unit\",name=\"netstat\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "CE/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_IpExtInECT0Pkts{unit=~\"$unit\",name=\"netstat\"}[2m])",
+              "instant": false,
+              "legendFormat": "ECT0/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv4 ECN statistics",
@@ -6799,11 +6426,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_packets_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Ip6InReceives{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_Ip6OutRequests{unit=~\"$unit\",name=\"snmp6\"}[2m])",
+              "instant": false,
+              "legendFormat": "out/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv6 packets",
@@ -6925,11 +6564,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_ect_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Ip6InECT0Pkts{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "ECT0/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_Ip6InECT1Pkts{unit=~\"$unit\",name=\"snmp6\"}[2m])",
+              "instant": false,
+              "legendFormat": "ECT1/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv6 ECT packets",
@@ -7057,9 +6708,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_sockstat6_tcp_sockets_sockets_average{unit=~\"$unit\"}",
+              "expr": "netstat_tcp_established{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "established",
               "range": true,
               "refId": "A"
             }
@@ -7189,9 +6840,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_sockstat6_udp_sockets_sockets_average{unit=~\"$unit\"}",
+              "expr": "netstat_udp_socket{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "udp sockets",
               "range": true,
               "refId": "A"
             }
@@ -7294,11 +6945,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_udppackets_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Udp6InDatagrams{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_Udp6OutDatagrams{unit=~\"$unit\",name=\"snmp6\"}[2m])",
+              "instant": false,
+              "legendFormat": "out/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv6 UDP packets",
@@ -7400,9 +7063,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_udperrors_events_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Udp6InErrors{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "errors/s",
               "range": true,
               "refId": "A"
             }
@@ -7572,11 +7235,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_mcast_kilobits_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Ip6InMcastOctets{unit=~\"$unit\",name=\"snmp6\"}[2m])*8/1000",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in Kbits/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_Ip6OutMcastOctets{unit=~\"$unit\",name=\"snmp6\"}[2m])*8/1000",
+              "instant": false,
+              "legendFormat": "out Kbits/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv6 multicast bandwidth",
@@ -7718,11 +7393,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_mcastpkts_packets_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Ip6InMcastPkts{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_Ip6OutMcastPkts{unit=~\"$unit\",name=\"snmp6\"}[2m])",
+              "instant": false,
+              "legendFormat": "out/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv6 multicast packets",
@@ -7850,11 +7537,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_icmp_messages_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Icmp6InMsgs{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_Icmp6OutMsgs{unit=~\"$unit\",name=\"snmp6\"}[2m])",
+              "instant": false,
+              "legendFormat": "out/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv6 ICMP messages",
@@ -7956,11 +7655,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_icmperrors_errors_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Icmp6InErrors{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in errors/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_Icmp6OutErrors{unit=~\"$unit\",name=\"snmp6\"}[2m])",
+              "instant": false,
+              "legendFormat": "out errors/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv6 ICMP errors",
@@ -8061,11 +7772,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_icmpechos_messages_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Icmp6InEchos{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_Icmp6OutEchoReplies{unit=~\"$unit\",name=\"snmp6\"}[2m])",
+              "instant": false,
+              "legendFormat": "out/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv6 ICMP echo",
@@ -8166,11 +7889,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_icmprouter_messages_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Icmp6InRouterAdvertisements{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "advert/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_Icmp6OutRouterSolicits{unit=~\"$unit\",name=\"snmp6\"}[2m])",
+              "instant": false,
+              "legendFormat": "solicits/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv6 router messages",
@@ -8271,11 +8006,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_icmpneighbor_messages_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Icmp6InNeighborSolicits{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "solicits/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_Icmp6OutNeighborAdvertisements{unit=~\"$unit\",name=\"snmp6\"}[2m])",
+              "instant": false,
+              "legendFormat": "advert/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv6 neighbor messages",
@@ -8376,9 +8123,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_icmpmldv2_reports_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Icmp6InMLDv2Reports{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "reports/s",
               "range": true,
               "refId": "A"
             }
@@ -8481,11 +8228,23 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "netdata_ipv6_icmprouter_messages_persec_average{unit=~\"$unit\"}",
+              "expr": "rate(nstat_Icmp6InMsgs{unit=~\"$unit\",name=\"snmp6\"}[2m])",
               "instant": false,
-              "legendFormat": "{{dimension}}",
+              "legendFormat": "in/s",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(nstat_Icmp6OutMsgs{unit=~\"$unit\",name=\"snmp6\"}[2m])",
+              "instant": false,
+              "legendFormat": "out/s",
+              "range": true,
+              "refId": "B"
             }
           ],
           "title": "IPv6 ICMP types",
@@ -8562,7 +8321,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(netdata_net_net_kilobits_persec_average{chart=~\"^net.tun.*|^net.tap.*|^net.ipsec.*\"},chart)",
+        "definition": "label_values(net_bytes_recv{unit=~\"$unit\",interface=~\"tun.*|tap.*|ipsec.*|wg.*\"},interface)",
         "hide": 0,
         "includeAll": true,
         "label": "VPN interface",
@@ -8571,7 +8330,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(netdata_net_net_kilobits_persec_average{chart=~\"^net.tun.*|^net.tap.*|^net.ipsec.*\"},chart)",
+          "query": "label_values(net_bytes_recv{unit=~\"$unit\",interface=~\"tun.*|tap.*|ipsec.*|wg.*\"},interface)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
