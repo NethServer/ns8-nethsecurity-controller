@@ -3116,7 +3116,7 @@
               "editorMode": "code",
               "expr": "diskio_iops_in_progress{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "iops in progress",
+              "legendFormat": "{{name}} iops in progress",
               "range": true,
               "refId": "A"
             }
@@ -3221,7 +3221,7 @@
               "editorMode": "code",
               "expr": "rate(diskio_merged_reads{unit=~\"$unit\"}[2m])",
               "instant": false,
-              "legendFormat": "merged reads/s",
+              "legendFormat": "{{name}} merged reads/s",
               "range": true,
               "refId": "A"
             },
@@ -3233,7 +3233,7 @@
               "editorMode": "code",
               "expr": "rate(diskio_merged_writes{unit=~\"$unit\"}[2m])",
               "instant": false,
-              "legendFormat": "merged writes/s",
+              "legendFormat": "{{name}} merged writes/s",
               "range": true,
               "refId": "B"
             }
@@ -3337,129 +3337,12 @@
               "editorMode": "code",
               "expr": "diskio_io_util{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "utilization %",
+              "legendFormat": "{{name}} utilization %",
               "range": true,
               "refId": "A"
             }
           ],
           "title": "Disk utilization time",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "The sum of the duration of all completed I/O operations. This number can exceed the interval if the disk is able to execute I/O operations in parallel.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "ms",
-              "unitScale": true
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 37
-          },
-          "id": 176,
-          "options": {
-            "legend": {
-              "calcs": [
-                "mean",
-                "lastNotNull",
-                "max",
-                "min",
-                "sum"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "10.3.3",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "disk_used{unit=~\"$unit\"}/1073741824",
-              "instant": false,
-              "legendFormat": "used GiB",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "disk_total{unit=~\"$unit\"}/1073741824",
-              "instant": false,
-              "legendFormat": "total GiB",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "title": "Disk total I/O time",
           "transparent": true,
           "type": "timeseries"
         }
@@ -3550,7 +3433,7 @@
                   }
                 ]
               },
-              "unit": "kbytes"
+              "unit": "decbytes"
             },
             "overrides": []
           },
@@ -3587,9 +3470,9 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "disk_inodes_used{unit=~\"$unit\"}",
+              "expr": "disk_used{unit=~\"$unit\"}",
               "instant": false,
-              "legendFormat": "inodes used",
+              "legendFormat": "{{device}} used",
               "range": true,
               "refId": "A"
             }
