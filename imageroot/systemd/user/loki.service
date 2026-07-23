@@ -5,7 +5,7 @@ Before=promtail.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%S/state/environment
+EnvironmentFile=%E/state/environment
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/loki.pid %t/loki.ctr-id
@@ -16,9 +16,9 @@ ExecStart=/usr/bin/podman run \
     --pod-id-file %t/controller.pod-id \
     --replace -d --name loki \
     --volume=loki-data:/loki \
-    --volume %S/etc/loki.yaml:/etc/loki/local-config.yaml:z \
+    --volume %E/etc/loki.yaml:/etc/loki/local-config.yaml:z \
     --network=host \
-    --env-file=%S/state/loki.env \
+    --env-file=%E/state/loki.env \
     ${LOKI_IMAGE} \
     -config.expand-env=true \
     -config.file=/etc/loki/local-config.yaml \
