@@ -6,7 +6,7 @@ After=loki.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%S/state/environment
+EnvironmentFile=%E/state/environment
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/grafana.pid %t/grafana.ctr-id
@@ -18,11 +18,11 @@ ExecStart=/usr/bin/podman run \
     --pod-id-file %t/controller.pod-id \
     --replace -d --name grafana \
     --volume grafana-data:/var/lib/grafana:z \
-    --volume=%S/state/grafana.yml:/etc/grafana/provisioning/datasources/local.yml:z \
-    --volume=%S/etc/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:z \
-    --volume=%S/etc/dashboards/:/etc/grafana/dashboards:z \
+    --volume=%E/state/grafana.yml:/etc/grafana/provisioning/datasources/local.yml:z \
+    --volume=%E/etc/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:z \
+    --volume=%E/etc/dashboards/:/etc/grafana/dashboards:z \
     --network=host \
-    --env-file=%S/state/grafana.env \
+    --env-file=%E/state/grafana.env \
     ${GRAFANA_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/grafana.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/grafana.ctr-id

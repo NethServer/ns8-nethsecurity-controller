@@ -2,12 +2,12 @@
 Description=Podman controller.service
 Requires=vpn.service api.service ui.service proxy.service promtail.service loki.service prometheus.service grafana.service webssh.service timescale.service
 Before=vpn.service api.service ui.service proxy.service promtail.service loki.service prometheus.service grafana.service webssh.service timescale.service
-ConditionPathExists=%S/state/environment
-ConditionPathExists=%S/state/network.env
+ConditionPathExists=%E/state/environment
+ConditionPathExists=%E/state/network.env
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%S/state/environment
+EnvironmentFile=%E/state/environment
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/controller.pid %t/controller.pod-id
