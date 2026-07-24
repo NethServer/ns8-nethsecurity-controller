@@ -1,0 +1,48 @@
+#!/bin/sh
+
+source /etc/openvpn/conf.env
+
+# Send output to stdout to avoid flooding the logs
+/usr/bin/psql $REPORT_DB_URI -c "UPDATE units SET vpn_connected_since = NOW() WHERE uuid = '$common_name';" > /dev/null
+
+# Dynamically assign VPN IP address
+tmp_config=$1
+if [ -z "$tmp_config" ]; then
+  exit 0
+fi
+
+vpn_address=$(/usr/bin/psql "$REPORT_DB_URI" -t -A -c "SELECT vpn_address FROM units WHERE uuid = '$common_name';")
+if [ -n "$vpn_address" ]; then
+  echo "ifconfig-push $vpn_address $OVPN_NETMASK" >> $tmp_config
+else
+  vpn_address=$ifconfig_pool_remote_ip
+fi
+
+# Add route to traefik
+cat <<EOF > /etc/openvpn/proxy/$common_name.yaml
+http:
+  # Add the router
+  routers:
+    router$common_name:
+      entryPoints:
+      - web
+      middlewares:
+      - m$common_name-stripprefix
+      service: service-$common_name
+      rule: PathPrefix(\`/$common_name\`)
+
+  # Add the service
+  services:
+    service-$common_name:
+      loadBalancer:
+        servers:
+        - url: https://$vpn_address:9090/
+        passHostHeader: true
+
+  # Add middleware
+  middlewares:
+    m$common_name-stripprefix:
+      stripPrefix:
+        prefixes:
+          - "/$common_name"
+EOF

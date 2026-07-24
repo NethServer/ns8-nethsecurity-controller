@@ -1,19 +1,16 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "local>NethServer/.github:ns8-automerge"
+    "local>NethServer/.github:ns8-automerge",
+    "customManagers:dockerfileVersions"
   ],
-  "customManagers": [
+  "packageRules": [
     {
-      "customType": "regex",
-      "fileMatch": [
-        "build-images.sh"
+      "matchDepNames": [
+        "NethServer/nethsecurity-ui"
       ],
-      "matchStrings": [
-        "controller_version=\"(?<currentValue>[-0-9a-zA-Z_.]+)\""
-      ],
-      "depNameTemplate": "NethServer/nethsecurity-controller",
-      "datasourceTemplate": "github-releases"
+      "matchUpdateTypes": "minor",
+      "automerge": false
     }
   ]
 }
