@@ -1,0 +1,9 @@
+# Re-include the Go "logs" package: the repo-root .gitignore ignores "logs"
+!api/logs/
+
+# Runtime artifacts from the API server / VPN PKI — never commit
+api/api
+api/credentials/
+api/data/
+api/secrets/
+api/ovpn/

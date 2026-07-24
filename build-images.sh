@@ -9,7 +9,6 @@ images=()
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
 reponame="nethsecurity-controller"
-controller_version="2.3.11"
 promtail_image="docker.io/grafana/promtail:3.6.11"
 loki_image="docker.io/grafana/loki:2.9.17"
 prometheus_image="docker.io/prom/prometheus:v3.13.1"
@@ -53,6 +52,19 @@ buildah commit "${webssh}" "${repobase}/webssh"
 # Append the image URL to the images array
 images+=("${repobase}/webssh")
 
+# Build the controller service images (api, vpn, proxy, ui) from the vendored
+# sources under controller/. The default (last) stage `dist` is built, so the
+# api Containerfile's `test` stage does not run at build time.
+for svc in api vpn proxy ui; do
+    img="${repobase}/nethsecurity-${svc}"
+    echo "Build ${img} from controller/${svc}/Containerfile"
+    buildah build --layers \
+        --file "controller/${svc}/Containerfile" \
+        --tag "${img}" \
+        "controller/${svc}"
+    images+=("${img}")
+done
+
 # Create a new empty container image
 container=$(buildah from scratch)
 
@@ -77,7 +89,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm node:tunadm,portsadm" \
     --label="org.nethserver.min-core=3.12.4-0" \
     --label="org.nethserver.tcp-ports-demand=11" \
-    --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn:$controller_version ghcr.io/nethserver/nethsecurity-api:$controller_version ghcr.io/nethserver/nethsecurity-ui:$controller_version ghcr.io/nethserver/nethsecurity-proxy:$controller_version $promtail_image $loki_image $prometheus_image $grafana_image ghcr.io/nethserver/webssh:${IMAGETAG:-latest} $timescale_image" \
+    --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn:${IMAGETAG:-latest} ghcr.io/nethserver/nethsecurity-api:${IMAGETAG:-latest} ghcr.io/nethserver/nethsecurity-ui:${IMAGETAG:-latest} ghcr.io/nethserver/nethsecurity-proxy:${IMAGETAG:-latest} $promtail_image $loki_image $prometheus_image $grafana_image ghcr.io/nethserver/webssh:${IMAGETAG:-latest} $timescale_image" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
