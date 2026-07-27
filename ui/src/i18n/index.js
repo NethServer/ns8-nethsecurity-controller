@@ -7,7 +7,10 @@ export function loadLanguage(lang, i18n) {
       i18n.locale = lang;
     })
     .catch((error) => {
-      console.warn(`Cannot import ${lang} language messages, falling back to English.`, error);
+      console.warn(
+        `Cannot import ${lang} language messages, falling back to English.`,
+        error
+      );
       // fallback to english
       if (lang !== "en") {
         loadLanguage("en", i18n);

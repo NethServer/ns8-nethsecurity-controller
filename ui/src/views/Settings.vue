@@ -210,19 +210,31 @@
                         $t("settings.maxmind_license_tooltip")
                       }}</template>
                     </NsTextInput>
-                    <NsTextInput v-model.trim="tun_mtu" ref="tun_mtu"
-                      :invalid-message="$t(error.tun_mtu)" type="number" :label="$t('settings.tun_mtu')"
-                      :helper-text="$t('settings.tun_mtu_helper')" :disabled="stillLoading">
+                    <NsTextInput
+                      v-model.trim="tun_mtu"
+                      ref="tun_mtu"
+                      :invalid-message="$t(error.tun_mtu)"
+                      type="number"
+                      :label="$t('settings.tun_mtu')"
+                      :helper-text="$t('settings.tun_mtu_helper')"
+                      :disabled="stillLoading"
+                    >
                       <template #tooltip>{{
-                          $t("settings.tun_mtu_tooltip")
-                        }}</template>
+                        $t("settings.tun_mtu_tooltip")
+                      }}</template>
                     </NsTextInput>
-                    <NsTextInput v-model.trim="mssfix" ref="mssfix"
-                      :invalid-message="$t(error.mssfix)" type="number" :label="$t('settings.mssfix')"
-                      :helper-text="$t('settings.mssfix_helper')" :disabled="stillLoading">
+                    <NsTextInput
+                      v-model.trim="mssfix"
+                      ref="mssfix"
+                      :invalid-message="$t(error.mssfix)"
+                      type="number"
+                      :label="$t('settings.mssfix')"
+                      :helper-text="$t('settings.mssfix_helper')"
+                      :disabled="stillLoading"
+                    >
                       <template #tooltip>{{
-                          $t("settings.mssfix_tooltip")
-                        }}</template>
+                        $t("settings.mssfix_tooltip")
+                      }}</template>
                     </NsTextInput>
                   </div>
                   <div class="mg-top-xxlg">
@@ -376,7 +388,7 @@ export default {
         maxmind_license: "",
         tun_mtu: "",
         mssfix: "",
-        allowed_ips: ""
+        allowed_ips: "",
       },
     };
   },
@@ -523,7 +535,17 @@ export default {
       this.clearErrors(this);
       this.validationErrorDetails = [];
       let isValidationOk = true;
-      let fields = ["host", "cn", "network", "netmask", "user", "loki_retention", "prometheus_retention", "tun_mtu", "mssfix"];
+      let fields = [
+        "host",
+        "cn",
+        "network",
+        "netmask",
+        "user",
+        "loki_retention",
+        "prometheus_retention",
+        "tun_mtu",
+        "mssfix",
+      ];
 
       // On first config the password must be non-empty
       if (this.firstConfig) {
