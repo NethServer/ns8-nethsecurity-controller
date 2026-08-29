@@ -7,7 +7,7 @@ Requires=api.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%S/state/environment
+EnvironmentFile=%E/state/environment
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/.pid %t/ui.ctr-id
@@ -18,7 +18,7 @@ ExecStart=/usr/bin/podman run \
     --pod-id-file %t/controller.pod-id \
     --replace -d --name ui \
     --network=host \
-    --env-file=%S/state/network.env \
+    --env-file=%E/state/network.env \
     ${NETHSECURITY_UI_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/ui.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/ui.ctr-id

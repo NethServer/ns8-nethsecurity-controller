@@ -6,7 +6,7 @@ After=controller.service vpn.service timescale.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%S/state/environment
+EnvironmentFile=%E/state/environment
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/api.pid %t/api.ctr-id
@@ -21,14 +21,14 @@ ExecStart=/usr/bin/podman run \
     --volume api-secrets:/nethsecurity-api/secrets/:z \
     --volumes-from=vpn \
     --network=host \
-    --env-file=%S/state/network.env \
-    --env-file=%S/state/secret.env \
-    --env-file=%S/state/config.env \
-    --env-file=%S/state/promtail.env \
-    --env-file=%S/state/subscription.env \
-    --env-file=%S/state/db.env \
-    --env-file=%S/state/platform.env \
-    --env-file=%S/state/api.env \
+    --env-file=%E/state/network.env \
+    --env-file=%E/state/secret.env \
+    --env-file=%E/state/config.env \
+    --env-file=%E/state/promtail.env \
+    --env-file=%E/state/subscription.env \
+    --env-file=%E/state/db.env \
+    --env-file=%E/state/platform.env \
+    --env-file=%E/state/api.env \
     ${NETHSECURITY_API_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/api.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/api.ctr-id

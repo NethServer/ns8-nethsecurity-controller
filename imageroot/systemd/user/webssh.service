@@ -6,8 +6,8 @@ After=vpn.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%S/state/environment
-EnvironmentFile=%S/state/network.env
+EnvironmentFile=%E/state/environment
+EnvironmentFile=%E/state/network.env
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/.pid %t/webssh.ctr-id
