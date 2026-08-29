@@ -9,7 +9,7 @@ images=()
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
 reponame="nethsecurity-controller"
-controller_version="2.3.12"
+controller_version="pr-293"
 promtail_image="docker.io/grafana/promtail:3.6.11"
 loki_image="docker.io/grafana/loki:2.9.17"
 prometheus_image="docker.io/prom/prometheus:v3.13.2"
