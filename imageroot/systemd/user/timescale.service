@@ -5,10 +5,10 @@ Wants=controller.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%S/state/environment
-EnvironmentFile=%S/state/secret.env
-EnvironmentFile=%S/state/db.env
-WorkingDirectory=%S/state
+EnvironmentFile=%E/state/environment
+EnvironmentFile=%E/state/secret.env
+EnvironmentFile=%E/state/db.env
+WorkingDirectory=%E/state
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/timescale.pid %t/timescale.ctr-id
@@ -19,7 +19,7 @@ ExecStart=/usr/bin/podman run \
     --pod-id-file %t/controller.pod-id \
     --replace -d --name timescale \
     --volume=timescale-data:/var/lib/postgresql/data \
-    --env-file=%S/state/db.env \
+    --env-file=%E/state/db.env \
     --network=host \
     ${TIMESCALEDB_IMAGE} -p ${POSTGRES_PORT} -h 127.0.0.1
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/timescale.ctr-id -t 10
