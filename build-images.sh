@@ -85,7 +85,7 @@ buildah config --entrypoint=/ \
         $loki_image \
         $prometheus_image \
         $grafana_image \
-        ghcr.io/nethserver/webssh:${IMAGETAG:-latest}
+        ghcr.io/nethserver/webssh:${IMAGETAG:-latest} \
         $timescale_image" \
     "${container}"
 # Commit the image
