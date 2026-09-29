@@ -77,7 +77,16 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm node:tunadm,portsadm" \
     --label="org.nethserver.min-core=3.20.1" \
     --label="org.nethserver.tcp-ports-demand=11" \
-    --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn:$controller_version ghcr.io/nethserver/nethsecurity-api:$controller_version ghcr.io/nethserver/nethsecurity-ui:$controller_version ghcr.io/nethserver/nethsecurity-proxy:$controller_version $promtail_image $loki_image $prometheus_image $grafana_image ghcr.io/nethserver/webssh:${IMAGETAG:-latest} $timescale_image" \
+    --label="org.nethserver.images=ghcr.io/nethserver/nethsecurity-vpn@sha256:d194cac516c731c3a8db5d9a481de44c0cb351a38d36b925e0c3ac4e722347f4 \
+        ghcr.io/nethserver/nethsecurity-api@sha256:cb0ffa677380d98203e42d696ee9e6d02d286316cc936215b7165461068e27aa \
+        ghcr.io/nethserver/nethsecurity-ui@sha256:8fc362bf01294ce59b886a876776d838798d6457f87f5c2687ba6e0a3ef02395 \
+        ghcr.io/nethserver/nethsecurity-proxy@sha256:34ec3ab6ee0be6cc5ea0b0fee9a0b033db89cbb6081ed669b27a4c5137c57d31 \
+        $promtail_image \
+        $loki_image \
+        $prometheus_image \
+        $grafana_image \
+        ghcr.io/nethserver/webssh:${IMAGETAG:-latest}
+        $timescale_image" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
