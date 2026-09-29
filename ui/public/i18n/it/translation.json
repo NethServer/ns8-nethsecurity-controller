@@ -1,7 +1,7 @@
 {
     "error": {
         "404": "Risorsa non trovata",
-        "network_error": "Errore di rete. Controlla la connessione e ricarica la pagina.",
+        "network_error": "Errore di rete",
         "error": "Errore",
         "validation_error": "Errore di validazione",
         "cannot_retrieve_installed_modules": "Impossibile elencare moduli installati",
