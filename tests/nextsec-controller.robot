@@ -4,6 +4,8 @@ Library    SSHLibrary
 *** Variables ***
 ${ADMIN_USER}    admin
 ${ADMIN_PASSWORD}    Nethesis,1234
+@{DASHBOARD_UIDS}    ady5vjxjqywowd    liz0yRCZz    MQHVDmtWk    W3S__804z    b14a1181-a2ee-4df4-a732-888e0190037f
+...    c8d43e5f-068e-4cac-9283-2318d9e1911b    fe0af3cb-9be0-4b2a-8ccb-86704956cf2e    dd395331-5dc0-4172-b243-8646c0ca3ccd    fdxlb58zxvpj4f
 
 *** Test Cases ***
 Check if nethsecurity-controller is installed correctly
@@ -40,6 +42,14 @@ Check if admin interface is accessible
 Check if grafana is accessible
     Wait Until Keyword Succeeds    60 times    10 seconds    Access Grafana
 
+Check if grafana datasources are healthy
+    Wait Until Keyword Succeeds    30 times    10 seconds    Grafana Datasource Is Healthy    prometheus
+    Wait Until Keyword Succeeds    30 times    10 seconds    Grafana Datasource Is Healthy    loki
+    Wait Until Keyword Succeeds    30 times    10 seconds    Grafana Datasource Is Healthy    timescale
+
+Check if grafana dashboards are provisioned
+    Wait Until Keyword Succeeds    30 times    10 seconds    Grafana Dashboards Are Provisioned
+
 Check if loki is running
     ${output}  ${rc} =    Execute Command    runagent -m ${module_id} systemctl --user is-active loki.service
     ...    return_rc=True
@@ -51,6 +61,28 @@ Check if prometheus is running
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${output}    active
+
+Check if prometheus is ready
+    ${port} =    Read Module Env    prometheus.env    PROMETHEUS_PORT
+    ${path} =    Read Module Env    prometheus.env    PROMETHEUS_PATH
+    ${user} =    Read Module Env    secret.env    PROMETHEUS_AUTH_USERNAME
+    ${pass} =    Read Module Env    secret.env    PROMETHEUS_AUTH_PASSWORD
+    Set Suite Variable    ${prom_url}    http://127.0.0.1:${port}${path}
+    Set Suite Variable    ${prom_auth}    ${user}:${pass}
+    Wait Until Keyword Succeeds    30 times    5 seconds    Prometheus Request    /-/ready
+
+Check if prometheus requires authentication
+    ${out} =    Execute Command    curl -s -o /dev/null -w '\%{http_code}' '${prom_url}/api/v1/status/buildinfo'
+    Should Be Equal    ${out}    401
+
+Check if prometheus configuration is loaded
+    ${out} =    Prometheus Request    /api/v1/status/config
+    Should Contain    ${out}    "status":"success"
+    Should Contain    ${out}    job_name: node
+    Should Contain    ${out}    job_name: loki
+
+Check if prometheus scrapes loki
+    Wait Until Keyword Succeeds    30 times    10 seconds    Prometheus Target Is Up    loki
 
 Check if promtail is running
     ${output}  ${rc} =    Execute Command    runagent -m ${module_id} systemctl --user is-active promtail.service
@@ -97,6 +129,45 @@ Access Grafana
     ...    return_rc=True  return_stdout=True  return_stderr=True
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${out}    "name":"Main Org."
+
+Grafana Request
+    [Arguments]    ${path}
+    ${out}  ${err}  ${rc} =    Execute Command    curl -s -S -f -k -L -u '${ADMIN_USER}:${ADMIN_PASSWORD}' -H "Host: controller.dom.test" 'https://127.0.0.1/grafana${path}'
+    ...    return_rc=True  return_stdout=True  return_stderr=True
+    Should Be Equal As Integers    ${rc}  0    ${err}
+    RETURN    ${out}
+
+Grafana Datasource Is Healthy
+    [Arguments]    ${uid}
+    ${out} =    Grafana Request    /api/datasources/uid/${uid}/health
+    Should Contain    ${out}    "status":"OK"
+
+Grafana Dashboards Are Provisioned
+    ${out} =    Grafana Request    /api/search?type=dash-db
+    FOR    ${uid}    IN    @{DASHBOARD_UIDS}
+        Should Contain    ${out}    "uid":"${uid}"
+    END
+
+Read Module Env
+    [Arguments]    ${file}    ${key}
+    ${out}  ${rc} =    Execute Command    runagent -m ${module_id} sed -n 's/^${key}=//p' ${file}
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Not Be Empty    ${out}
+    RETURN    ${out}
+
+Prometheus Request
+    [Arguments]    ${path}
+    ${out}  ${err}  ${rc} =    Execute Command    curl -s -S -f -u '${prom_auth}' '${prom_url}${path}'
+    ...    return_rc=True  return_stdout=True  return_stderr=True
+    Should Be Equal As Integers    ${rc}  0    ${err}
+    RETURN    ${out}
+
+Prometheus Target Is Up
+    [Arguments]    ${job}
+    ${out} =    Prometheus Request    /api/v1/query?query=up%7Bjob%3D%22${job}%22%7D
+    Should Contain    ${out}    "job":"${job}"
+    Should Match Regexp    ${out}    "value":\\[[0-9.]+,"1"\\]
 
 Check API Health
     ${out}  ${err}  ${rc} =    Execute Command    curl -s -k -H "Host: controller.dom.test" https://127.0.0.1/api/health
