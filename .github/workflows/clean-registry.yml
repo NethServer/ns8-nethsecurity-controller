@@ -12,5 +12,5 @@ jobs:
     steps:
       - uses: NethServer/ns8-github-actions/.github/actions/delete-image@v1
         with:
-          images: "nethsecurity-controller webssh"
+          images: "nethsecurity-controller webssh nethsecurity-vpn nethsecurity-api nethsecurity-ui nethsecurity-proxy"
           delete_image_token: ${{ secrets.IMAGES_CLEANUP_TOKEN }}

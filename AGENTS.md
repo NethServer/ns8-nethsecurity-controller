@@ -4,28 +4,53 @@ This file provides guidance to AI agents when working with code in this reposito
 
 ## Repository overview
 
-This is an **NS8 module** (`ns8-nethsecurity-controller`) that packages and configures an instance of [nethsecurity-controller](https://github.com/NethServer/nethsecurity-controller) on a NethServer 8 node. A single controller instance manages a fleet of NethSecurity firewall units over an OpenVPN tunnel, collecting their logs/metrics and exposing a Vue cluster-admin UI.
+This is an **NS8 module** (`ns8-nethsecurity-controller`) that packages and configures an instance of nethsecurity-controller on a NethServer 8 node. A single controller instance manages a fleet of NethSecurity firewall units over an OpenVPN tunnel, collecting their logs/metrics and exposing a Vue cluster-admin UI.
 
 The module's containers run as one systemd-managed Podman pod:
-- `nethsecurity-api` — Go REST API (source lives in the separate `NethServer/nethsecurity-controller` repo, **not** in this repo; only consumed as a prebuilt image)
-- `nethsecurity-vpn` — OpenVPN server (external image)
-- `nethsecurity-ui` — lighttpd static UI server (external image; distinct from this repo's own `ui/`)
-- `nethsecurity-proxy` — Traefik reverse proxy (external image)
+- `nethsecurity-api` — Go REST API (`controller/api/`)
+- `nethsecurity-vpn` — OpenVPN server (`controller/vpn/`)
+- `nethsecurity-ui` — lighttpd serving the NethSecurity UI built from `NethServer/nethsecurity-ui` (`controller/ui/`; distinct from this repo's own `ui/`)
+- `nethsecurity-proxy` — Traefik reverse proxy (`controller/proxy/`)
 - `promtail` / `loki` — log shipping and storage
 - `prometheus` — metrics scraping
 - `timescale` — TimescaleDB for network-traffic/DPI/VPN time-series data
 - `grafana` — dashboards over Prometheus + Loki + Timescale
 - `webssh` — web SSH client, built locally from upstream `huashengdun/webssh` with a custom template
 
-Only the module glue (`imageroot/`), the cluster-admin frontend (`ui/`), and the `webssh` UI override are implemented in this repo; the API server, VPN, UI-proxy, and other images are pulled prebuilt and pinned in `build-images.sh`.
+The module glue (`imageroot/`), the cluster-admin frontend (`ui/`), the `webssh` UI override and the controller services (`controller/`) are implemented in this repo; the other images are pulled prebuilt and pinned in `build-images.sh`.
 
 ## Build
 
 `build-images.sh` builds images with **buildah** (no top-level Containerfile — built imperatively via `buildah from/add/config/commit`). It:
 1. Builds `webssh` from `python:3.13.14-alpine`, unpacking the upstream `huashengdun/webssh` release and replacing its UI with `webssh/index.html`.
-2. Builds the Vue `ui/` app in a `node:24.17.0-slim` builder container (`corepack enable && yarn install --frozen-lockfile && yarn build`), then assembles the main `nethsecurity-controller` image from `scratch` with `imageroot/` → `/imageroot` and `ui/dist` → `/ui`, plus NS8 image labels (`org.nethserver.authorizations`, `org.nethserver.min-core`, `org.nethserver.images`, etc.).
+2. Builds `nethsecurity-{vpn,api,ui,proxy}` with `buildah build --target dist` from `controller/<service>/Containerfile`. The module references them with the same `IMAGETAG` as the module image.
+3. Builds the Vue `ui/` app in a `node:24.17.0-slim` builder container (`corepack enable && yarn install --frozen-lockfile && yarn build`), then assembles the main `nethsecurity-controller` image from `scratch` with `imageroot/` → `/imageroot` and `ui/dist` → `/ui`, plus NS8 image labels (`org.nethserver.authorizations`, `org.nethserver.min-core`, `org.nethserver.images`, etc.).
 
-Version pins for all external images (`controller_version`, `promtail_image`, `loki_image`, `prometheus_image`, `grafana_image`, `timescale_image`, `webssh_version`) live at the top of `build-images.sh`. `controller_version` is kept in sync automatically both by Renovate (custom regex manager in `renovate.json`) and by the nightly `update-controller.yml` workflow.
+Version pins for all external images (`promtail_image`, `loki_image`, `prometheus_image`, `grafana_image`, `timescale_image`, `webssh_version`) live at the top of `build-images.sh`. The nethsecurity-ui version is the `UI_VERSION` ARG in `controller/ui/Containerfile`, bumped by Renovate.
+
+## Controller services (`controller/`)
+
+`api/`, `vpn/`, `proxy/`, `ui/` each hold a Containerfile; `controller.te` is the SELinux policy. `ui-new/` is a Vue 3/Vite UI, not built or tested in CI yet.
+
+Dev environment: `controller/dev.sh start|stop` runs a local pod with all services plus TimescaleDB and writes `api.env`. It needs a `tunsec` device, created once as root:
+
+```bash
+sudo ip tuntap add dev tunsec mod tun
+sudo ip addr add 172.21.0.1/16 dev tunsec
+sudo ip link set dev tunsec up
+```
+
+`dev.sh` defaults to images tagged with the current branch (as published by CI); run `IMAGE_TAG=latest ./dev.sh start` for images built locally with `build-images.sh`. `controller/test/smoke.sh` runs `build-images.sh`, starts the pod and checks login, units and health.
+
+Go API tests need TimescaleDB running. Use the image pinned as `timescale_image` in `build-images.sh`:
+
+```bash
+podman run --rm -d --name timescaledb -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=report <timescale_image>
+cd controller/api && go test ./...
+podman stop timescaledb
+```
+
+Add or update tests for any API change, and keep the README in each service directory up to date. Commit scope for controller changes is the service (`api`, `vpn`, `ui`, `proxy`), e.g. `fix(vpn): resolve authentication handshake failure`.
 
 ## UI development (`ui/`)
 
@@ -67,8 +92,8 @@ Integration tests use **Robot Framework** driven over SSH against a live NS8 nod
 
 ## CI (`.github/workflows/`)
 
-All workflows are thin wrappers around reusable workflows in `NethServer/ns8-github-actions`; there is no dedicated local lint job:
+Most workflows are thin wrappers around reusable workflows in `NethServer/ns8-github-actions`; there is no dedicated local lint job:
 - `publish-images.yml` — on push, runs `build-images.sh` via `publish-branch.yml@v1`; also runs `module-info.yml@v1` and (on stable/latest releases) `scan-with-trivy.yml@v1`.
 - `test-module.yml` — runs the Robot Framework suite after images publish, or manually via `workflow_dispatch`.
-- `update-controller.yml` — nightly cron that bumps `controller_version` in `build-images.sh` and opens a PR.
+- `controller-tests.yml` — Go API tests and `controller/test/smoke.sh`, on push/PR touching `controller/`.
 - `build-apidoc.yml` / `clean-apidoc.yml` — build/clean API docs from `validate-input.json`/`validate-output.json` changes.
