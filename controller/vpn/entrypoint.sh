@@ -9,6 +9,7 @@ ovpn_port=${OVPN_UDP_PORT:-1194}
 tun=${OVPN_TUN:-tunsec}
 tun_mtu=${OVPN_TUN_MTU:-1500}
 mssfix=${OVPN_MSSFIX:-1450}
+max_clients=${OVPN_MAX_CLIENTS:-1024}
 
 if [ ! -f /etc/openvpn/pki/ca.crt ]; then
     cd /etc/openvpn
@@ -50,6 +51,8 @@ client-config-dir /etc/openvpn/ccd
 ifconfig-pool-persist host-to-net.pool 0
 
 port $ovpn_port
+max-clients $max_clients
+explicit-exit-notify 1
 script-security 3
 float
 multihome

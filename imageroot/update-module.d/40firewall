@@ -11,6 +11,7 @@ import json
 import sys
 import agent
 import os
+import ipaddress
 
 (start,end) = os.environ["TCP_PORTS_RANGE"].split('-')
 ports = [*range(int(start), int(end)+1)]
@@ -26,8 +27,7 @@ server_address = config["ovpn_network"].removesuffix('.0') + '.1'
 network = agent.read_envfile('network.env')
 
 tun = network.get('OVPN_TUN')
-bits = sum(bin(int(x)).count('1') for x in config["ovpn_netmask"].split('.'))
-cidr = f'{config["ovpn_network"]}/{bits}'
+cidr = ipaddress.IPv4Network(f'{config["ovpn_network"]}/{config["ovpn_netmask"]}').with_prefixlen
 rules = [
     f'rule family=ipv4 priority=-100 source address={server_address} destination address={cidr} accept',
     f'rule family=ipv4 priority=-99 source address={cidr} destination address={server_address} port port={ports[4]} protocol=tcp accept',

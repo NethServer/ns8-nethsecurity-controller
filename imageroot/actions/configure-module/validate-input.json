@@ -8,8 +8,8 @@
             "api_user": "admin",
             "api_password": "admin",
             "host": "controller.nethserver.org",
-            "ovpn_network": "127.2.10.0",
-            "ovpn_netmask": "255.255.0.0",
+            "ovpn_network": "172.20.16.0",
+            "ovpn_netmask": "255.255.240.0",
             "ovpn_cn": "nethsec",
             "loki_retention": 180,
             "prometheus_retention": 15,
@@ -47,12 +47,12 @@
         "ovpn_network": {
             "type": "string",
             "format": "ipv4",
-            "description": "VPN client network, like '127.2.1.0.0'"
+            "description": "VPN client network, like '172.20.16.0'. It can't change after the first configuration"
         },
         "ovpn_netmask": {
             "type": "string",
             "format": "ipv4",
-            "description": "VPN client netmask, like '255.255.0.0'"
+            "description": "VPN client netmask, from '255.255.240.0' (/20) to '255.255.255.0' (/24). It can't change after the first configuration"
         },
         "ovpn_cn": {
             "type": "string",

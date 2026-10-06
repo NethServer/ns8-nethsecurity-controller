@@ -635,9 +635,7 @@ export default {
       }
 
       // validate netmask
-      const netmask_re = new RegExp(
-        /^(255|254|252|248|240|224|192|128|0)\.(255|254|252|248|240|224|192|128|0)\.(255|254|252|248|240|224|192|128|0)\.(0|128|192|224|240|248|252|254|255)$/
-      );
+      const netmask_re = new RegExp(/^255\.255\.(240|248|252|254|255)\.0$/);
       if (!netmask_re.test(this.netmask)) {
         this.error.netmask = this.$t("error.invalid_netmask");
         this.focusElement("netmask");
