@@ -29,16 +29,27 @@ except ipaddress.NetmaskValueError:
     validation_failed('ovpn_netmask', ovpn_netmask, 'invalid_netmask')
 except ValueError:
     validation_failed('ovpn_network', ovpn_network, 'invalid_network')
-if not 20 <= vpn_network.prefixlen <= 24:
+if vpn_network.prefixlen > 24:
     validation_failed('ovpn_netmask', ovpn_netmask, 'netmask_out_of_range')
+
+with open('config.json', 'r') as cf:
+    config = json.load(cf)
+
+# Units keep their stored VPN address, it must stay inside the new network
+if not request.get('force', False):
+    if vpn_network.prefixlen < 20:
+        validation_failed('ovpn_netmask', ovpn_netmask, 'netmask_out_of_range')
+    current_network = ipaddress.IPv4Network(f'{config["ovpn_network"]}/{config["ovpn_netmask"]}')
+    if ovpn_network != config['ovpn_network']:
+        validation_failed('ovpn_network', ovpn_network, 'network_change_not_supported')
+    if vpn_network.prefixlen > current_network.prefixlen:
+        validation_failed('ovpn_netmask', ovpn_netmask, 'netmask_shrink_not_supported')
 
 subprocess.run(['systemctl', '--user', 'stop', 'controller.service'], check=True)
 
 network = agent.read_envfile('network.env')
 agent.assert_exp(agent.remove_tun(network.get('OVPN_TUN')))
 
-with open('config.json', 'r') as cf:
-    config = json.load(cf)
 config['ovpn_network'] = ovpn_network
 config['ovpn_netmask'] = ovpn_netmask
 with open('config.json', 'w') as cf:

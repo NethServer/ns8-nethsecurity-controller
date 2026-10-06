@@ -75,6 +75,10 @@ Run `set-vpn-network`, e.g. to widen a `/24` to a `/20`:
     api-cli run module/nethsecurity-controller1/set-vpn-network --data '{"ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.240.0"}'
 
 The network address must be aligned to the netmask: `172.19.64.0` is valid for a `/20`, `172.19.65.0` is not.
+Only expand the network: keep the same network address and widen the netmask, units keep their VPN IP.
+Shrinking the network makes units with an IP outside it lose their connection entirely, changing the network address does it for all units.
+The action rejects both, as well as netmasks outside `/20`-`/24`.
+Add `"force": true` to skip these checks and allow netmasks wider than `/20`, `/24` is still the limit: units that lost the connection **must be removed and added again**.
 The action stops the controller, creates the tun and the firewall rules again and starts the controller. Units reconnect on their own.
 
 ## Module overview

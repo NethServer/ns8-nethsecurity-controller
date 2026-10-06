@@ -22,11 +22,13 @@ def validation_failed(field, value, error):
     json.dump([{'field': field, 'parameter': field, 'value': value, 'error': error}], fp=sys.stdout)
     sys.exit(2)
 
+first_config = False
 try:
     with open('config.json', 'r') as tmp:
         config = json.load(tmp)
 except:
     config = request
+    first_config = True
 
 ovpn_network = request['ovpn_network']
 ovpn_netmask = request['ovpn_netmask']
@@ -43,7 +45,8 @@ except ipaddress.NetmaskValueError:
     validation_failed('netmask', ovpn_netmask, 'invalid_netmask')
 except ValueError:
     validation_failed('network', ovpn_network, 'invalid_network')
-if not 20 <= vpn_network.prefixlen <= 24:
+# set-vpn-network with force can store any netmask
+if first_config and not 20 <= vpn_network.prefixlen <= 24:
     validation_failed('netmask', ovpn_netmask, 'netmask_out_of_range')
 
 for path in ['loki_path', 'prometheus_path', 'webssh_path']:
