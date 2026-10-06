@@ -7,25 +7,26 @@
 
 import json
 import subprocess
-import os
 import sys
 import agent
+
+db = agent.read_envfile('db.env')
+
+def count(table):
+    p = subprocess.run(["/usr/bin/podman", "exec", "timescale", "psql", "-U", db["POSTGRES_USER"], "-p", db["POSTGRES_PORT"], "-tAc", f"SELECT count(*) FROM {table}"], capture_output=True, text=True, check=True)
+    return int(p.stdout.strip())
 
 units = 0
 users = 0
 try:
-    p = subprocess.run(["/usr/bin/podman", "exec", "-ti", "vpn", "find", "/etc/openvpn/ccd", "-type", "f"], capture_output=True, text=True)
-    units = len(p.stdout.split("\n")) - 1
+    units = count("units")
 except Exception as ex:
     print(agent.SD_ERR, ex, file=sys.stderr)
-    units = 0
 
 try:
-    p = subprocess.run(["/usr/bin/podman", "exec", "-ti", "api", "sqlite3", "/nethsecurity-api/data/db.sqlite", "select count(*) from accounts;"], capture_output=True, text=True)
-    users = int(p.stdout.strip())
+    users = count("accounts")
 except Exception as ex:
     print(agent.SD_ERR, ex, file=sys.stderr)
-    users = 0
 
 json.dump({
     "units": units,
