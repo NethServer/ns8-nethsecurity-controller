@@ -1,19 +1,30 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "local>NethServer/.github:ns8-automerge"
+    "local>NethServer/.github:ns8-automerge",
+    "customManagers:dockerfileVersions"
   ],
   "customManagers": [
     {
       "customType": "regex",
+      "description": "Bump the first image tag following a `renovate: datasource=... depName=...` comment",
       "fileMatch": [
-        "build-images.sh"
+        "^controller/dev\\.sh$",
+        "^controller/README\\.md$",
+        "^\\.github/workflows/controller-tests\\.yml$"
       ],
       "matchStrings": [
-        "controller_version=\"(?<currentValue>[-0-9a-zA-Z_.]+)\""
+        "renovate: datasource=(?<datasource>[a-z-]+) depName=(?<depName>\\S+)[\\s\\S]*?\\s[^\\s:]+/[^\\s:]+:(?<currentValue>[-0-9a-zA-Z_.]+)"
+      ]
+    }
+  ],
+  "packageRules": [
+    {
+      "matchDepNames": [
+        "NethServer/nethsecurity-ui"
       ],
-      "depNameTemplate": "NethServer/nethsecurity-controller",
-      "datasourceTemplate": "github-releases"
+      "matchUpdateTypes": "minor",
+      "automerge": false
     }
   ]
 }
