@@ -196,11 +196,8 @@ with open('prometheus.env', 'w') as pfp:
 network = agent.read_envfile('network.env')
 
 # Listen also on VPN server address
-listen_address = network.get('LISTEN_ADDRESS', '')
 api_port = network.get('API_PORT', ports[1])
-if server_address not in listen_address:
-    network['LISTEN_ADDRESS'] = f'{listen_address},{server_address}:{api_port}'
-    agent.write_envfile('network.env', network)
+network['LISTEN_ADDRESS'] = f'127.0.0.1:{api_port},{server_address}:{api_port}'
 
 # Setup allowed_ips
 network['ALLOWED_IPS'] = ','.join(request.get('allowed_ips', []))

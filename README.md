@@ -66,36 +66,16 @@ The above command will:
 Once the controller is configured, you access the controller URL, eg. `mycontroller.nethsecurity.org`, and manage NethSecurity units.
 
 New controllers get a random `/20` VPN network, controllers installed before got a `/24`.
-VPN network and netmask can't be changed after the first configuration.
+`configure-module` can't change VPN network and netmask after the first configuration, use `set-vpn-network` instead.
 
 ### Change the VPN network
 
-This is not supported by `configure-module`, follow these steps only if you really need it.
-The steps below widen the netmask keeping the same network address, e.g. from `172.19.64.0/24` to `172.19.64.0/20`:
-units keep their VPN IP and need no change. The network address must be aligned to the new netmask
-(`172.19.64.0` is valid for a `/20`, `172.19.65.0` is not).
+Run `set-vpn-network`, e.g. to widen a `/24` to a `/20`:
 
-Moving to a different network address changes the controller VPN IP: units must be removed and added again.
+    api-cli run module/nethsecurity-controller1/set-vpn-network --data '{"ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.240.0"}'
 
-1. Stop the controller and read the tun name and the node ID:
-
-       runagent -m nethsecurity-controller1 systemctl --user stop controller.service
-       runagent -m nethsecurity-controller1 grep OVPN_TUN network.env
-       runagent -m nethsecurity-controller1 printenv NODE_ID
-
-2. Remove the tun, replace `tunnsc1` and `1` with the values from step 1:
-
-       api-cli run node/1/remove-tun --data '{"tun": "tunnsc1"}'
-
-3. Set the new netmask inside the saved configuration:
-
-       runagent -m nethsecurity-controller1 python3 -c 'import json; c = json.load(open("config.json")); c["ovpn_netmask"] = "255.255.240.0"; json.dump(c, open("config.json", "w"))'
-
-4. Run `configure-module` with the current configuration, it creates the tun and the firewall rules again and starts the controller:
-
-       api-cli run module/nethsecurity-controller1/get-configuration | jq -c 'del(.api_password)' | api-cli run module/nethsecurity-controller1/configure-module --data -
-
-   Units reconnect on their own.
+The network address must be aligned to the netmask: `172.19.64.0` is valid for a `/20`, `172.19.65.0` is not.
+The action stops the controller, creates the tun and the firewall rules again and starts the controller. Units reconnect on their own.
 
 ## Module overview
 
