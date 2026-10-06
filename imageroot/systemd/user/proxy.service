@@ -1,8 +1,8 @@
 
 [Unit]
 Description=Podman proxy.service
-Wants=controller.service
-After=api.service vpn.service 
+BindsTo=controller.service
+After=controller.service api.service vpn.service
 Requires=api.service vpn.service
 
 [Service]
@@ -10,7 +10,7 @@ Environment=PODMAN_SYSTEMD_UNIT=%n
 EnvironmentFile=%E/state/environment
 Restart=always
 TimeoutStopSec=70
-ExecStartPre=/bin/rm -f %t/.pid %t/proxy.ctr-id
+ExecStartPre=/bin/rm -f %t/proxy.pid %t/proxy.ctr-id
 ExecStart=/usr/bin/podman run \
     --conmon-pidfile %t/proxy.pid \
     --cidfile %t/proxy.ctr-id \

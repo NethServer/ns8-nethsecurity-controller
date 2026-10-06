@@ -1,8 +1,8 @@
 
 [Unit]
 Description=Podman webssh.service
-Wants=controller.service
-After=vpn.service
+BindsTo=controller.service
+After=controller.service vpn.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -10,7 +10,7 @@ EnvironmentFile=%E/state/environment
 EnvironmentFile=%E/state/network.env
 Restart=always
 TimeoutStopSec=70
-ExecStartPre=/bin/rm -f %t/.pid %t/webssh.ctr-id
+ExecStartPre=/bin/rm -f %t/webssh.pid %t/webssh.ctr-id
 ExecStart=/usr/bin/podman run \
     --conmon-pidfile %t/webssh.pid \
     --cidfile %t/webssh.ctr-id \

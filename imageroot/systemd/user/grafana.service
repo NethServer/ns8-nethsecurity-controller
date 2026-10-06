@@ -1,7 +1,8 @@
 [Unit]
 Description=Podman grafana.service
-Wants=controller.service
-After=promethus.service
+BindsTo=controller.service
+After=controller.service
+After=prometheus.service
 After=loki.service
 
 [Service]

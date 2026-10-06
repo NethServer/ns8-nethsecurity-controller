@@ -1,8 +1,8 @@
 
 [Unit]
 Description=Podman ui.service
-Wants=controller.service
-After=api.service
+BindsTo=controller.service
+After=controller.service api.service
 Requires=api.service
 
 [Service]
@@ -10,7 +10,7 @@ Environment=PODMAN_SYSTEMD_UNIT=%n
 EnvironmentFile=%E/state/environment
 Restart=always
 TimeoutStopSec=70
-ExecStartPre=/bin/rm -f %t/.pid %t/ui.ctr-id
+ExecStartPre=/bin/rm -f %t/ui.pid %t/ui.ctr-id
 ExecStart=/usr/bin/podman run \
     --conmon-pidfile %t/ui.pid \
     --cidfile %t/ui.ctr-id \
