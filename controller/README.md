@@ -221,6 +221,7 @@ The following environment variables can be used to configure the containers:
 - `OVPN_TUN`: OpenVPN tun device name, default is `tunsec`
 - `OVPN_TUN_MTU`: OpenVPN tun device MTU, default is `1500`
 - `OVPN_MSSFIX`: OpenVPN mssfix value, default is `1450`
+- `OVPN_MAX_CLIENTS`: OpenVPN max connected clients, default is `1024`
 - `UI_PORT`: UI listening port, default is `3000`
 - `UI_BIND_IP`: UI binding IP, default is `0.0.0.0`
 - `API_PORT`: API server listening port, default is `5000`

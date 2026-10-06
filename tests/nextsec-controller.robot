@@ -16,7 +16,7 @@ Check if nethsecurity-controller is installed correctly
     Set Global Variable    ${module_id}    ${output.module_id}
 
 Check if nethsecurity-controller can be configured
-    ${out}  ${err}  ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host": "controller.dom.test", "lets_encrypt": false, "api_user": "admin", "api_password": "Nethesis,1234", "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.255.0", "ovpn_cn": "nethsec", "loki_retention": 180, "prometheus_retention": 15}'
+    ${out}  ${err}  ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host": "controller.dom.test", "lets_encrypt": false, "api_user": "admin", "api_password": "Nethesis,1234", "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.240.0", "ovpn_cn": "nethsec", "loki_retention": 180, "prometheus_retention": 15}'
     ...    return_rc=True  return_stdout=True  return_stderr=True
     Should Be Equal As Integers    ${rc}  0
 

@@ -1,0 +1,6 @@
+[Unit]
+Description=NethSecurity controller
+Wants=controller.service vpn.service api.service ui.service proxy.service promtail.service loki.service prometheus.service grafana.service webssh.service timescale.service
+
+[Install]
+WantedBy=default.target
