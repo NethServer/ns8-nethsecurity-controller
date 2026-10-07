@@ -8,13 +8,13 @@
 import json
 import agent
 import os
+import ipaddress
 
 vpn_port = os.environ['TCP_PORTS_RANGE'].split('-')[0]
 controller_version = os.environ.get('IMAGE_URL', '').split(':')[-1]
 
 config = agent.read_envfile('config.env')
-bits = sum(bin(int(x)).count('1') for x in config.get('OVPN_NETWORK', '').split('.'))
-vpn_network = f"{config.get('OVPN_NETWORK', '')}/{bits}"
+vpn_network = ipaddress.IPv4Network(f"{config['OVPN_NETWORK']}/{config['OVPN_NETMASK']}").with_prefixlen
 metrics_retension_days = config.get('RETENTION_DAYS', '30')
 
 loki = agent.read_envfile('loki.env')

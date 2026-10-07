@@ -37,8 +37,8 @@ Let's assume that the nethsecurity-controller instance is named `nethsecurity-co
 Launch `configure-module`, by setting the following parameters:
 - `host`: a fully qualified domain name for the controller
 - `lets_encrypt`: enable or disable Let's Encrypt certificate
-- `ovpn_network`: OpenVPN network
-- `ovpn_netmask`: OpenVPN netmask
+- `ovpn_network`: OpenVPN network, it must be the first address of the network
+- `ovpn_netmask`: OpenVPN netmask, from `255.255.240.0` (/20) to `255.255.255.0` (/24)
 - `ovpn_cn`: OpenVPN Certificate CN
 - `api_user`: controller admin user
 - `api_password`: controller admin password, change it after first login
@@ -49,7 +49,7 @@ Launch `configure-module`, by setting the following parameters:
 
 Example:
 
-    api-cli run  module/nethsecurity-controller1/configure-module --data '{"host": "mycontroller.nethsecurity.org", "lets_encrypt": false, "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.255.0", "ovpn_cn": "nethsec", "api_user": "admin", "api_password": "password", "loki_retention": 180, "prometheus_retention": 15, "maxmind_license": "xxx"}'
+    api-cli run  module/nethsecurity-controller1/configure-module --data '{"host": "mycontroller.nethsecurity.org", "lets_encrypt": false, "ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.240.0", "ovpn_cn": "nethsec", "api_user": "admin", "api_password": "password", "loki_retention": 180, "prometheus_retention": 15, "maxmind_license": "xxx"}'
 
 The above command will:
 - start and configure the nethsecurity-controller instance
@@ -64,6 +64,22 @@ The above command will:
 - setup Grafana for metrics visualization
 
 Once the controller is configured, you access the controller URL, eg. `mycontroller.nethsecurity.org`, and manage NethSecurity units.
+
+New controllers get a random `/20` VPN network, controllers installed before got a `/24`.
+`configure-module` can't change VPN network and netmask after the first configuration, use `set-vpn-network` instead.
+
+### Change the VPN network
+
+Run `set-vpn-network`, e.g. to widen a `/24` to a `/20`:
+
+    api-cli run module/nethsecurity-controller1/set-vpn-network --data '{"ovpn_network": "172.19.64.0", "ovpn_netmask": "255.255.240.0"}'
+
+The network address must be aligned to the netmask: `172.19.64.0` is valid for a `/20`, `172.19.65.0` is not.
+Only expand the network: keep the same network address and widen the netmask, units keep their VPN IP.
+Shrinking the network makes units with an IP outside it lose their connection entirely, changing the network address does it for all units.
+The action rejects both, as well as netmasks outside `/20`-`/24`.
+Add `"force": true` to skip these checks and allow netmasks wider than `/20`, `/24` is still the limit: units that lost the connection **must be removed and added again**.
+The action stops the controller, creates the tun and the firewall rules again and starts the controller. Units reconnect on their own.
 
 ## Module overview
 

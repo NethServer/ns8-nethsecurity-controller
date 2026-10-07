@@ -624,24 +624,26 @@ export default {
         isValidationOk = false;
       }
 
-      // validate network
-      const network_re = new RegExp(
-        /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.0$/
-      );
-      if (!network_re.test(this.network)) {
-        this.error.network = this.$t("error.invalid_network");
-        this.focusElement("network");
-        isValidationOk = false;
-      }
+      // network and netmask are read-only after the first configuration and set-vpn-network
+      // with force can store values outside these checks
+      if (this.firstConfig) {
+        // validate network
+        const network_re = new RegExp(
+          /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.0$/
+        );
+        if (!network_re.test(this.network)) {
+          this.error.network = this.$t("error.invalid_network");
+          this.focusElement("network");
+          isValidationOk = false;
+        }
 
-      // validate netmask
-      const netmask_re = new RegExp(
-        /^(255|254|252|248|240|224|192|128|0)\.(255|254|252|248|240|224|192|128|0)\.(255|254|252|248|240|224|192|128|0)\.(0|128|192|224|240|248|252|254|255)$/
-      );
-      if (!netmask_re.test(this.netmask)) {
-        this.error.netmask = this.$t("error.invalid_netmask");
-        this.focusElement("netmask");
-        isValidationOk = false;
+        // validate netmask
+        const netmask_re = new RegExp(/^255\.255\.(240|248|252|254|255)\.0$/);
+        if (!netmask_re.test(this.netmask)) {
+          this.error.netmask = this.$t("error.invalid_netmask");
+          this.focusElement("netmask");
+          isValidationOk = false;
+        }
       }
 
       // validate allowed_ips: each line must be a valid IPv4 or IPv4/CIDR

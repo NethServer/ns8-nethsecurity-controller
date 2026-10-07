@@ -10,17 +10,44 @@ import sys
 import agent
 import os
 import uuid
+import ipaddress
 
 request = json.load(sys.stdin)
 
 (start,end) = os.environ["TCP_PORTS_RANGE"].split('-')
 ports = [*range(int(start), int(end)+1)]
 
+def validation_failed(field, value, error):
+    agent.set_status('validation-failed')
+    json.dump([{'field': field, 'parameter': field, 'value': value, 'error': error}], fp=sys.stdout)
+    sys.exit(2)
+
+first_config = False
 try:
     with open('config.json', 'r') as tmp:
         config = json.load(tmp)
 except:
     config = request
+    first_config = True
+
+ovpn_network = request['ovpn_network']
+ovpn_netmask = request['ovpn_netmask']
+
+# The tun address is set only once by add_tun, so the network can't change after the first configuration
+if config['ovpn_network'] != ovpn_network:
+    validation_failed('network', ovpn_network, 'network_change_not_supported')
+if config['ovpn_netmask'] != ovpn_netmask:
+    validation_failed('netmask', ovpn_netmask, 'network_change_not_supported')
+
+try:
+    vpn_network = ipaddress.IPv4Network(f'{ovpn_network}/{ovpn_netmask}')
+except ipaddress.NetmaskValueError:
+    validation_failed('netmask', ovpn_netmask, 'invalid_netmask')
+except ValueError:
+    validation_failed('network', ovpn_network, 'invalid_network')
+# set-vpn-network with force can store any netmask
+if first_config and not 20 <= vpn_network.prefixlen <= 24:
+    validation_failed('netmask', ovpn_netmask, 'netmask_out_of_range')
 
 for path in ['loki_path', 'prometheus_path', 'webssh_path']:
     if not config.get(path):
@@ -120,6 +147,8 @@ with open('config.env', 'w') as env:
     env.write(f'ADMIN_PASSWORD={request.get("api_password", config["api_password"])}\n')
     env.write(f'OVPN_NETWORK={request["ovpn_network"]}\n')
     env.write(f'OVPN_NETMASK={request["ovpn_netmask"]}\n')
+    # network, broadcast and server addresses excluded
+    env.write(f'OVPN_MAX_CLIENTS={vpn_network.num_addresses - 3}\n')
     env.write(f'OVPN_CN={request["ovpn_cn"]}\n')
     env.write(f'FQDN={request["host"]}\n')
     env.write(f'ISSUER_2FA={request["host"]}\n')
@@ -170,11 +199,8 @@ with open('prometheus.env', 'w') as pfp:
 network = agent.read_envfile('network.env')
 
 # Listen also on VPN server address
-listen_address = network.get('LISTEN_ADDRESS', '')
 api_port = network.get('API_PORT', ports[1])
-if server_address not in listen_address:
-    network['LISTEN_ADDRESS'] = f'{listen_address},{server_address}:{api_port}'
-    agent.write_envfile('network.env', network)
+network['LISTEN_ADDRESS'] = f'127.0.0.1:{api_port},{server_address}:{api_port}'
 
 # Setup allowed_ips
 network['ALLOWED_IPS'] = ','.join(request.get('allowed_ips', []))
@@ -183,8 +209,8 @@ agent.write_envfile('network.env', network)
 
 # Setup firewall
 tun = network.get('OVPN_TUN')
-bits = sum(bin(int(x)).count('1') for x in request["ovpn_netmask"].split('.'))
-cidr = f'{request["ovpn_network"]}/{bits}'
+bits = vpn_network.prefixlen
+cidr = vpn_network.with_prefixlen
 # Allow access only on Promtail and API ports, reject everything else
 rules = [
     f'rule family=ipv4 priority=-100 source address={server_address} destination address={cidr} accept',

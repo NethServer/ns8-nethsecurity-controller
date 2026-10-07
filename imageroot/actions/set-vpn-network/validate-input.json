@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Set the VPN network",
+    "$id": "http://nethserver.org/json-schema/task/input/nethsec-controller/set-vpn-network",
+    "description": "Change the VPN network of nethsec-controller, recreating the tun and restarting the controller",
+    "examples": [
+        {
+            "ovpn_network": "172.20.16.0",
+            "ovpn_netmask": "255.255.240.0"
+        }
+    ],
+    "type": "object",
+    "required": [ "ovpn_network", "ovpn_netmask" ],
+    "properties": {
+        "ovpn_network": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "VPN client network, it must be the first address of the network, like '172.20.16.0'. It must be equal to the current one, unless force is set"
+        },
+        "ovpn_netmask": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "VPN client netmask, from '255.255.240.0' (/20) to '255.255.255.0' (/24). It can only be widened, unless force is set"
+        },
+        "force": {
+            "type": "boolean",
+            "description": "Skip the network and netmask checks and allow netmasks wider than /20, /24 is still the limit, units outside the new network must be removed and added again"
+        }
+    }
+}
