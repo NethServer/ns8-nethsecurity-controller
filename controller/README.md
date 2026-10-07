@@ -141,7 +141,7 @@ To start the API server in development mode:
 - first, make sure that a Timescale DB is running and accessible:
   <!-- renovate: datasource=docker depName=docker.io/timescale/timescaledb -->
   ```
-  podman run --rm --name timescaledb -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=report docker.io/timescale/timescaledb:2.23.1-pg16
+  podman run --rm --name timescaledb -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=report docker.io/timescale/timescaledb:2.30.2-pg16
   ```
 - then move to the `api` directory, create the `data` directory and build the API server:
   ```
@@ -161,7 +161,7 @@ To run the testing suite:
 - first, make sure that a Timescale DB is running and accessible:
   <!-- renovate: datasource=docker depName=docker.io/timescale/timescaledb -->
   ```
-  podman run --rm --name timescaledb -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=report docker.io/timescale/timescaledb:2.23.1-pg16
+  podman run --rm --name timescaledb -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=report docker.io/timescale/timescaledb:2.30.2-pg16
   ```
 - then move to the `api` directory and run the tests:
   ```

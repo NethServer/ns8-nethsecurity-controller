@@ -42,7 +42,7 @@ start_pod() {
     # The --pull option, sets pull policy to never if image exists locally to avoid registry lookup errors (required for GitHub CI)
     podman run --rm --detach --pull="missing" --network=host --privileged --cap-add=NET_ADMIN --device /dev/net/tun -v ovpn-data:/etc/openvpn/:z --pod $POD --name $POD-vpn  $(get_image ghcr.io/nethserver/nethsecurity-vpn:$image_tag)
     # renovate: datasource=docker depName=docker.io/timescale/timescaledb
-    podman run --rm --detach --pull="missing" --network=host --name $POD-db --pod $POD -e POSTGRES_PASSWORD=password -e POSTGRES_USER=report docker.io/timescale/timescaledb:2.23.1-pg16
+    podman run --rm --detach --pull="missing" --network=host --name $POD-db --pod $POD -e POSTGRES_PASSWORD=password -e POSTGRES_USER=report docker.io/timescale/timescaledb:2.30.2-pg16
     # Wait for Postgres to be ready
     echo -n "Waiting for Postgres to start..."
     for i in {1..30}; do
