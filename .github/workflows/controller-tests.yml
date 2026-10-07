@@ -29,7 +29,7 @@ jobs:
       - name: Start TimescaleDB
         run: |
           # renovate: datasource=docker depName=docker.io/timescale/timescaledb
-          podman run --rm -d --name timescaledb -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=report docker.io/timescale/timescaledb:2.23.1-pg16
+          podman run --rm -d --name timescaledb -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=report docker.io/timescale/timescaledb:2.30.2-pg16
           # Wait for DB to be ready
           for i in {1..30}; do
             podman exec timescaledb pg_isready -U report && break
