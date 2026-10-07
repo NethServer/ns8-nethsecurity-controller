@@ -9,7 +9,6 @@ images=()
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
 reponame="nethsecurity-controller"
-controller_version="2.4.1"
 promtail_image="docker.io/grafana/promtail:3.6.11"
 loki_image="docker.io/grafana/loki:2.9.17"
 prometheus_image="docker.io/prom/prometheus:v3.15.0"
@@ -53,6 +52,16 @@ buildah commit "${webssh}" "${repobase}/webssh"
 # Append the image URL to the images array
 images+=("${repobase}/webssh")
 
+# Build controller service images
+for service in vpn api ui proxy; do
+    echo "Build nethsecurity-${service} container"
+    buildah build --layers --target dist \
+        --file "controller/${service}/Containerfile" \
+        --tag "${repobase}/nethsecurity-${service}" \
+        "controller/${service}"
+    images+=("${repobase}/nethsecurity-${service}")
+done
+
 # Create a new empty container image
 container=$(buildah from scratch)
 
@@ -78,10 +87,10 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.min-core=3.20.1" \
     --label="org.nethserver.tcp-ports-demand=11" \
     --label="org.nethserver.images=\
-        ghcr.io/nethserver/nethsecurity-vpn:$controller_version \
-        ghcr.io/nethserver/nethsecurity-api:$controller_version \
-        ghcr.io/nethserver/nethsecurity-ui:$controller_version \
-        ghcr.io/nethserver/nethsecurity-proxy:$controller_version \
+        ghcr.io/nethserver/nethsecurity-vpn:${IMAGETAG:-latest} \
+        ghcr.io/nethserver/nethsecurity-api:${IMAGETAG:-latest} \
+        ghcr.io/nethserver/nethsecurity-ui:${IMAGETAG:-latest} \
+        ghcr.io/nethserver/nethsecurity-proxy:${IMAGETAG:-latest} \
         $promtail_image \
         $loki_image \
         $prometheus_image \

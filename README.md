@@ -1,6 +1,6 @@
 # ns8-nethsecurity-controller
 
-Setup and start an instance of [nethsecurity-controller](https://github.com/NethServer/nethsecurity-controller).
+Setup and start an instance of [nethsecurity-controller](controller).
 
 Each node can host multiple controller instances.
 
@@ -81,19 +81,19 @@ The module is composed by the following systemd units:
 
 ### API Server
 
-The [api server](https://github.com/NethServer/nethsecurity-controller/tree/master/api) gives NethSecurity the ability to register itself to NS8 (through [`ns-plug`](https://dev.nethsecurity.org/nethsecurity/packages/ns-plug/)) and gives access to the on-demand generated credentials for the VPN.
+The [api server](controller/api) gives NethSecurity the ability to register itself to NS8 (through [`ns-plug`](https://dev.nethsecurity.org/nethsecurity/packages/ns-plug/)) and gives access to the on-demand generated credentials for the VPN.
 
 The API also registers the endpoints for the [Traefik Proxy](#proxy-and-ui) that allows direct interaction with the firewall, even if it's not in the same network.
 
 ### VPN
 
-The [OpenVPN container](https://github.com/NethServer/nethsecurity-controller/tree/master/vpn) tunnels connection from the NethSecurity to the NS8 through a VPN tunnel, due to [firewall configuration](https://github.com/NethServer/ns8-nethsecurity-controller/blob/main/imageroot/actions/configure-module/20configure#L87) in NS8, no client can be reached from other clients and only client-server communication is allowed.
+The [OpenVPN container](controller/vpn) tunnels connection from the NethSecurity to the NS8 through a VPN tunnel, due to [firewall configuration](https://github.com/NethServer/ns8-nethsecurity-controller/blob/main/imageroot/actions/configure-module/20configure#L87) in NS8, no client can be reached from other clients and only client-server communication is allowed.
 
 The module uses the NS8 [TUN feature](https://dev.nethsecurity.org/ns8-core/core/tun/) to create a new network interface and assign it to the VPN container.
 
 ### Proxy and UI
 
-The [UI](https://github.com/NethServer/nethsecurity-controller/tree/master/ui) allows the browse of the interface directly off the NethSecurity installation, this is possible due to the [Traefik Proxy](https://github.com/NethServer/nethsecurity-controller/tree/master/proxy) server that redirects the urls to the correct IP inside the VPN.
+The [UI](controller/ui) allows the browse of the interface directly off the NethSecurity installation, this is possible due to the [Traefik Proxy](controller/proxy) server that redirects the urls to the correct IP inside the VPN.
 
 ### Promtail
 
@@ -243,7 +243,7 @@ journalctl _UID=$(id -u nethsecurity-controller1) --grep 'MIGRATION'
 ### Database maintenance
 
 The database is used to store configuration and metrics.
-See [Database design](https://github.com/NethServer/nethsecurity-controller/tree/main/api#database-design) for more details.
+See [Database design](controller/api/README.md#database-design) for more details.
 
 #### DPI stats cleanup
 

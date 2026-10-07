@@ -1,0 +1,61 @@
+name: Controller tests
+
+on:
+  push:
+    paths:
+      - "controller/**"
+      - ".github/workflows/controller-tests.yml"
+  pull_request:
+    paths:
+      - "controller/**"
+      - ".github/workflows/controller-tests.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: controller
+
+jobs:
+  api:
+    name: API Tests
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Install Podman
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman oathtool
+      - name: Start TimescaleDB
+        run: |
+          # renovate: datasource=docker depName=docker.io/timescale/timescaledb
+          podman run --rm -d --name timescaledb -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=report docker.io/timescale/timescaledb:2.23.1-pg16
+          # Wait for DB to be ready
+          for i in {1..30}; do
+            podman exec timescaledb pg_isready -U report && break
+            sleep 1
+          done
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: controller/api/go.mod
+      - name: Test with the Go CLI
+        run: cd api && go test ./... -coverpkg=./... -coverprofile=coverage.out -v
+
+  smoke:
+    name: Smoke Tests
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman buildah jq
+      - name: Create tunsec device
+        run: |
+          sudo ip tuntap add dev tunsec mod tun
+          sudo ip addr add 172.21.0.1/16 dev tunsec
+          sudo ip link set dev tunsec up
+      - name: Run smoke test
+        run: ./test/smoke.sh
