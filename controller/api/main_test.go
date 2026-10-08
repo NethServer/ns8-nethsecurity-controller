@@ -457,6 +457,49 @@ func TestMainEndpoints(t *testing.T) {
 		storage.DeleteUnit(unitID)
 	})
 
+	t.Run("TestRegisterUnitWithoutFleetToken", func(t *testing.T) {
+		// a new installation ships without a fleet-wide token
+		original := configuration.Config.RegistrationToken
+		configuration.Config.RegistrationToken = ""
+		defer func() { configuration.Config.RegistrationToken = original }()
+
+		unitID := "3a1e3c02-9d0a-4a31-8f5e-2f7f0a1d4b77"
+		if err := storage.AddUnit(unitID, "172.21.0.11", ""); err != nil {
+			t.Fatalf("failed to add unit: %v", err)
+		}
+		if _, err := os.Create(configuration.Config.OpenVPNPKIDir + "/issued/" + unitID + ".crt"); err != nil {
+			t.Fatalf("failed to create file: %v", err)
+		}
+
+		// a unit without its own token has nothing left to fall back on
+		body := `{"unit_id": "` + unitID + `", "username": "myuser", "unit_name": "myname", "password": "mypassword"}`
+		req, _ := http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("RegistrationToken", "1234")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+		assert.NotContains(t, w.Body.String(), "key")
+
+		// an empty token must not match the empty expected one either
+		req, _ = http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("RegistrationToken", " ")
+		w = httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+
+		// same on the ingest path
+		ingest, _ := http.NewRequest("POST", "/ingest/info", bytes.NewBuffer([]byte(`{"unit_name": "myname"}`)))
+		ingest.Header.Set("Content-Type", "application/json")
+		ingest.SetBasicAuth(unitID, "1234")
+		w = httptest.NewRecorder()
+		router.ServeHTTP(w, ingest)
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+
+		storage.DeleteUnit(unitID)
+	})
+
 	t.Run("TestNoRoute", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/nonexistent", nil)

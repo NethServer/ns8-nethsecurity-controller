@@ -120,11 +120,16 @@ func Init() {
 	} else {
 		Config.SensitiveList = []string{"password", "secret", "token", "passphrase", "private", "key"}
 	}
+	// An empty REGISTRATION_TOKEN disables the fleet-wide token: only the token
+	// issued to a unit when it was added is then accepted. New installations ship
+	// without it; installations upgraded from a release that predates per-unit
+	// tokens keep theirs, because their existing units still rely on it.
 	if os.Getenv("REGISTRATION_TOKEN") != "" {
 		Config.RegistrationToken = os.Getenv("REGISTRATION_TOKEN")
+		logs.Logs.Println("[WARNING][ENV] REGISTRATION_TOKEN is set: units added before per-unit tokens existed can still register with it")
 	} else {
-		logs.Logs.Println("[CRITICAL][ENV] REGISTRATION_TOKEN variable is empty")
-		os.Exit(1)
+		Config.RegistrationToken = ""
+		logs.Logs.Println("[INFO][ENV] REGISTRATION_TOKEN is empty: only per-unit registration tokens are accepted")
 	}
 
 	if os.Getenv("CREDENTIALS_DIR") != "" {

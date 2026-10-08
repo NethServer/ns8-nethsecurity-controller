@@ -13,7 +13,7 @@ CGO_ENABLED=0 go build
 - `ADMIN_USERNAME`: admin username to login
 - `ADMIN_PASSWORD`: admin password to login
 - `SECRET_JWT`: secret to sing JWT tokens
-- `REGISTRATION_TOKEN`: secret token used to register units
+- `REGISTRATION_TOKEN`: fleet-wide token accepted only for units that have no token of their own, i.e. units added before per-unit tokens existed. Leave it empty, as new installations do, to accept per-unit tokens only
 
 - `CREDENTIALS_DIR`: directory to save credentials of connected units
 
@@ -411,9 +411,10 @@ Key design choices include:
 - `POST /units/register`
 
   The `RegistrationToken` header must carry the token of the requested `unit_id`, as
-  found in its join code. Units added before per-unit tokens existed accept the
-  fleet-wide `REGISTRATION_TOKEN` instead. A unit is also bound to the `username` sent
-  at its first registration, and later calls presenting a different one are refused.
+  found in its join code. Units added before per-unit tokens existed have none of their
+  own, and accept the fleet-wide `REGISTRATION_TOKEN` when it is set. A unit is also
+  bound to the `username` sent at its first registration, and later calls presenting a
+  different one are refused.
 
   REQ
 

@@ -64,7 +64,8 @@ PROMTAIL_PORT=6565
 PROMETHEUS_PATH=/prometheus
 WEBSSH_PATH=$(uuidgen)
 GRAFANA_PATH=/grafana
-REGISTRATION_TOKEN=1234
+# like a new installation: no fleet-wide token, each unit gets its own when added
+REGISTRATION_TOKEN=
 DATA_DIR=data
 OVPN_DIR=/etc/openvpn
 REPORT_DB_URI=postgres://report:password@127.0.0.1:5432/report
