@@ -15,6 +15,7 @@ import (
 	"database/sql"
 	_ "embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"os"
@@ -26,6 +27,7 @@ import (
 	"github.com/NethServer/nethsecurity-controller/api/logs"
 	"github.com/NethServer/nethsecurity-controller/api/models"
 	"github.com/NethServer/nethsecurity-controller/api/utils"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -1205,6 +1207,23 @@ func DeleteUnit(uuid string) error {
 
 	// Delete of report data is not required: data are cleaned up by a database job
 	return nil
+}
+
+// GetUnitUsername returns the username bound to the unit at its first registration.
+// It returns an empty string when the unit has never registered, and an error only
+// when the lookup itself fails, so that callers can fail closed.
+func GetUnitUsername(uuid string) (string, error) {
+	pgpool, pgctx := ReportInstance()
+	var username string
+	err := pgpool.QueryRow(pgctx, "SELECT username FROM unit_credentials WHERE uuid = $1::uuid", uuid).Scan(&username)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", nil
+	}
+	if err != nil {
+		logs.Logs.Println("[ERR][STORAGE][GET_UNIT_USERNAME] error in query execution:" + err.Error())
+		return "", err
+	}
+	return username, nil
 }
 
 func GetUnitCredentials(uuid string) (string, string, error) {

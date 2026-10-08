@@ -397,6 +397,29 @@ func RegisterUnit(c *gin.Context) {
 
 	// check openvpn conf exists
 	if _, err := os.Stat(configuration.Config.OpenVPNPKIDir + "/issued/" + jsonRequest.UnitId + ".crt"); err == nil {
+		// A unit is bound to the username sent at its first registration: the
+		// registration token is shared by the whole fleet, so without this check any
+		// token holder knowing a unit id could download that unit's VPN private key.
+		boundUsername, errRead := storage.GetUnitUsername(jsonRequest.UnitId)
+		if errRead != nil {
+			c.JSON(http.StatusInternalServerError, structs.Map(response.StatusInternalServerError{
+				Code:    500,
+				Message: "cannot read credentials for: " + jsonRequest.UnitId,
+				Data:    errRead.Error(),
+			}))
+			logs.Logs.Println("[ERROR][RegisterUnit] cannot read credentials for: " + jsonRequest.UnitId + " - " + errRead.Error())
+			return
+		}
+		if boundUsername != "" && boundUsername != jsonRequest.Username {
+			c.JSON(http.StatusForbidden, structs.Map(response.StatusForbidden{
+				Code:    403,
+				Message: "unit already registered with a different username",
+				Data:    "",
+			}))
+			logs.Logs.Println("[ERROR][RegisterUnit] username mismatch for: " + jsonRequest.UnitId)
+			return
+		}
+
 		// read ca
 		ca, errCa := os.ReadFile(configuration.Config.OpenVPNPKIDir + "/" + "ca.crt")
 		caS := strings.TrimSpace(string(ca[:]))
@@ -459,22 +482,8 @@ func RegisterUnit(c *gin.Context) {
 			"vpn_address":      vpnAddress,
 		}
 
-		// read credentials from database
-		curUsername, _, errRead := storage.GetUnitCredentials(jsonRequest.UnitId)
-
-		var errWrite error
-		// credentials exists, update only if username matches
-		if errRead == nil {
-			if curUsername == jsonRequest.Username {
-				errWrite = storage.SetUnitCredentials(jsonRequest.UnitId, curUsername, jsonRequest.Password)
-			}
-		} else {
-			// create credentials
-			errWrite = storage.SetUnitCredentials(jsonRequest.UnitId, jsonRequest.Username, jsonRequest.Password)
-		}
-
-		// save new credentials
-		if errWrite != nil {
+		// save credentials: the username is either new or the bound one
+		if errWrite := storage.SetUnitCredentials(jsonRequest.UnitId, jsonRequest.Username, jsonRequest.Password); errWrite != nil {
 			c.JSON(http.StatusBadRequest, structs.Map(response.StatusBadRequest{
 				Code:    400,
 				Message: "cannot write credentials file for: " + jsonRequest.UnitId,
