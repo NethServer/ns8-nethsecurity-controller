@@ -43,6 +43,9 @@ CREATE TABLE IF NOT EXISTS units (
     info JSONB,
     vpn_address TEXT,
     vpn_connected_since TIMESTAMP,
+    -- Per-unit registration token, NULL for units added before this column existed:
+    -- those keep using the fleet-wide REGISTRATION_TOKEN until they are re-added
+    registration_token TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

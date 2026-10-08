@@ -11,6 +11,7 @@ package utils
 
 import (
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -86,11 +87,26 @@ func CheckPasswordHash(password, hash string) bool {
 // - unit_id
 // - registration token
 // - fqdn
-func GetJoinCode(unitId string) string {
+// GenerateRegistrationToken returns a new random token to be assigned to a single unit.
+func GenerateRegistrationToken() (string, error) {
+	buf := make([]byte, 32)
+	if _, err := io.ReadFull(rand.Reader, buf); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(buf), nil
+}
+
+// GetJoinCode composes the join code of a unit. An empty token falls back to the
+// fleet-wide registration token, for units added before per-unit tokens existed.
+func GetJoinCode(unitId string, token string) string {
+	if token == "" {
+		token = configuration.Config.RegistrationToken
+	}
+
 	// compose join code
 	joinCode := gin.H{
 		"unit_id": unitId,
-		"token":   configuration.Config.RegistrationToken,
+		"token":   token,
 		"fqdn":    configuration.Config.FQDN,
 	}
 

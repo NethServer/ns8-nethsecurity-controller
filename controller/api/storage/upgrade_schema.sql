@@ -12,6 +12,7 @@ ALTER TABLE units ADD COLUMN IF NOT EXISTS info JSONB;
 ALTER TABLE units ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE units ADD COLUMN IF NOT EXISTS vpn_address TEXT;
 ALTER TABLE units ADD COLUMN IF NOT EXISTS vpn_connected_since TIMESTAMP NULL;
+ALTER TABLE units ADD COLUMN IF NOT EXISTS registration_token TEXT;
 /* Remove foreign key constraints: the cascade trigger causes very slow deletes */
 ALTER TABLE openvpn_config
     DROP CONSTRAINT IF EXISTS openvpn_config_uuid_fkey,
