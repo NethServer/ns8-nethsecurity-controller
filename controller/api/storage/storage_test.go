@@ -58,7 +58,7 @@ func TestMain(m *testing.M) {
 
 func TestAddUnit(t *testing.T) {
 	// Test adding a unit
-	err := AddUnit("550e8400-e29b-41d4-a716-446655440000", "192.168.1.10")
+	err := AddUnit("550e8400-e29b-41d4-a716-446655440000", "192.168.1.10", "")
 	assert.NoError(t, err)
 
 	// Verify it exists
@@ -73,7 +73,7 @@ func TestAddUnit(t *testing.T) {
 
 func TestGetUnit(t *testing.T) {
 	// Add a unit first
-	AddUnit("550e8400-e29b-41d4-a716-446655440001", "192.168.1.11")
+	AddUnit("550e8400-e29b-41d4-a716-446655440001", "192.168.1.11", "")
 
 	// Get it
 	unit, err := GetUnit("550e8400-e29b-41d4-a716-446655440001")
@@ -176,7 +176,7 @@ func TestUpdatePassword(t *testing.T) {
 
 func TestListUnits(t *testing.T) {
 	// Add a unit
-	AddUnit("550e8400-e29b-41d4-a716-446655440003", "192.168.1.12")
+	AddUnit("550e8400-e29b-41d4-a716-446655440003", "192.168.1.12", "")
 
 	// List units
 	units, err := ListUnits()

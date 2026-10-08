@@ -410,6 +410,11 @@ Key design choices include:
 
 - `POST /units/register`
 
+  The `RegistrationToken` header must carry the token of the requested `unit_id`, as
+  found in its join code. Units added before per-unit tokens existed accept the
+  fleet-wide `REGISTRATION_TOKEN` instead. A unit is also bound to the `username` sent
+  at its first registration, and later calls presenting a different one are refused.
+
   REQ
 
   ```json
@@ -984,7 +989,7 @@ takes `firewall_api` as a parameter.
 The `firewall_api` paramater is the name of the firewall API that is sending the metrics.
 The API accepts only POST requests abd requires the following headers:
 
-- `Authorization:`: basic authentication header, where the username is the unit uuid and the password is the registration token
+- `Authorization:`: basic authentication header, where the username is the unit uuid and the password is the registration token of that unit, as found in its join code
 - `Content-Type: application/json`: the content type must be JSON
 
 It responds with a 200 status code in case of success. Success example:
@@ -1162,7 +1167,7 @@ Error example:
 
   This endpoint is used to store general information about the unit in the report database. It requires basic authentication and accepts the following headers:
 
-  - `Authorization:`: basic authentication header, where the username is the unit UUID and the password is the registration token.
+  - `Authorization:`: basic authentication header, where the username is the unit UUID and the password is the registration token of that unit, as found in its join code.
   - `Content-Type: application/json`: the content type must be JSON.
 
   REQ

@@ -11,6 +11,7 @@ package methods
 
 import (
 	"bytes"
+	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -32,6 +33,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func GetUnits(c *gin.Context) {
@@ -317,8 +319,20 @@ func AddUnit(c *gin.Context) {
 		return
 	}
 
+	// mint a registration token dedicated to this unit, so that a leaked join code
+	// cannot be replayed to claim the VPN identity of a different unit
+	registrationToken, errToken := utils.GenerateRegistrationToken()
+	if errToken != nil {
+		c.JSON(http.StatusInternalServerError, structs.Map(response.StatusInternalServerError{
+			Code:    500,
+			Message: "cannot generate registration token for: " + jsonRequest.UnitId,
+			Data:    errToken.Error(),
+		}))
+		return
+	}
+
 	// create record inside units table
-	errCreate := storage.AddUnit(jsonRequest.UnitId, freeIP)
+	errCreate := storage.AddUnit(jsonRequest.UnitId, freeIP, registrationToken)
 	if errCreate != nil {
 		c.JSON(http.StatusBadRequest, structs.Map(response.StatusBadRequest{
 			Code:    400,
@@ -333,7 +347,7 @@ func AddUnit(c *gin.Context) {
 		Code:    200,
 		Message: "unit added successfully",
 		Data: gin.H{
-			"join_code": utils.GetJoinCode(jsonRequest.UnitId),
+			"join_code": utils.GetJoinCode(jsonRequest.UnitId, registrationToken),
 		},
 	}))
 }
@@ -351,16 +365,6 @@ func RegisterUnit(c *gin.Context) {
 		return
 	}
 
-	// validate token
-	if token != configuration.Config.RegistrationToken {
-		c.JSON(http.StatusUnauthorized, structs.Map(response.StatusBadRequest{
-			Code:    403,
-			Message: "invalid registration token",
-		}))
-		logs.Logs.Println("[ERROR][RegisterUnit] invalid registration token")
-		return
-	}
-
 	// parse request fields
 	var jsonRequest models.RegisterRequest
 	if err := c.ShouldBindJSON(&jsonRequest); err != nil {
@@ -370,6 +374,47 @@ func RegisterUnit(c *gin.Context) {
 			Data:    err.Error(),
 		}))
 		logs.Logs.Println("[ERROR][RegisterUnit] request fields malformed:", err.Error())
+		return
+	}
+
+	// Reject a malformed id before the database sees it, where it would fail as a
+	// uuid cast. This is a format check only: it tells the caller nothing about
+	// which units exist.
+	if _, errUuid := uuid.Parse(jsonRequest.UnitId); errUuid != nil {
+		c.JSON(http.StatusBadRequest, structs.Map(response.StatusBadRequest{
+			Code:    400,
+			Message: "invalid unit id",
+			Data:    "",
+		}))
+		logs.Logs.Println("[ERROR][RegisterUnit] invalid unit id")
+		return
+	}
+
+	// Validate the token against the requested unit. Units added with a dedicated
+	// token must present exactly that one, so that a join code leaked from one unit
+	// cannot be replayed to claim the VPN identity of another. Units added before
+	// per-unit tokens existed have none, and still accept the fleet-wide token.
+	expectedToken, errToken := storage.GetUnitRegistrationToken(jsonRequest.UnitId)
+	if errToken != nil {
+		c.JSON(http.StatusInternalServerError, structs.Map(response.StatusInternalServerError{
+			Code:    500,
+			Message: "cannot read registration token for: " + jsonRequest.UnitId,
+			Data:    errToken.Error(),
+		}))
+		logs.Logs.Println("[ERROR][RegisterUnit] cannot read registration token for: " + jsonRequest.UnitId)
+		return
+	}
+	if expectedToken == "" {
+		expectedToken = configuration.Config.RegistrationToken
+	}
+
+	// validate token
+	if subtle.ConstantTimeCompare([]byte(token), []byte(expectedToken)) != 1 {
+		c.JSON(http.StatusUnauthorized, structs.Map(response.StatusBadRequest{
+			Code:    403,
+			Message: "invalid registration token",
+		}))
+		logs.Logs.Println("[ERROR][RegisterUnit] invalid registration token for: " + jsonRequest.UnitId)
 		return
 	}
 
