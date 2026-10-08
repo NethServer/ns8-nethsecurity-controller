@@ -319,8 +319,7 @@ func AddUnit(c *gin.Context) {
 		return
 	}
 
-	// mint a registration token dedicated to this unit, so that a leaked join code
-	// cannot be replayed to claim the VPN identity of a different unit
+	// issue a dedicated registration token, carried in the join code
 	registrationToken, errToken := utils.GenerateRegistrationToken()
 	if errToken != nil {
 		c.JSON(http.StatusInternalServerError, structs.Map(response.StatusInternalServerError{
@@ -377,9 +376,7 @@ func RegisterUnit(c *gin.Context) {
 		return
 	}
 
-	// Reject a malformed id before the database sees it, where it would fail as a
-	// uuid cast. This is a format check only: it tells the caller nothing about
-	// which units exist.
+	// reject a malformed id before it reaches the database
 	if _, errUuid := uuid.Parse(jsonRequest.UnitId); errUuid != nil {
 		c.JSON(http.StatusBadRequest, structs.Map(response.StatusBadRequest{
 			Code:    400,
@@ -390,10 +387,7 @@ func RegisterUnit(c *gin.Context) {
 		return
 	}
 
-	// Validate the token against the requested unit. Units added with a dedicated
-	// token must present exactly that one, so that a join code leaked from one unit
-	// cannot be replayed to claim the VPN identity of another. Units added before
-	// per-unit tokens existed have none, and still accept the fleet-wide token.
+	// expect the unit token, or the fleet-wide one for legacy units
 	expectedToken, errToken := storage.GetUnitRegistrationToken(jsonRequest.UnitId)
 	if errToken != nil {
 		c.JSON(http.StatusInternalServerError, structs.Map(response.StatusInternalServerError{
@@ -408,8 +402,7 @@ func RegisterUnit(c *gin.Context) {
 		expectedToken = configuration.Config.RegistrationToken
 	}
 
-	// validate token: an empty expected token means the unit has none and the
-	// fleet-wide one is disabled, so there is nothing that can be accepted
+	// validate token: an empty expected token accepts nothing
 	if expectedToken == "" || subtle.ConstantTimeCompare([]byte(token), []byte(expectedToken)) != 1 {
 		c.JSON(http.StatusUnauthorized, structs.Map(response.StatusBadRequest{
 			Code:    403,
@@ -443,9 +436,7 @@ func RegisterUnit(c *gin.Context) {
 
 	// check openvpn conf exists
 	if _, err := os.Stat(configuration.Config.OpenVPNPKIDir + "/issued/" + jsonRequest.UnitId + ".crt"); err == nil {
-		// A unit is bound to the username sent at its first registration: the
-		// registration token is shared by the whole fleet, so without this check any
-		// token holder knowing a unit id could download that unit's VPN private key.
+		// later registrations must present the username bound at the first one
 		boundUsername, errRead := storage.GetUnitUsername(jsonRequest.UnitId)
 		if errRead != nil {
 			c.JSON(http.StatusInternalServerError, structs.Map(response.StatusInternalServerError{

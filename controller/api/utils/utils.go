@@ -82,11 +82,6 @@ func CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-// generate join code
-// the join code is a JSON encoded in base64 with the following fields:
-// - unit_id
-// - registration token
-// - fqdn
 // GenerateRegistrationToken returns a new random token to be assigned to a single unit.
 func GenerateRegistrationToken() (string, error) {
 	buf := make([]byte, 32)
@@ -96,8 +91,12 @@ func GenerateRegistrationToken() (string, error) {
 	return hex.EncodeToString(buf), nil
 }
 
-// GetJoinCode composes the join code of a unit. An empty token falls back to the
-// fleet-wide registration token, for units added before per-unit tokens existed.
+// generate join code
+// the join code is a JSON encoded in base64 with the following fields:
+// - unit_id
+// - registration token
+// - fqdn
+// An empty token falls back to the fleet-wide registration token.
 func GetJoinCode(unitId string, token string) string {
 	if token == "" {
 		token = configuration.Config.RegistrationToken

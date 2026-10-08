@@ -1213,9 +1213,7 @@ func DeleteUnit(uuid string) error {
 	return nil
 }
 
-// GetUnitRegistrationToken returns the token assigned to a unit when it was added.
-// It returns an empty string when the unit is unknown or predates per-unit tokens,
-// and an error only when the lookup itself fails, so that callers can fail closed.
+// GetUnitRegistrationToken returns the unit token, empty if unknown or legacy.
 func GetUnitRegistrationToken(uuid string) (string, error) {
 	pgpool, pgctx := ReportInstance()
 	var token sql.NullString
@@ -1230,9 +1228,7 @@ func GetUnitRegistrationToken(uuid string) (string, error) {
 	return token.String, nil
 }
 
-// GetUnitUsername returns the username bound to the unit at its first registration.
-// It returns an empty string when the unit has never registered, and an error only
-// when the lookup itself fails, so that callers can fail closed.
+// GetUnitUsername returns the username bound at first registration, empty if none.
 func GetUnitUsername(uuid string) (string, error) {
 	pgpool, pgctx := ReportInstance()
 	var username string

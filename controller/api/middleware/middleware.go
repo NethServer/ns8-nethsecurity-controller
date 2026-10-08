@@ -289,9 +289,7 @@ func BasicUnitAuth() gin.HandlerFunc {
 			return
 		}
 
-		// Reject a malformed id before the database sees it, where it would fail as a
-		// uuid cast. This is a format check only: it tells the caller nothing about
-		// which units exist.
+		// reject a malformed id before it reaches the database
 		if _, err := uuid.Parse(unitId); err != nil {
 			c.JSON(http.StatusUnauthorized, structs.Map(response.StatusUnauthorized{
 				Code:    401,
@@ -302,10 +300,7 @@ func BasicUnitAuth() gin.HandlerFunc {
 			return
 		}
 
-		// Validate the token against the requesting unit. Units added with a dedicated
-		// token must present exactly that one, so that a join code leaked from one unit
-		// cannot be replayed to push data on behalf of another. Units added before
-		// per-unit tokens existed have none, and still accept the fleet-wide token.
+		// expect the unit token, or the fleet-wide one for legacy units
 		expectedToken, errToken := storage.GetUnitRegistrationToken(unitId)
 		if errToken != nil {
 			c.JSON(http.StatusInternalServerError, structs.Map(response.StatusInternalServerError{
@@ -320,8 +315,7 @@ func BasicUnitAuth() gin.HandlerFunc {
 			expectedToken = configuration.Config.RegistrationToken
 		}
 
-		// validate registration token: an empty expected token means the unit has none
-		// and the fleet-wide one is disabled, so there is nothing that can be accepted
+		// validate registration token: an empty expected token accepts nothing
 		if expectedToken == "" || subtle.ConstantTimeCompare([]byte(token), []byte(expectedToken)) != 1 {
 			c.JSON(http.StatusUnauthorized, structs.Map(response.StatusBadRequest{
 				Code:    401,
