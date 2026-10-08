@@ -338,6 +338,40 @@ func TestMainEndpoints(t *testing.T) {
 		assert.Equal(t, "mypassword", pass)
 	})
 
+	t.Run("TestRegisterUnitUsernameBinding", func(t *testing.T) {
+		unitID := "88860838-63bd-4717-a6c3-cbc351010843"
+
+		// a different username must not get the VPN key of an already registered unit
+		body := `{"unit_id": "` + unitID + `", "username": "attacker", "unit_name": "myname", "password": "attackerpassword"}`
+		req, _ := http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("RegistrationToken", "1234")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusForbidden, w.Code)
+		assert.NotContains(t, w.Body.String(), "key")
+
+		// the stored credentials must be left untouched
+		user, pass, err := storage.GetUnitCredentials(unitID)
+		assert.NoError(t, err)
+		assert.Equal(t, "myuser", user)
+		assert.Equal(t, "mypassword", pass)
+
+		// the bound username can still register and rotate its password
+		body = `{"unit_id": "` + unitID + `", "username": "myuser", "unit_name": "myname", "password": "newpassword"}`
+		req, _ = http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("RegistrationToken", "1234")
+		w = httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusOK, w.Code, w.Body.String())
+
+		user, pass, err = storage.GetUnitCredentials(unitID)
+		assert.NoError(t, err)
+		assert.Equal(t, "myuser", user)
+		assert.Equal(t, "newpassword", pass)
+	})
+
 	t.Run("TestNoRoute", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/nonexistent", nil)
