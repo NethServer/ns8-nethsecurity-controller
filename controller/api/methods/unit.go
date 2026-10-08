@@ -408,8 +408,9 @@ func RegisterUnit(c *gin.Context) {
 		expectedToken = configuration.Config.RegistrationToken
 	}
 
-	// validate token
-	if subtle.ConstantTimeCompare([]byte(token), []byte(expectedToken)) != 1 {
+	// validate token: an empty expected token means the unit has none and the
+	// fleet-wide one is disabled, so there is nothing that can be accepted
+	if expectedToken == "" || subtle.ConstantTimeCompare([]byte(token), []byte(expectedToken)) != 1 {
 		c.JSON(http.StatusUnauthorized, structs.Map(response.StatusBadRequest{
 			Code:    403,
 			Message: "invalid registration token",

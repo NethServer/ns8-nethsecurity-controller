@@ -89,6 +89,12 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, "/tmp/data", Config.DataDir)
 	assert.Equal(t, "/tmp/creds", Config.CredentialsDir)
 	assert.Equal(t, "token", Config.RegistrationToken)
+
+	// an unset REGISTRATION_TOKEN disables the fleet-wide token instead of aborting
+	os.Unsetenv("REGISTRATION_TOKEN")
+	Init()
+	assert.Equal(t, "", Config.RegistrationToken)
+	os.Setenv("REGISTRATION_TOKEN", "token")
 	assert.Equal(t, "secret", Config.SecretJWT)
 	assert.Equal(t, "password", Config.AdminPassword)
 	assert.Equal(t, "admin", Config.AdminUsername)
