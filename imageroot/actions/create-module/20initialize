@@ -43,10 +43,7 @@ WEBSSH_PORT=$webssh_port
 PUBLIC_ENDPOINTS=/api/units/register
 EOF
 
-# A new installation has no fleet-wide registration token: every unit is issued its
-# own token when it is added, and only that one is accepted for it. The variable is
-# kept, empty, because installations upgraded from an older release still carry a
-# value here for the units they added before per-unit tokens existed.
+# No fleet-wide registration token: each unit gets its own when added
 cat << EOF > secret.env
 REGISTRATION_TOKEN=
 ENCRYPTION_KEY=$encryption_key

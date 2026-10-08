@@ -342,8 +342,8 @@ func TestMainEndpoints(t *testing.T) {
 	t.Run("TestRegisterUnitUsernameBinding", func(t *testing.T) {
 		unitID := "88860838-63bd-4717-a6c3-cbc351010843"
 
-		// a different username must not get the VPN key of an already registered unit
-		body := `{"unit_id": "` + unitID + `", "username": "attacker", "unit_name": "myname", "password": "attackerpassword"}`
+		// a registration presenting a different username is refused
+		body := `{"unit_id": "` + unitID + `", "username": "otheruser", "unit_name": "myname", "password": "otherpassword"}`
 		req, _ := http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("RegistrationToken", "1234")
@@ -377,7 +377,7 @@ func TestMainEndpoints(t *testing.T) {
 		unitID := "0d6cf6f4-2f32-4a5f-9a27-3b9a63f6a1cb"
 		unitToken := "a-token-of-its-own"
 
-		// a unit added with its own token is unreachable with the fleet-wide one
+		// a unit added with its own token only accepts that one
 		if err := storage.AddUnit(unitID, "172.21.0.9", unitToken); err != nil {
 			t.Fatalf("failed to add unit: %v", err)
 		}
@@ -396,10 +396,10 @@ func TestMainEndpoints(t *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, w.Code)
 		assert.NotContains(t, w.Body.String(), "key")
 
-		// the join code of another unit is not accepted either
+		// the token of another unit is not accepted either
 		req, _ = http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("RegistrationToken", "someone-else-token")
+		req.Header.Set("RegistrationToken", "another-unit-token")
 		w = httptest.NewRecorder()
 		router.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusUnauthorized, w.Code)
@@ -448,7 +448,7 @@ func TestMainEndpoints(t *testing.T) {
 		// the fleet-wide token no longer works for a unit that has its own
 		assert.Equal(t, http.StatusUnauthorized, post(unitID, "1234"))
 		// nor does the token of another unit
-		assert.Equal(t, http.StatusUnauthorized, post(unitID, "someone-else-token"))
+		assert.Equal(t, http.StatusUnauthorized, post(unitID, "another-unit-token"))
 		// a malformed unit id is refused without reaching the database
 		assert.Equal(t, http.StatusUnauthorized, post("not-a-uuid", unitToken))
 		// its own token works

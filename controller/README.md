@@ -174,7 +174,7 @@ To run the testing suite:
 General workflow:
 
 1. Access the controller and add a new machine using the `add` API below. This will generate a join code containing the FQDN of the controller, a registration token, and the unit UUID.
-   The registration token is generated for that unit alone: it is accepted only for its own UUID, so a leaked join code cannot be used to claim or impersonate a different unit.
+   The registration token is generated for that unit alone, and is accepted only for its own UUID.
    New installations have no fleet-wide token: `REGISTRATION_TOKEN` is left empty and only per-unit tokens are accepted.
    Installations upgraded from an older release keep their `REGISTRATION_TOKEN`, because the units they already manage still rely on it. To move one of those units onto its own token, delete it from the controller and add it again, then register the firewall with the new join code. Once every unit has been through this, `REGISTRATION_TOKEN` can be emptied.
 2. Connect the NethSecurity unit and register the machine using the join code.
