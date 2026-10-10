@@ -11,6 +11,7 @@ package middleware
 
 import (
 	"bytes"
+	"crypto/subtle"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -21,16 +22,17 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/nqd/flat"
 	"golang.org/x/time/rate"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 
-	"github.com/NethServer/nethsecurity-controller/api/models"
-	"github.com/NethServer/nethsecurity-controller/api/response"
 	"github.com/NethServer/nethsecurity-controller/api/configuration"
 	"github.com/NethServer/nethsecurity-controller/api/logs"
 	"github.com/NethServer/nethsecurity-controller/api/methods"
+	"github.com/NethServer/nethsecurity-controller/api/models"
+	"github.com/NethServer/nethsecurity-controller/api/response"
 	"github.com/NethServer/nethsecurity-controller/api/storage"
 	"github.com/NethServer/nethsecurity-controller/api/utils"
 )
@@ -249,7 +251,7 @@ func InitJWT() *jwt.GinJWTMiddleware {
 		},
 		SendCookie:     true,
 		CookieName:     cookieName,
-		SecureCookie:    gin.Mode() != gin.DebugMode,
+		SecureCookie:   gin.Mode() != gin.DebugMode,
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteLaxMode,
 		TokenLookup:    "header: Authorization, token: jwt",
@@ -276,8 +278,8 @@ func InitJWT() *jwt.GinJWTMiddleware {
 
 func BasicUnitAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		uuid, token, _ := c.Request.BasicAuth()
-		if uuid == "" || token == "" {
+		unitId, token, _ := c.Request.BasicAuth()
+		if unitId == "" || token == "" {
 			c.JSON(http.StatusBadRequest, structs.Map(response.StatusUnauthorized{
 				Code:    400,
 				Message: "missing unit or token",
@@ -287,18 +289,8 @@ func BasicUnitAuth() gin.HandlerFunc {
 			return
 		}
 
-		// validate registration token against configured one
-		if token != configuration.Config.RegistrationToken {
-			c.JSON(http.StatusUnauthorized, structs.Map(response.StatusBadRequest{
-				Code:    401,
-				Message: "invalid registration token",
-			}))
-			c.Abort()
-			return
-		}
-
-		// UnitId is invalid if there is no certificate issued for it
-		if _, err := os.Stat(configuration.Config.OpenVPNPKIDir + "/issued/" + uuid + ".crt"); err != nil {
+		// reject a malformed id before it reaches the database
+		if _, err := uuid.Parse(unitId); err != nil {
 			c.JSON(http.StatusUnauthorized, structs.Map(response.StatusUnauthorized{
 				Code:    401,
 				Message: "invalid unit id",
@@ -308,7 +300,43 @@ func BasicUnitAuth() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("UnitId", uuid)
+		// expect the unit token, or the fleet-wide one for legacy units
+		expectedToken, errToken := storage.GetUnitRegistrationToken(unitId)
+		if errToken != nil {
+			c.JSON(http.StatusInternalServerError, structs.Map(response.StatusInternalServerError{
+				Code:    500,
+				Message: "cannot read registration token",
+				Data:    nil,
+			}))
+			c.Abort()
+			return
+		}
+		if expectedToken == "" {
+			expectedToken = configuration.Config.RegistrationToken
+		}
+
+		// validate registration token: an empty expected token accepts nothing
+		if expectedToken == "" || subtle.ConstantTimeCompare([]byte(token), []byte(expectedToken)) != 1 {
+			c.JSON(http.StatusUnauthorized, structs.Map(response.StatusBadRequest{
+				Code:    401,
+				Message: "invalid registration token",
+			}))
+			c.Abort()
+			return
+		}
+
+		// UnitId is invalid if there is no certificate issued for it
+		if _, err := os.Stat(configuration.Config.OpenVPNPKIDir + "/issued/" + unitId + ".crt"); err != nil {
+			c.JSON(http.StatusUnauthorized, structs.Map(response.StatusUnauthorized{
+				Code:    401,
+				Message: "invalid unit id",
+				Data:    nil,
+			}))
+			c.Abort()
+			return
+		}
+
+		c.Set("UnitId", unitId)
 		c.Next()
 	}
 }

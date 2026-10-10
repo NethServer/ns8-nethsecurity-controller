@@ -151,7 +151,7 @@ To start the API server in development mode:
   ```
 - start the API server by setting up all required environment variables:
   ```
-  LISTEN_ADDRESS=0.0.0.0:5000 ADMIN_USERNAME=admin ADMIN_PASSWORD=admin SECRET_JWT=secret PROMTAIL_ADDRESS=127.0.0.1 PROMTAIL_PORT=6565 PROMETHEUS_PATH="/prometheus" WEBSSH_PATH="/webssh" GRAFANA_PATH="/grafana" REGISTRATION_TOKEN=1234 REPORT_DB_URI=postgres://report:password@127.0.0.1:5432/report GRAFANA_POSTGRES_PASSWORD=password ISSUER_2FA=test ENCRYPTION_KEY=12345678901234567890123456789012 VALID_SUBSCRIPTION=true CREDENTIALS_DIR=data DATA_DIR=data ./api
+  LISTEN_ADDRESS=0.0.0.0:5000 ADMIN_USERNAME=admin ADMIN_PASSWORD=admin SECRET_JWT=secret PROMTAIL_ADDRESS=127.0.0.1 PROMTAIL_PORT=6565 PROMETHEUS_PATH="/prometheus" WEBSSH_PATH="/webssh" GRAFANA_PATH="/grafana" REPORT_DB_URI=postgres://report:password@127.0.0.1:5432/report GRAFANA_POSTGRES_PASSWORD=password ISSUER_2FA=test ENCRYPTION_KEY=12345678901234567890123456789012 VALID_SUBSCRIPTION=true CREDENTIALS_DIR=data DATA_DIR=data ./api
   ```
 - the API server will be available at `http://localhost:5000/`
 
@@ -174,6 +174,9 @@ To run the testing suite:
 General workflow:
 
 1. Access the controller and add a new machine using the `add` API below. This will generate a join code containing the FQDN of the controller, a registration token, and the unit UUID.
+   The registration token is generated for that unit alone, and is accepted only for its own UUID.
+   New installations have no fleet-wide token: `REGISTRATION_TOKEN` is left empty and only per-unit tokens are accepted.
+   Installations upgraded from an older release keep their `REGISTRATION_TOKEN`, because the units they already manage still rely on it. To move one of those units onto its own token, delete it from the controller and add it again, then register the firewall with the new join code. Once every unit has been through this, `REGISTRATION_TOKEN` can be emptied.
 2. Connect the NethSecurity unit and register the machine using the join code.
 3. Return to the controller and manage the unit.
   - The UI retrieves a token for the NethSecurity unit: `curl http://localhost:8080/api/servers/login/clientX`

@@ -268,7 +268,9 @@ func TestGetJoinCode(t *testing.T) {
 	configuration.Config.FQDN = "test.example.com"
 
 	unitId := "unit-123"
-	joinCode := GetJoinCode(unitId)
+
+	// an empty token falls back to the fleet-wide one
+	joinCode := GetJoinCode(unitId, "")
 
 	assert.NotEmpty(t, joinCode)
 
@@ -283,6 +285,25 @@ func TestGetJoinCode(t *testing.T) {
 	assert.Equal(t, unitId, data["unit_id"])
 	assert.Equal(t, "test-token", data["token"])
 	assert.Equal(t, "test.example.com", data["fqdn"])
+
+	// a per-unit token takes precedence
+	joinCode = GetJoinCode(unitId, "unit-token")
+	decoded, err = base64.StdEncoding.DecodeString(joinCode)
+	assert.NoError(t, err)
+	err = json.Unmarshal(decoded, &data)
+	assert.NoError(t, err)
+	assert.Equal(t, "unit-token", data["token"])
+}
+
+// TestGenerateRegistrationToken checks that tokens are non-empty and unique.
+func TestGenerateRegistrationToken(t *testing.T) {
+	first, err := GenerateRegistrationToken()
+	assert.NoError(t, err)
+	assert.Len(t, first, 64)
+
+	second, err := GenerateRegistrationToken()
+	assert.NoError(t, err)
+	assert.NotEqual(t, first, second)
 }
 
 // TestGeoIPDownloadAndLookup tests the GeoIP2 database download and country lookup functionality.

@@ -12,6 +12,7 @@ package main
 import (
 	"bytes"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -338,6 +339,167 @@ func TestMainEndpoints(t *testing.T) {
 		assert.Equal(t, "mypassword", pass)
 	})
 
+	t.Run("TestRegisterUnitUsernameBinding", func(t *testing.T) {
+		unitID := "88860838-63bd-4717-a6c3-cbc351010843"
+
+		// a registration presenting a different username is refused
+		body := `{"unit_id": "` + unitID + `", "username": "otheruser", "unit_name": "myname", "password": "otherpassword"}`
+		req, _ := http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("RegistrationToken", "1234")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusForbidden, w.Code)
+		assert.NotContains(t, w.Body.String(), "key")
+
+		// the stored credentials must be left untouched
+		user, pass, err := storage.GetUnitCredentials(unitID)
+		assert.NoError(t, err)
+		assert.Equal(t, "myuser", user)
+		assert.Equal(t, "mypassword", pass)
+
+		// the bound username can still register and rotate its password
+		body = `{"unit_id": "` + unitID + `", "username": "myuser", "unit_name": "myname", "password": "newpassword"}`
+		req, _ = http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("RegistrationToken", "1234")
+		w = httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusOK, w.Code, w.Body.String())
+
+		user, pass, err = storage.GetUnitCredentials(unitID)
+		assert.NoError(t, err)
+		assert.Equal(t, "myuser", user)
+		assert.Equal(t, "newpassword", pass)
+	})
+
+	t.Run("TestRegisterUnitPerUnitToken", func(t *testing.T) {
+		unitID := "0d6cf6f4-2f32-4a5f-9a27-3b9a63f6a1cb"
+		unitToken := "a-token-of-its-own"
+
+		// a unit added with its own token only accepts that one
+		if err := storage.AddUnit(unitID, "172.21.0.9", unitToken); err != nil {
+			t.Fatalf("failed to add unit: %v", err)
+		}
+		for _, name := range []string{"/issued/" + unitID + ".crt", "/private/" + unitID + ".key"} {
+			if _, err := os.Create(configuration.Config.OpenVPNPKIDir + name); err != nil {
+				t.Fatalf("failed to create file: %v", err)
+			}
+		}
+
+		body := `{"unit_id": "` + unitID + `", "username": "myuser", "unit_name": "myname", "password": "mypassword"}`
+		req, _ := http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("RegistrationToken", "1234") // the fleet-wide token
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+		assert.NotContains(t, w.Body.String(), "key")
+
+		// the token of another unit is not accepted either
+		req, _ = http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("RegistrationToken", "another-unit-token")
+		w = httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+
+		// its own token works
+		req, _ = http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("RegistrationToken", unitToken)
+		w = httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusOK, w.Code, w.Body.String())
+
+		// the join code carries the per-unit token, not the fleet-wide one
+		unit, err := storage.GetUnit(unitID)
+		assert.NoError(t, err)
+		decoded, err := base64.StdEncoding.DecodeString(unit["join_code"].(string))
+		assert.NoError(t, err)
+		var joinCode map[string]interface{}
+		assert.NoError(t, json.Unmarshal(decoded, &joinCode))
+		assert.Equal(t, unitToken, joinCode["token"])
+
+		storage.DeleteUnit(unitID)
+	})
+
+	t.Run("TestIngestPerUnitToken", func(t *testing.T) {
+		unitID := "6f1f6d6a-1c7a-4a5e-9c31-0d2a1b7e4c55"
+		unitToken := "ingest-token-of-its-own"
+
+		if err := storage.AddUnit(unitID, "172.21.0.10", unitToken); err != nil {
+			t.Fatalf("failed to add unit: %v", err)
+		}
+		if _, err := os.Create(configuration.Config.OpenVPNPKIDir + "/issued/" + unitID + ".crt"); err != nil {
+			t.Fatalf("failed to create file: %v", err)
+		}
+
+		body := `{"unit_name": "myname"}`
+		post := func(user string, pass string) int {
+			req, _ := http.NewRequest("POST", "/ingest/info", bytes.NewBuffer([]byte(body)))
+			req.Header.Set("Content-Type", "application/json")
+			req.SetBasicAuth(user, pass)
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+			return w.Code
+		}
+
+		// the fleet-wide token no longer works for a unit that has its own
+		assert.Equal(t, http.StatusUnauthorized, post(unitID, "1234"))
+		// nor does the token of another unit
+		assert.Equal(t, http.StatusUnauthorized, post(unitID, "another-unit-token"))
+		// a malformed unit id is refused without reaching the database
+		assert.Equal(t, http.StatusUnauthorized, post("not-a-uuid", unitToken))
+		// its own token works
+		assert.Equal(t, http.StatusOK, post(unitID, unitToken))
+
+		storage.DeleteUnit(unitID)
+	})
+
+	t.Run("TestRegisterUnitWithoutFleetToken", func(t *testing.T) {
+		// a new installation ships without a fleet-wide token
+		original := configuration.Config.RegistrationToken
+		configuration.Config.RegistrationToken = ""
+		defer func() { configuration.Config.RegistrationToken = original }()
+
+		unitID := "3a1e3c02-9d0a-4a31-8f5e-2f7f0a1d4b77"
+		if err := storage.AddUnit(unitID, "172.21.0.11", ""); err != nil {
+			t.Fatalf("failed to add unit: %v", err)
+		}
+		if _, err := os.Create(configuration.Config.OpenVPNPKIDir + "/issued/" + unitID + ".crt"); err != nil {
+			t.Fatalf("failed to create file: %v", err)
+		}
+
+		// a unit without its own token has nothing left to fall back on
+		body := `{"unit_id": "` + unitID + `", "username": "myuser", "unit_name": "myname", "password": "mypassword"}`
+		req, _ := http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("RegistrationToken", "1234")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+		assert.NotContains(t, w.Body.String(), "key")
+
+		// an empty token must not match the empty expected one either
+		req, _ = http.NewRequest("POST", "/units/register", bytes.NewBuffer([]byte(body)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("RegistrationToken", " ")
+		w = httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+
+		// same on the ingest path
+		ingest, _ := http.NewRequest("POST", "/ingest/info", bytes.NewBuffer([]byte(`{"unit_name": "myname"}`)))
+		ingest.Header.Set("Content-Type", "application/json")
+		ingest.SetBasicAuth(unitID, "1234")
+		w = httptest.NewRecorder()
+		router.ServeHTTP(w, ingest)
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+
+		storage.DeleteUnit(unitID)
+	})
+
 	t.Run("TestNoRoute", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/nonexistent", nil)
@@ -496,7 +658,7 @@ func addUnit(t *testing.T) string {
 	// Manually add to the database: we can't call /units POST endpoint because
 	// it requires the presence of easyrsa binary and configuration files
 	newIp := storage.GetFreeIP()
-	storage.AddUnit(unitID, newIp)
+	storage.AddUnit(unitID, newIp, "")
 
 	return unitID
 }

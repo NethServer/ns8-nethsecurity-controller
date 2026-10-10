@@ -15,6 +15,7 @@ import (
 	"database/sql"
 	_ "embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"os"
@@ -26,6 +27,7 @@ import (
 	"github.com/NethServer/nethsecurity-controller/api/logs"
 	"github.com/NethServer/nethsecurity-controller/api/models"
 	"github.com/NethServer/nethsecurity-controller/api/utils"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -587,14 +589,14 @@ func SetUserRecoveryCodes(username string, codes []string) error {
 	return err
 }
 
-func AddUnit(uuid string, ipaddr string) error {
+func AddUnit(uuid string, ipaddr string, registrationToken string) error {
 	pgpool, pgctx := ReportInstance()
 	// Try to insert the unit; if it already exists, return an error
 	_, err := pgpool.Exec(pgctx, `
-		INSERT INTO units (uuid, vpn_address, created_at, updated_at)
-		VALUES ($1, $2, NOW(), NOW())
+		INSERT INTO units (uuid, vpn_address, registration_token, created_at, updated_at)
+		VALUES ($1, $2, $3, NOW(), NOW())
 		ON CONFLICT (uuid) DO NOTHING
-	`, uuid, ipaddr)
+	`, uuid, ipaddr, registrationToken)
 	if err != nil {
 		logs.Logs.Println("[ERR][STORAGE][ADD_UNIT] error in query execution:" + err.Error())
 	}
@@ -700,7 +702,8 @@ func migrateUnitInfoFromFileToPostgres(toBeMigratedUnits []string) {
 				softErrors++
 			}
 		} else {
-			addUnitErr := AddUnit(uuid, ipaddr)
+			// migrated units predate per-unit tokens: they keep the fleet-wide one
+			addUnitErr := AddUnit(uuid, ipaddr, "")
 			if addUnitErr != nil {
 				logs.Logs.Println("[WARNING][MIGRATION] error adding unit to Postgres:", uuid, addUnitErr.Error())
 				continue
@@ -1032,10 +1035,11 @@ func ListUnits() ([]map[string]interface{}, error) {
 			u.vpn_address,
 			u.info::text,
 			u.vpn_connected_since,
+			u.registration_token,
 			COALESCE(array_agg(g.name) FILTER (WHERE g.id IS NOT NULL), '{}') AS groups
 		FROM units u
 		LEFT JOIN unit_groups g ON u.uuid = ANY(g.units)
-		GROUP BY u.uuid, u.vpn_address, u.info, u.vpn_connected_since
+		GROUP BY u.uuid, u.vpn_address, u.info, u.vpn_connected_since, u.registration_token
 		ORDER BY u.created_at ASC
 	`)
 	if err != nil {
@@ -1051,12 +1055,13 @@ func ListUnits() ([]map[string]interface{}, error) {
 		var ipaddress sql.NullString
 		var infoStr sql.NullString
 		var connectedSince sql.NullTime
+		var registrationToken sql.NullString
 		var info map[string]interface{}
 		var groups []string
 		vpn_info := make(map[string]interface{})
 		unit := make(map[string]interface{})
 
-		if err := rows.Scan(&uuid, &name, &ipaddress, &infoStr, &connectedSince, &groups); err != nil {
+		if err := rows.Scan(&uuid, &name, &ipaddress, &infoStr, &connectedSince, &registrationToken, &groups); err != nil {
 			logs.Logs.Println("[ERR][STORAGE][LIST_UNITS] error in row scan: " + err.Error())
 			continue
 		}
@@ -1081,7 +1086,7 @@ func ListUnits() ([]map[string]interface{}, error) {
 			}
 		}
 
-		unit["join_code"] = utils.GetJoinCode(uuid.String)
+		unit["join_code"] = utils.GetJoinCode(uuid.String, registrationToken.String)
 		if connectedSince.Valid {
 			vpn_info["connected_since"] = connectedSince.Time.Unix()
 		}
@@ -1130,14 +1135,15 @@ func UpdateUnitVpnStatus(uuid string, connectedSince int) error {
 
 func GetUnit(uuid string) (map[string]interface{}, error) {
 	pgpool, pgctx := ReportInstance()
-	row := pgpool.QueryRow(pgctx, "SELECT uuid, vpn_address, info::text, vpn_connected_since FROM units WHERE uuid = $1", uuid)
+	row := pgpool.QueryRow(pgctx, "SELECT uuid, vpn_address, info::text, vpn_connected_since, registration_token FROM units WHERE uuid = $1", uuid)
 
 	var unit map[string]interface{}
 	var ipaddress sql.NullString
 	var infoStr sql.NullString
 	var connectedSince sql.NullTime
+	var registrationToken sql.NullString
 
-	if err := row.Scan(&uuid, &ipaddress, &infoStr, &connectedSince); err != nil {
+	if err := row.Scan(&uuid, &ipaddress, &infoStr, &connectedSince, &registrationToken); err != nil {
 		logs.Logs.Println("[ERR][STORAGE][GET_UNIT] error in query execution:" + err.Error())
 		return nil, err
 	}
@@ -1165,7 +1171,7 @@ func GetUnit(uuid string) (map[string]interface{}, error) {
 	}
 
 	unit["vpn"] = vpn_info
-	unit["join_code"] = utils.GetJoinCode(uuid)
+	unit["join_code"] = utils.GetJoinCode(uuid, registrationToken.String)
 
 	return unit, nil
 }
@@ -1205,6 +1211,36 @@ func DeleteUnit(uuid string) error {
 
 	// Delete of report data is not required: data are cleaned up by a database job
 	return nil
+}
+
+// GetUnitRegistrationToken returns the unit token, empty if unknown or legacy.
+func GetUnitRegistrationToken(uuid string) (string, error) {
+	pgpool, pgctx := ReportInstance()
+	var token sql.NullString
+	err := pgpool.QueryRow(pgctx, "SELECT registration_token FROM units WHERE uuid = $1::uuid", uuid).Scan(&token)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", nil
+	}
+	if err != nil {
+		logs.Logs.Println("[ERR][STORAGE][GET_UNIT_REGISTRATION_TOKEN] error in query execution:" + err.Error())
+		return "", err
+	}
+	return token.String, nil
+}
+
+// GetUnitUsername returns the username bound at first registration, empty if none.
+func GetUnitUsername(uuid string) (string, error) {
+	pgpool, pgctx := ReportInstance()
+	var username string
+	err := pgpool.QueryRow(pgctx, "SELECT username FROM unit_credentials WHERE uuid = $1::uuid", uuid).Scan(&username)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", nil
+	}
+	if err != nil {
+		logs.Logs.Println("[ERR][STORAGE][GET_UNIT_USERNAME] error in query execution:" + err.Error())
+		return "", err
+	}
+	return username, nil
 }
 
 func GetUnitCredentials(uuid string) (string, string, error) {

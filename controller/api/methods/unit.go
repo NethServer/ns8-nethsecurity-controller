@@ -11,6 +11,7 @@ package methods
 
 import (
 	"bytes"
+	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -32,6 +33,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func GetUnits(c *gin.Context) {
@@ -317,8 +319,19 @@ func AddUnit(c *gin.Context) {
 		return
 	}
 
+	// issue a dedicated registration token, carried in the join code
+	registrationToken, errToken := utils.GenerateRegistrationToken()
+	if errToken != nil {
+		c.JSON(http.StatusInternalServerError, structs.Map(response.StatusInternalServerError{
+			Code:    500,
+			Message: "cannot generate registration token for: " + jsonRequest.UnitId,
+			Data:    errToken.Error(),
+		}))
+		return
+	}
+
 	// create record inside units table
-	errCreate := storage.AddUnit(jsonRequest.UnitId, freeIP)
+	errCreate := storage.AddUnit(jsonRequest.UnitId, freeIP, registrationToken)
 	if errCreate != nil {
 		c.JSON(http.StatusBadRequest, structs.Map(response.StatusBadRequest{
 			Code:    400,
@@ -333,7 +346,7 @@ func AddUnit(c *gin.Context) {
 		Code:    200,
 		Message: "unit added successfully",
 		Data: gin.H{
-			"join_code": utils.GetJoinCode(jsonRequest.UnitId),
+			"join_code": utils.GetJoinCode(jsonRequest.UnitId, registrationToken),
 		},
 	}))
 }
@@ -351,16 +364,6 @@ func RegisterUnit(c *gin.Context) {
 		return
 	}
 
-	// validate token
-	if token != configuration.Config.RegistrationToken {
-		c.JSON(http.StatusUnauthorized, structs.Map(response.StatusBadRequest{
-			Code:    403,
-			Message: "invalid registration token",
-		}))
-		logs.Logs.Println("[ERROR][RegisterUnit] invalid registration token")
-		return
-	}
-
 	// parse request fields
 	var jsonRequest models.RegisterRequest
 	if err := c.ShouldBindJSON(&jsonRequest); err != nil {
@@ -370,6 +373,42 @@ func RegisterUnit(c *gin.Context) {
 			Data:    err.Error(),
 		}))
 		logs.Logs.Println("[ERROR][RegisterUnit] request fields malformed:", err.Error())
+		return
+	}
+
+	// reject a malformed id before it reaches the database
+	if _, errUuid := uuid.Parse(jsonRequest.UnitId); errUuid != nil {
+		c.JSON(http.StatusBadRequest, structs.Map(response.StatusBadRequest{
+			Code:    400,
+			Message: "invalid unit id",
+			Data:    "",
+		}))
+		logs.Logs.Println("[ERROR][RegisterUnit] invalid unit id")
+		return
+	}
+
+	// expect the unit token, or the fleet-wide one for legacy units
+	expectedToken, errToken := storage.GetUnitRegistrationToken(jsonRequest.UnitId)
+	if errToken != nil {
+		c.JSON(http.StatusInternalServerError, structs.Map(response.StatusInternalServerError{
+			Code:    500,
+			Message: "cannot read registration token for: " + jsonRequest.UnitId,
+			Data:    errToken.Error(),
+		}))
+		logs.Logs.Println("[ERROR][RegisterUnit] cannot read registration token for: " + jsonRequest.UnitId)
+		return
+	}
+	if expectedToken == "" {
+		expectedToken = configuration.Config.RegistrationToken
+	}
+
+	// validate token: an empty expected token accepts nothing
+	if expectedToken == "" || subtle.ConstantTimeCompare([]byte(token), []byte(expectedToken)) != 1 {
+		c.JSON(http.StatusUnauthorized, structs.Map(response.StatusBadRequest{
+			Code:    403,
+			Message: "invalid registration token",
+		}))
+		logs.Logs.Println("[ERROR][RegisterUnit] invalid registration token for: " + jsonRequest.UnitId)
 		return
 	}
 
@@ -397,6 +436,27 @@ func RegisterUnit(c *gin.Context) {
 
 	// check openvpn conf exists
 	if _, err := os.Stat(configuration.Config.OpenVPNPKIDir + "/issued/" + jsonRequest.UnitId + ".crt"); err == nil {
+		// later registrations must present the username bound at the first one
+		boundUsername, errRead := storage.GetUnitUsername(jsonRequest.UnitId)
+		if errRead != nil {
+			c.JSON(http.StatusInternalServerError, structs.Map(response.StatusInternalServerError{
+				Code:    500,
+				Message: "cannot read credentials for: " + jsonRequest.UnitId,
+				Data:    errRead.Error(),
+			}))
+			logs.Logs.Println("[ERROR][RegisterUnit] cannot read credentials for: " + jsonRequest.UnitId + " - " + errRead.Error())
+			return
+		}
+		if boundUsername != "" && boundUsername != jsonRequest.Username {
+			c.JSON(http.StatusForbidden, structs.Map(response.StatusForbidden{
+				Code:    403,
+				Message: "unit already registered with a different username",
+				Data:    "",
+			}))
+			logs.Logs.Println("[ERROR][RegisterUnit] username mismatch for: " + jsonRequest.UnitId)
+			return
+		}
+
 		// read ca
 		ca, errCa := os.ReadFile(configuration.Config.OpenVPNPKIDir + "/" + "ca.crt")
 		caS := strings.TrimSpace(string(ca[:]))
@@ -459,22 +519,8 @@ func RegisterUnit(c *gin.Context) {
 			"vpn_address":      vpnAddress,
 		}
 
-		// read credentials from database
-		curUsername, _, errRead := storage.GetUnitCredentials(jsonRequest.UnitId)
-
-		var errWrite error
-		// credentials exists, update only if username matches
-		if errRead == nil {
-			if curUsername == jsonRequest.Username {
-				errWrite = storage.SetUnitCredentials(jsonRequest.UnitId, curUsername, jsonRequest.Password)
-			}
-		} else {
-			// create credentials
-			errWrite = storage.SetUnitCredentials(jsonRequest.UnitId, jsonRequest.Username, jsonRequest.Password)
-		}
-
-		// save new credentials
-		if errWrite != nil {
+		// save credentials: the username is either new or the bound one
+		if errWrite := storage.SetUnitCredentials(jsonRequest.UnitId, jsonRequest.Username, jsonRequest.Password); errWrite != nil {
 			c.JSON(http.StatusBadRequest, structs.Map(response.StatusBadRequest{
 				Code:    400,
 				Message: "cannot write credentials file for: " + jsonRequest.UnitId,

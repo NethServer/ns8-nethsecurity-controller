@@ -39,7 +39,7 @@ func TestUnitExists(t *testing.T) {
 	// Create a test unit
 	unitID := uuid.New().String()
 	ip := storage.GetFreeIP()
-	storage.AddUnit(unitID, ip)
+	storage.AddUnit(unitID, ip, "")
 
 	// Verify unit exists
 	exists, err := storage.UnitExists(unitID)
@@ -58,7 +58,7 @@ func TestUnitCredentialsCRUD(t *testing.T) {
 
 	unitID := uuid.New().String()
 	ip := storage.GetFreeIP()
-	storage.AddUnit(unitID, ip)
+	storage.AddUnit(unitID, ip, "")
 
 	// Test SetUnitCredentials (Create)
 	username := "testuser"
@@ -114,7 +114,7 @@ func TestGetFreeIPConsistency(t *testing.T) {
 
 	// Add a unit with this IP
 	unitID1 := uuid.New().String()
-	storage.AddUnit(unitID1, ip1)
+	storage.AddUnit(unitID1, ip1, "")
 
 	// Get next free IP
 	ip2 := storage.GetFreeIP()
@@ -128,7 +128,7 @@ func TestUnitCredentialsEncryption(t *testing.T) {
 
 	unitID := uuid.New().String()
 	ip := storage.GetFreeIP()
-	storage.AddUnit(unitID, ip)
+	storage.AddUnit(unitID, ip, "")
 
 	// Test with sensitive password
 	sensitivePassword := "P@ssw0rd!#$%^&*()"

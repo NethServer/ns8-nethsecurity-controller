@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS units (
     info JSONB,
     vpn_address TEXT,
     vpn_connected_since TIMESTAMP,
+    registration_token TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

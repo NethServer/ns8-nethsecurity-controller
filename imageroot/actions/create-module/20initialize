@@ -24,7 +24,6 @@ db_port=$(($start+10))
 num=$(echo $MODULE_ID | sed 's/nethsecurity\-controller//')
 
 jwt_secret=$(uuidgen | sha256sum | awk '{print $1}')
-reg_secret=$(uuidgen | sha256sum | awk '{print $1}')
 db_secret=$(uuidgen | sha256sum | awk '{print $1}')
 prometheus_secret=$(uuidgen | sha256sum | awk '{print $1}')
 encryption_key=$(uuidgen | sha256sum | awk '{print substr($1,1,32)}')
@@ -44,8 +43,9 @@ WEBSSH_PORT=$webssh_port
 PUBLIC_ENDPOINTS=/api/units/register
 EOF
 
+# No fleet-wide registration token: each unit gets its own when added
 cat << EOF > secret.env
-REGISTRATION_TOKEN=$reg_secret
+REGISTRATION_TOKEN=
 ENCRYPTION_KEY=$encryption_key
 PROMETHEUS_AUTH_USERNAME=prometheus_$RANDOM
 PROMETHEUS_AUTH_PASSWORD=$prometheus_secret

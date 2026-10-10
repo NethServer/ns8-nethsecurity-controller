@@ -120,11 +120,13 @@ func Init() {
 	} else {
 		Config.SensitiveList = []string{"password", "secret", "token", "passphrase", "private", "key"}
 	}
+	// empty REGISTRATION_TOKEN disables the fleet-wide token (new installations)
 	if os.Getenv("REGISTRATION_TOKEN") != "" {
 		Config.RegistrationToken = os.Getenv("REGISTRATION_TOKEN")
+		logs.Logs.Println("[INFO][ENV] REGISTRATION_TOKEN is set: it is used by units that have no token of their own")
 	} else {
-		logs.Logs.Println("[CRITICAL][ENV] REGISTRATION_TOKEN variable is empty")
-		os.Exit(1)
+		Config.RegistrationToken = ""
+		logs.Logs.Println("[INFO][ENV] REGISTRATION_TOKEN is empty: only per-unit registration tokens are accepted")
 	}
 
 	if os.Getenv("CREDENTIALS_DIR") != "" {
