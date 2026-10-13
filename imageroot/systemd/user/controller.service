@@ -1,7 +1,7 @@
 [Unit]
 Description=Podman controller.service
-Requires=vpn.service api.service ui.service proxy.service promtail.service loki.service prometheus.service grafana.service webssh.service timescale.service
-Before=vpn.service api.service ui.service proxy.service promtail.service loki.service prometheus.service grafana.service webssh.service timescale.service
+Requires=vpn.service api.service ui.service proxy.service promtail.service loki.service prometheus.service grafana.service timescale.service
+Before=vpn.service api.service ui.service proxy.service promtail.service loki.service prometheus.service grafana.service timescale.service
 ConditionPathExists=%E/state/environment
 ConditionPathExists=%E/state/network.env
 

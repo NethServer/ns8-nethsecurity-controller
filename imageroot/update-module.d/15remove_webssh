@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Remove webssh, replaced by the API SSH terminal
+
+import json
+import os
+import subprocess
+import sys
+import agent
+import agent.tasks
+
+network = agent.read_envfile('network.env')
+try:
+    with open('config.json', 'r') as cfp:
+        config = json.load(cfp)
+except FileNotFoundError:
+    config = {}
+
+# Exit if already removed
+if 'WEBSSH_PORT' not in network and 'webssh_path' not in config:
+    sys.exit(0)
+
+subprocess.run(['systemctl', '--user', 'disable', '--now', 'webssh.service'], stdout=sys.stderr, stderr=sys.stderr)
+subprocess.run(['podman', 'rm', '--ignore', '-f', 'webssh'], stdout=sys.stderr, stderr=sys.stderr)
+
+# The route may be missing on unconfigured instances, so the result is ignored
+default_traefik_id = agent.resolve_agent_id('traefik@node')
+if default_traefik_id is not None:
+    agent.tasks.run(
+        agent_id=default_traefik_id,
+        action='delete-route',
+        data={'instance': os.environ['MODULE_ID'] + '_webssh'},
+    )
+
+network.pop('WEBSSH_PORT', None)
+agent.write_envfile('network.env', network)
+
+if 'webssh_path' in config:
+    del config['webssh_path']
+    with open('config.json', 'w') as cfp:
+        json.dump(config, cfp)

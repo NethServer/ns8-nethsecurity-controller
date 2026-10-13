@@ -49,7 +49,7 @@ except ValueError:
 if first_config and not 20 <= vpn_network.prefixlen <= 24:
     validation_failed('netmask', ovpn_netmask, 'netmask_out_of_range')
 
-for path in ['loki_path', 'prometheus_path', 'webssh_path']:
+for path in ['loki_path', 'prometheus_path']:
     if not config.get(path):
         config[path] = f'/{uuid.uuid4()}'
 
@@ -112,25 +112,6 @@ if 'lets_encrypt' in request:
 
 agent.set_route(set_route_data)
 
-# Configure Traefik to route requests to the webssh service
-set_route_data = {
-    'instance': os.environ['MODULE_ID'] + '_webssh',
-    'url':  f'http://127.0.0.1:{ports[9]}',
-    'http2https': True,
-    'host': request["host"],
-    'path': config['webssh_path'],
-    'strip_prefix': True,
-    'lets_encrypt_check': True,
-    'lets_encrypt_cleanup': True,
-    'forward_auth': {
-        'address': f'http://127.0.0.1:{ports[3]}/api/auth',
-    },
-}
-if 'lets_encrypt' in request:
-    set_route_data['lets_encrypt'] = request['lets_encrypt']
-
-agent.set_route(set_route_data)
-
 config["allowed_ips"] = request.get("allowed_ips", [])
 
 # Save configuration to JSON for later user and backup
@@ -153,7 +134,6 @@ with open('config.env', 'w') as env:
     env.write(f'FQDN={request["host"]}\n')
     env.write(f'ISSUER_2FA={request["host"]}\n')
     env.write(f'PROMETHEUS_PATH={config["prometheus_path"]}\n')
-    env.write(f'WEBSSH_PATH={config["webssh_path"]}/\n')
     env.write(f'GRAFANA_PATH=/grafana\n')
     env.write(f'DATA_DIR=/nethsecurity-api/data\n')
     if subscription:

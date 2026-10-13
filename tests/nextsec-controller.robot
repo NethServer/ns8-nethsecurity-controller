@@ -90,12 +90,6 @@ Check if promtail is running
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${output}    active
 
-Check if webssh is running
-    ${output}  ${rc} =    Execute Command    runagent -m ${module_id} systemctl --user is-active webssh.service
-    ...    return_rc=True
-    Should Be Equal As Integers    ${rc}  0
-    Should Contain    ${output}    active
-
 Check if timescale is running
     ${output}  ${rc} =    Execute Command    runagent -m ${module_id} systemctl --user is-active timescale.service
     ...    return_rc=True
