@@ -21,7 +21,6 @@ CGO_ENABLED=0 go build
 - `PROMTAIL_PORT`: promtail port
 
 - `PROMETHEUS_PATH`: prometheus web path
-- `WEBSSH_PATH`: webssh web path
 - `GRAFANA_PATH`: grafana web path
 - `GRAFANA_POSTGRES_PASSWORD`: password to access grafana postgres database
 - `REPORT_DB_URI`: Timescale database URI for reports
@@ -1004,7 +1003,6 @@ Key design choices include:
           "fqdn": "controller.ns8.local",
           "grafana_path": "/grafana",
           "prometheus_path": "/prometheus",
-          "webssh_path": "/webssh",
           "valid_subscription": false
       },
       "message": "success"

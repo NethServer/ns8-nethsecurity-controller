@@ -62,7 +62,6 @@ SECRET_JWT=secret
 PROMTAIL_ADDRESS=127.0.0.1
 PROMTAIL_PORT=6565
 PROMETHEUS_PATH=/prometheus
-WEBSSH_PATH=$(uuidgen)
 GRAFANA_PATH=/grafana
 # like a new installation: no fleet-wide token, each unit gets its own when added
 REGISTRATION_TOKEN=
