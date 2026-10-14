@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+
+# Load database credentials
+. ./db.env
+
+# Restore before the API starts: run a temporary timescale on the empty volume
+podman run --rm --detach --name timescale-restore \
+    --volume=timescale-data:/var/lib/postgresql/data \
+    --env-file=db.env \
+    --network=host \
+    "${TIMESCALEDB_IMAGE}" --port="${POSTGRES_PORT}" --listen_addresses=127.0.0.1
+trap 'podman stop timescale-restore' EXIT
+
+# Wait for database to be ready pooling every 5 seconds
+until podman exec timescale-restore pg_isready --dbname="${REPORT_DB_URI}"; do
+  sleep 5
+done
+
+# Grants are skipped: the grafana role doesn't exist yet, the API recreates them on start
+podman exec timescale-restore psql --dbname="${REPORT_DB_URI}" --set=ON_ERROR_STOP=1 --command="CREATE EXTENSION IF NOT EXISTS timescaledb; SELECT timescaledb_pre_restore();"
+podman exec --interactive timescale-restore pg_restore --format=custom --no-privileges --dbname="${REPORT_DB_URI}" < backup.dump
+podman exec timescale-restore psql --dbname="${REPORT_DB_URI}" --set=ON_ERROR_STOP=1 --command="SELECT timescaledb_post_restore();"
