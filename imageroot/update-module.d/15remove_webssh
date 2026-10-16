@@ -14,6 +14,8 @@ import sys
 import agent
 import agent.tasks
 
+agent.unset_env('WEBSSH_IMAGE')
+
 network = agent.read_envfile('network.env')
 try:
     with open('config.json', 'r') as cfp:
