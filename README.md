@@ -13,7 +13,6 @@ The module is composed by the following containers:
 - [prometheus](#prometheus): metrics collector, it scrapes metrics from the connected machines
 - [loki](#loki): log storage, it stores logs from promtail
 - [grafana](#grafana): metrics visualization, it visualizes metrics from prometheus and logs from loki
-- [webssh](#webssh): web-based ssh client
 - [timescale](#timescale): time-series database for storing metrics
 
 
@@ -93,7 +92,6 @@ The module is composed by the following systemd units:
 - prometheus.service: runs the prometheus container
 - loki.service: runs the loki container
 - grafana.service: runs the grafana container
-- webssh.service: runs the webssh container
 
 ### API Server
 
@@ -187,13 +185,9 @@ It has also some pre-configured dashboards:
 
 Grafana is accessible at `https://<controller-host>/grafana/`, default credentials are the same set for the controller. You should change them on the first login.
 
-### WebSSH
+### SSH terminal
 
-[WebSSH](https://github.com/huashengdun/webssh) is a web-based ssh client. It's configured using parameters in the webssh.service unit.
-
-Access to WebSSH is protected using a random generated URL, you can find it inside the module configuration file at `/home/nethsecurity-controller1/.config/state/config.json`.
-
-Authentication is enforced via Traefik forward auth: every request to the WebSSH path is validated by the controller API (`/api/auth`) before being proxied to the WebSSH backend. The API checks for a valid `ns_jwt` session cookie (set at login, `HttpOnly; Secure; SameSite=Lax`) and falls back to HTTP Basic Auth. Unauthenticated or expired-cookie requests receive a 401; the stale cookie is also cleared.
+The API opens a root shell on a unit over SSH through the VPN, served as a websocket at `/api/units/<unit_id>/terminal`. It logs in with the SSH key the user generated in the controller, so the public key must be in the unit's authorized keys. See the [API docs](controller/api#units) for the protocol.
 
 ### Timescale
 
@@ -221,7 +215,7 @@ systemctl --user restart controller.service
 
 ### Restarting the controller
 
-The controller runs as a systemd user unit (controller.service) that creates the Podman pod hosting the other containers. The controller unit Requires and is ordered Before the following services: vpn.service, api.service, ui.service, proxy.service, promtail.service, loki.service, prometheus.service, grafana.service, webssh.service and timescale.service.
+The controller runs as a systemd user unit (controller.service) that creates the Podman pod hosting the other containers. The controller unit Requires and is ordered Before the following services: vpn.service, api.service, ui.service, proxy.service, promtail.service, loki.service, prometheus.service, grafana.service and timescale.service.
 
 Quick restart, recommended for support operations:
 
@@ -233,7 +227,7 @@ This will stop and recreate the Podman pod and will trigger the dependent servic
 To pause the service, proceed with an ordered stop of the dependent services, then stop the controller:
 
     runagent -m nethsecurity-controller1
-    systemctl --user disable --now timescale api grafana loki prometheus promtail proxy ui vpn webssh
+    systemctl --user disable --now timescale api grafana loki prometheus promtail proxy ui vpn
     systemctl --user disable --now controller.service
 
 You can resume the service with an ordered start of the controller and dependent services:

@@ -14,43 +14,6 @@ loki_image="docker.io/grafana/loki:2.9.17"
 prometheus_image="docker.io/prom/prometheus:v3.15.0"
 grafana_image="docker.io/grafana/grafana:13.2.3"
 timescale_image="docker.io/timescale/timescaledb:2.23.1-pg16"
-webssh_version=1.6.2
-
-# Create a new empty container for webssh
-echo "Build webssh container" # from https://github.com/huashengdun/webssh
-mkdir -p webssh_tmp/build
-pushd webssh_tmp
-wget https://github.com/huashengdun/webssh/archive/refs/tags/v${webssh_version}.tar.gz -O webssh.tar.gz
-tar xvzf webssh.tar.gz -C build --strip-components=1
-pushd build
-webssh=$(buildah from docker.io/python:3.13.15-alpine)
-buildah add "${webssh}" . /code
-buildah run \
-    --workingdir '/code' \
-    ${webssh} \
-    sh -c "apk add --no-cache libc-dev libffi-dev gcc && \
-    pip install -r requirements.txt --no-cache-dir && \
-    apk del gcc libc-dev libffi-dev && \
-    addgroup webssh && \
-    adduser -Ss /bin/false -g webssh webssh && \
-    chown -R webssh:webssh /code
-    "
-# disable built-in ui
-buildah add "${webssh}" ../../webssh/index.html /code/webssh/templates/index.html
-# cleanup the container
-buildah run \
-    --workingdir '/code' \
-    ${webssh} \
-    sh -c 'rm -rf preview docker-compose.yml setup.* tests'
-popd
-popd
-rm -rf webssh_tmp
-# Commit the image
-buildah config --workingdir '/code'  --entrypoint='["python", "run.py"]'  "${webssh}"
-buildah commit "${webssh}" "${repobase}/webssh"
-
-# Append the image URL to the images array
-images+=("${repobase}/webssh")
 
 # Build controller service images
 for service in vpn api ui proxy; do
@@ -95,7 +58,6 @@ buildah config --entrypoint=/ \
         $loki_image \
         $prometheus_image \
         $grafana_image \
-        ghcr.io/nethserver/webssh:${IMAGETAG:-latest} \
         $timescale_image" \
     "${container}"
 # Commit the image

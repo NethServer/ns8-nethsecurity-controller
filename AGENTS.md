@@ -15,18 +15,16 @@ The module's containers run as one systemd-managed Podman pod:
 - `prometheus` — metrics scraping
 - `timescale` — TimescaleDB for network-traffic/DPI/VPN time-series data
 - `grafana` — dashboards over Prometheus + Loki + Timescale
-- `webssh` — web SSH client, built locally from upstream `huashengdun/webssh` with a custom template
 
-The module glue (`imageroot/`), the cluster-admin frontend (`ui/`), the `webssh` UI override and the controller services (`controller/`) are implemented in this repo; the other images are pulled prebuilt and pinned in `build-images.sh`.
+The module glue (`imageroot/`), the cluster-admin frontend (`ui/`) and the controller services (`controller/`) are implemented in this repo; the other images are pulled prebuilt and pinned in `build-images.sh`.
 
 ## Build
 
 `build-images.sh` builds images with **buildah** (no top-level Containerfile — built imperatively via `buildah from/add/config/commit`). It:
-1. Builds `webssh` from `python:3.13.14-alpine`, unpacking the upstream `huashengdun/webssh` release and replacing its UI with `webssh/index.html`.
-2. Builds `nethsecurity-{vpn,api,ui,proxy}` with `buildah build --target dist` from `controller/<service>/Containerfile`. The module references them with the same `IMAGETAG` as the module image.
-3. Builds the Vue `ui/` app in a `node:24.17.0-slim` builder container (`corepack enable && yarn install --frozen-lockfile && yarn build`), then assembles the main `nethsecurity-controller` image from `scratch` with `imageroot/` → `/imageroot` and `ui/dist` → `/ui`, plus NS8 image labels (`org.nethserver.authorizations`, `org.nethserver.min-core`, `org.nethserver.images`, etc.).
+1. Builds `nethsecurity-{vpn,api,ui,proxy}` with `buildah build --target dist` from `controller/<service>/Containerfile`. The module references them with the same `IMAGETAG` as the module image.
+2. Builds the Vue `ui/` app in a `node:24.17.0-slim` builder container (`corepack enable && yarn install --frozen-lockfile && yarn build`), then assembles the main `nethsecurity-controller` image from `scratch` with `imageroot/` → `/imageroot` and `ui/dist` → `/ui`, plus NS8 image labels (`org.nethserver.authorizations`, `org.nethserver.min-core`, `org.nethserver.images`, etc.).
 
-Version pins for all external images (`promtail_image`, `loki_image`, `prometheus_image`, `grafana_image`, `timescale_image`, `webssh_version`) live at the top of `build-images.sh`. The nethsecurity-ui version is the `UI_VERSION` ARG in `controller/ui/Containerfile`, bumped by Renovate.
+Version pins for all external images (`promtail_image`, `loki_image`, `prometheus_image`, `grafana_image`, `timescale_image`) live at the top of `build-images.sh`. The nethsecurity-ui version is the `UI_VERSION` ARG in `controller/ui/Containerfile`, bumped by Renovate.
 
 ## Controller services (`controller/`)
 

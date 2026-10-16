@@ -1371,7 +1371,6 @@ func setupRouter() *gin.Engine {
 	os.Setenv("PROMTAIL_ADDRESS", "127.0.0.1")
 	os.Setenv("PROMTAIL_PORT", "6565")
 	os.Setenv("PROMETHEUS_PATH", "/prometheus")
-	os.Setenv("WEBSSH_PATH", "webssh")
 	os.Setenv("GRAFANA_PATH", "/grafana")
 	os.Setenv("REGISTRATION_TOKEN", "1234")
 	os.Setenv("DATA_DIR", "./data")

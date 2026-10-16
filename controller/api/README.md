@@ -21,7 +21,6 @@ CGO_ENABLED=0 go build
 - `PROMTAIL_PORT`: promtail port
 
 - `PROMETHEUS_PATH`: prometheus web path
-- `WEBSSH_PATH`: webssh web path
 - `GRAFANA_PATH`: grafana web path
 - `GRAFANA_POSTGRES_PASSWORD`: password to access grafana postgres database
 - `REPORT_DB_URI`: Timescale database URI for reports
@@ -379,6 +378,34 @@ Key design choices include:
       "message": "unit token retrieved successfully"
    }
   ```
+
+- `GET /units/<unit_id>/terminal`
+
+  Opens a websocket with a root shell on the unit, over SSH through the VPN. The API logs in with the key the user generated with `POST /accounts/ssh-keys`, so the public key must be in the unit's `authorized_keys` first. The unit must be connected and must report a non-zero `ssh_port`.
+
+  Auth is the `ns_jwt` cookie set at login, since browsers can't send an `Authorization` header on a websocket. Users only reach the units they have access to.
+
+  REQ
+
+  ```
+   GET /units/<unit_id>/terminal
+   Connection: Upgrade
+   Upgrade: websocket
+   Cookie: ns_jwt=<JWT_TOKEN>
+  ```
+
+  The first frame is a JSON text frame. `passphrase` is the key passphrase, or empty if the key has none:
+
+  ```json
+   {"passphrase": "", "cols": 80, "rows": 24}
+  ```
+
+  After that:
+  - binary frames from the client are terminal input
+  - binary frames from the server are terminal output
+  - text frames from the client are control messages; the only one is the resize: `{"type": "resize", "cols": 120, "rows": 40}`
+
+  The server closes the websocket with code `1000` when the shell exits. On errors it closes with code `1011` and the error as reason, e.g. `resolve unit <unit_id>: unit not connected`, `key passphrase required` or `wrong key passphrase`.
 
 - `POST /units`
 
@@ -976,7 +1003,6 @@ Key design choices include:
           "fqdn": "controller.ns8.local",
           "grafana_path": "/grafana",
           "prometheus_path": "/prometheus",
-          "webssh_path": "/webssh",
           "valid_subscription": false
       },
       "message": "success"
