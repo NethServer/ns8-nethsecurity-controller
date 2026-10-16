@@ -56,6 +56,40 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestLoadReportSchemaKeepsDpiAggregates(t *testing.T) {
+	pgpool, pgctx := ReportInstance()
+	query := `SELECT array_agg(mat_hypertable_id ORDER BY user_view_name) FROM _timescaledb_catalog.continuous_agg
+		WHERE user_view_name IN ('ca_dpi_stats_hourly_bytes', 'ca_dpi_stats_hourly_client')`
+	var before, after []int32
+	assert.NoError(t, pgpool.QueryRow(pgctx, query).Scan(&before))
+	assert.Len(t, before, 2)
+
+	assert.True(t, loadReportSchema(pgpool, pgctx))
+
+	assert.NoError(t, pgpool.QueryRow(pgctx, query).Scan(&after))
+	assert.Equal(t, before, after)
+}
+
+func TestLoadReportSchemaPurgesOrphanMaterializationRanges(t *testing.T) {
+	pgpool, pgctx := ReportInstance()
+	conn, err := pgpool.Acquire(pgctx)
+	assert.NoError(t, err)
+	// Replica role skips the foreign key, like TimescaleDB's own catalog writes
+	_, err = conn.Exec(pgctx, "SET session_replication_role = replica")
+	assert.NoError(t, err)
+	_, err = conn.Exec(pgctx, "INSERT INTO _timescaledb_catalog.continuous_aggs_materialization_ranges VALUES (99999, 0, 1)")
+	assert.NoError(t, err)
+	_, err = conn.Exec(pgctx, "RESET session_replication_role")
+	assert.NoError(t, err)
+	conn.Release()
+
+	assert.True(t, loadReportSchema(pgpool, pgctx))
+
+	var count int
+	assert.NoError(t, pgpool.QueryRow(pgctx, "SELECT count(*) FROM _timescaledb_catalog.continuous_aggs_materialization_ranges WHERE materialization_id = 99999").Scan(&count))
+	assert.Equal(t, 0, count)
+}
+
 func TestAddUnit(t *testing.T) {
 	// Test adding a unit
 	err := AddUnit("550e8400-e29b-41d4-a716-446655440000", "192.168.1.10", "")
