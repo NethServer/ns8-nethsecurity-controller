@@ -31,6 +31,8 @@ import (
 func TestMain(m *testing.M) {
 	gin.SetMode(gin.TestMode)
 	logs.Init("test")
+	configuration.Config.ReportDbUri = "postgres://report:password@127.0.0.1:5432/report"
+	configuration.Config.RetentionDays = "60"
 	os.Exit(m.Run())
 }
 

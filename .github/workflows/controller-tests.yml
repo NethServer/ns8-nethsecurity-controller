@@ -40,7 +40,7 @@ jobs:
         with:
           go-version-file: controller/api/go.mod
       - name: Test with the Go CLI
-        run: cd api && go test ./... -coverpkg=./... -coverprofile=coverage.out -v
+        run: cd api && go test -p 1 ./... -coverpkg=./... -coverprofile=coverage.out -v
 
   smoke:
     name: Smoke Tests

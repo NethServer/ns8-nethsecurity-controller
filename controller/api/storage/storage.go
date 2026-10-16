@@ -478,26 +478,32 @@ func loadReportSchema(*pgxpool.Pool, context.Context) bool {
 		return false
 	}
 
-	logs.Logs.Println("[INFO][STORAGE] creating grafana user")
-	grafanaUserTemplate, _ := template.New("grafana_user").Parse(grafanaUserSQL)
-	var executedGrafanaUserReport bytes.Buffer
-	errExecute = grafanaUserTemplate.Execute(&executedGrafanaUserReport, configuration.Config)
-	if errExecute != nil {
-		logs.Logs.Println("[ERR][STORAGE] error in storage file schema init:" + errExecute.Error())
-		return false
-	}
-	_, errExecute = dbpool.Exec(dbctx, executedGrafanaUserReport.String())
-	if errExecute != nil {
-		logs.Logs.Println("[ERR][STORAGE] error in storage file schema init:" + errExecute.Error())
-		return false
-	}
-
 	// execute upgrade schema
 	logs.Logs.Println("[INFO][STORAGE] upgrading report schema")
 	_, errExecute = dbpool.Exec(dbctx, upgradeSchemaSQL)
 	if errExecute != nil {
 		logs.Logs.Println("[ERR][STORAGE] error in storage file schema upgrade:" + errExecute.Error())
 		return false
+	}
+
+	// grafana errors don't fail the init
+	logs.Logs.Println("[INFO][STORAGE] creating grafana user")
+	grafanaUserTemplate, _ := template.New("grafana_user").Parse(grafanaUserSQL)
+	var executedGrafanaUserReport bytes.Buffer
+	errExecute = grafanaUserTemplate.Execute(&executedGrafanaUserReport, configuration.Config)
+	if errExecute != nil {
+		logs.Logs.Println("[ERR][STORAGE] error in storage file schema init:" + errExecute.Error())
+		return true
+	}
+	_, errExecute = dbpool.Exec(dbctx, executedGrafanaUserReport.String())
+	if errExecute != nil {
+		logs.Logs.Println("[ERR][STORAGE] error in storage file schema init:" + errExecute.Error())
+		return true
+	}
+	// separate from the user creation, so postgres doesn't log the password when a grant fails
+	_, errExecute = dbpool.Exec(dbctx, "GRANT USAGE ON SCHEMA public TO grafana; GRANT SELECT ON ALL TABLES IN SCHEMA public TO grafana;")
+	if errExecute != nil {
+		logs.Logs.Println("[ERR][STORAGE] error in storage file schema init:" + errExecute.Error())
 	}
 	return true
 }
@@ -514,7 +520,9 @@ func InitReportDb() (*pgxpool.Pool, context.Context) {
 		logs.Logs.Println("[WARN][DB] error in db connection:" + err.Error())
 	}
 
-	loadReportSchema(dbpool, dbctx)
+	if !loadReportSchema(dbpool, dbctx) {
+		os.Exit(1)
+	}
 
 	return dbpool, dbctx
 }
