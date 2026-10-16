@@ -72,6 +72,10 @@ if [ ! -d "$CONFIG_DIR" ]; then
 fi
 
 cat <<EOF > /config.yaml
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
 entryPoints:
   web:
    address: "$ip:$port"
