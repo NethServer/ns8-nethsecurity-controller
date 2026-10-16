@@ -514,7 +514,9 @@ func InitReportDb() (*pgxpool.Pool, context.Context) {
 		logs.Logs.Println("[WARN][DB] error in db connection:" + err.Error())
 	}
 
-	loadReportSchema(dbpool, dbctx)
+	if !loadReportSchema(dbpool, dbctx) {
+		os.Exit(1)
+	}
 
 	return dbpool, dbctx
 }
