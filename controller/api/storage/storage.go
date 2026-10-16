@@ -498,6 +498,12 @@ func loadReportSchema(*pgxpool.Pool, context.Context) bool {
 	_, errExecute = dbpool.Exec(dbctx, executedGrafanaUserReport.String())
 	if errExecute != nil {
 		logs.Logs.Println("[ERR][STORAGE] error in storage file schema init:" + errExecute.Error())
+		return true
+	}
+	// separate from the user creation, so postgres doesn't log the password when a grant fails
+	_, errExecute = dbpool.Exec(dbctx, "GRANT USAGE ON SCHEMA public TO grafana; GRANT SELECT ON ALL TABLES IN SCHEMA public TO grafana;")
+	if errExecute != nil {
+		logs.Logs.Println("[ERR][STORAGE] error in storage file schema init:" + errExecute.Error())
 	}
 	return true
 }
