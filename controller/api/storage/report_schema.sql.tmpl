@@ -396,7 +396,7 @@ BEGIN
         SELECT 1
         FROM timescaledb_information.continuous_aggregates
         WHERE view_name = 'ca_dpi_stats_hourly_bytes'
-        AND view_definition LIKE '%WHERE application != ''''%'
+        AND view_definition LIKE '%WHERE (application <> ''''::text)%'
     ) THEN
         -- Drop the existing continuous aggregate
         DROP MATERIALIZED VIEW ca_dpi_stats_hourly_bytes CASCADE;
@@ -499,7 +499,7 @@ BEGIN
         SELECT 1
         FROM timescaledb_information.continuous_aggregates
         WHERE view_name = 'ca_dpi_stats_hourly_client'
-        AND view_definition LIKE '%WHERE client_address != ''''%'
+        AND view_definition LIKE '%client_address <> ''''::text%'
     ) THEN
         -- Drop the existing continuous aggregate
         DROP MATERIALIZED VIEW ca_dpi_stats_hourly_client CASCADE;
@@ -529,6 +529,16 @@ SELECT add_continuous_aggregate_policy('ca_dpi_stats_hourly_client',
 
 SELECT remove_retention_policy('ca_dpi_stats_hourly_client', if_exists => TRUE);
 SELECT add_retention_policy('ca_dpi_stats_hourly_client', drop_after => INTERVAL '{{ .RetentionDays }} days', if_not_exists => TRUE);
+
+-- Dropping a continuous aggregate leaves its materialization ranges behind, which breaks pg_restore
+DO $$
+BEGIN
+    IF to_regclass('_timescaledb_catalog.continuous_aggs_materialization_ranges') IS NOT NULL THEN
+        DELETE FROM _timescaledb_catalog.continuous_aggs_materialization_ranges
+        WHERE materialization_id NOT IN (SELECT mat_hypertable_id FROM _timescaledb_catalog.continuous_agg);
+    END IF;
+END
+$$;
 
 -- Stored procedures --
 
