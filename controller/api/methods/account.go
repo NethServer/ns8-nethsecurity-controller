@@ -348,7 +348,7 @@ func AddSSHKeys(c *gin.Context) {
 	keysPath := configuration.Config.DataDir + "/" + username + ".key"
 
 	// execute command
-	args := []string{"-t", "rsa", "-q", "-f", keysPath, "-N", json.Passphrase}
+	args := []string{"-t", "rsa", "-q", "-f", keysPath, "-N", json.Passphrase, "-C", username + "@controller"}
 	cmd := exec.Command("/usr/bin/ssh-keygen", args...)
 
 	// check error
