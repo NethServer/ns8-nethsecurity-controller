@@ -27,7 +27,6 @@ func TestMain(m *testing.M) {
 	os.Setenv("GRAFANA_POSTGRES_PASSWORD", "grafana_pass")
 	os.Setenv("REPORT_DB_URI", "postgres://report:password@localhost:5432/report")
 	os.Setenv("GRAFANA_PATH", "/grafana")
-	os.Setenv("WEBSSH_PATH", "/webssh")
 	os.Setenv("PROMETHEUS_PATH", "/prometheus")
 	os.Setenv("PROMTAIL_PORT", "3100")
 	os.Setenv("PROMTAIL_ADDRESS", "localhost")

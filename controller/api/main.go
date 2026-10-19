@@ -25,8 +25,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/time/rate"
 
+	jwt "github.com/appleboy/gin-jwt/v2"
+
 	"github.com/NethServer/nethsecurity-controller/api/response"
 	"github.com/NethServer/nethsecurity-controller/api/configuration"
+	"github.com/NethServer/nethsecurity-controller/api/internal/sshterm"
 	"github.com/NethServer/nethsecurity-controller/api/logs"
 	"github.com/NethServer/nethsecurity-controller/api/methods"
 	"github.com/NethServer/nethsecurity-controller/api/middleware"
@@ -200,6 +203,23 @@ func setup() *gin.Engine {
 	})
 	forwarded.GET("/:unit_id", func(c *gin.Context) {
 		c.Status(http.StatusOK)
+	})
+
+	// SSH terminal over websocket, cookie auth since browsers can't set headers on websockets
+	pool, _ := storage.ReportInstance()
+	terminal := sshterm.New(sshterm.PGUnits{Pool: pool}, sshterm.DirKeys{Dir: configuration.Config.DataDir})
+	router.GET("/units/:unit_id/terminal", middleware.CookieJWT().MiddlewareFunc(), func(c *gin.Context) {
+		user := jwt.ExtractClaims(c)["id"].(string)
+		unitID := c.Param("unit_id")
+		if !methods.UserCanAccessUnit(user, unitID) {
+			c.JSON(http.StatusForbidden, structs.Map(response.StatusForbidden{
+				Code:    403,
+				Message: "user does not have access to this unit",
+				Data:    nil,
+			}))
+			return
+		}
+		terminal.Serve(c.Writer, c.Request, user, unitID)
 	})
 
 	// Prometheus metrics endpoint

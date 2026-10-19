@@ -23,7 +23,7 @@ if default_traefik_id is None:
     sys.exit(2)
 
 # Remove traefik routes
-for instance in ['', '_grafana', '_loki', '_prometheus', '_webssh']:
+for instance in ['', '_grafana', '_loki', '_prometheus']:
     response = agent.tasks.run(
         agent_id=default_traefik_id,
         action='delete-route',

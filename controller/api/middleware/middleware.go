@@ -140,15 +140,15 @@ func InitJWT() *jwt.GinJWTMiddleware {
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
 			// check token validation
-			claims, _ := InstanceJWT().GetClaimsFromJWT(c)
-			token, _ := InstanceJWT().ParseToken(c)
+			claims := jwt.ExtractClaims(c)
+			token := jwt.GetToken(c)
 
 			// log request and body
 			reqMethod := c.Request.Method
 			reqURI := c.Request.RequestURI
 
 			// check if token exists
-			if !methods.CheckTokenValidation(claims["id"].(string), token.Raw) {
+			if !methods.CheckTokenValidation(claims["id"].(string), token) {
 				// write logs
 				logs.Logs.Println("[INFO][AUTH] authorization failed for user " + claims["id"].(string) + ". " + reqMethod + " " + reqURI)
 
@@ -428,6 +428,13 @@ func BasicUserAuth() gin.HandlerFunc {
 		c.Header("X-Auth-User", username)
 		c.Next()
 	}
+}
+
+// CookieJWT is the JWT middleware reading the token from the ns_jwt cookie only, for websockets.
+func CookieJWT() *jwt.GinJWTMiddleware {
+	mw := InitJWT()
+	mw.TokenLookup = "cookie:" + cookieName
+	return mw
 }
 
 // BodyLimit rejects requests whose body exceeds maxBytes before any downstream
