@@ -14,6 +14,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -85,6 +86,7 @@ func TestAddSSHKeys(t *testing.T) {
 		assert.Equal(t, "success", resp["message"], "response message should be 'success'")
 		data := resp["data"].(map[string]interface{})
 		assert.NotEmpty(t, data["key_pub"], "key_pub should not be empty")
+		assert.True(t, strings.HasSuffix(data["key_pub"].(string), " admin@controller"), "key_pub comment should be admin@controller")
 	}
 }
 
