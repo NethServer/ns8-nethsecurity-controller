@@ -381,7 +381,7 @@ Key design choices include:
 
 - `GET /units/<unit_id>/terminal`
 
-  Opens a websocket with a root shell on the unit, over SSH through the VPN. The API logs in with the key the user generated with `POST /accounts/ssh-keys`, so the public key must be in the unit's `authorized_keys` first. The unit must be connected and must report a non-zero `ssh_port`.
+  Opens a websocket with a root shell on the unit, over SSH through the VPN. The API logs in with the unit's root password when the client sends one, otherwise with the key the user generated with `POST /accounts/ssh-keys`, so the public key must be in the unit's `authorized_keys` first. The unit must be connected and must report a non-zero `ssh_port`.
 
   Auth is the `ns_jwt` cookie set at login, since browsers can't send an `Authorization` header on a websocket. Users only reach the units they have access to.
 
@@ -394,10 +394,10 @@ Key design choices include:
    Cookie: ns_jwt=<JWT_TOKEN>
   ```
 
-  The first frame is a JSON text frame. `passphrase` is the key passphrase, or empty if the key has none:
+  The first frame is a JSON text frame. `passphrase` is the key passphrase, or empty if the key has none. `password` is the unit's root password, or empty to log in with the key:
 
   ```json
-   {"passphrase": "", "cols": 80, "rows": 24}
+   {"passphrase": "", "password": "", "cols": 80, "rows": 24}
   ```
 
   After that:
@@ -405,7 +405,7 @@ Key design choices include:
   - binary frames from the server are terminal output
   - text frames from the client are control messages; the only one is the resize: `{"type": "resize", "cols": 120, "rows": 40}`
 
-  The server closes the websocket with code `1000` when the shell exits. On errors it closes with code `1011` and the error as reason, e.g. `resolve unit <unit_id>: unit not connected`, `key passphrase required` or `wrong key passphrase`.
+  The server closes the websocket with code `1000` when the shell exits. On errors it closes with code `1011` and the error as reason, e.g. `resolve unit <unit_id>: unit not connected`, `key passphrase required`, `wrong key passphrase` or `wrong root password`.
 
 - `POST /units`
 

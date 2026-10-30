@@ -43,9 +43,9 @@ type windowChange struct {
 	Cols, Rows, Width, Height uint32
 }
 
-// startSSHServer accepts the given client key as root and runs an echo shell: it writes back
-// whatever it reads and exits on "exit". Window changes are sent to the returned channel.
-func startSSHServer(t *testing.T, clientKey ssh.PublicKey) (string, <-chan windowChange) {
+// startSSHServer accepts the given client key and root password as root and runs an echo shell: it
+// writes back whatever it reads and exits on "exit". Window changes are sent to the returned channel.
+func startSSHServer(t *testing.T, clientKey ssh.PublicKey, rootPassword string) (string, <-chan windowChange) {
 	t.Helper()
 
 	_, hostPriv, err := ed25519.GenerateKey(rand.Reader)
@@ -59,6 +59,12 @@ func startSSHServer(t *testing.T, clientKey ssh.PublicKey) (string, <-chan windo
 	config := &ssh.ServerConfig{
 		PublicKeyCallback: func(meta ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
 			if meta.User() == "root" && bytes.Equal(key.Marshal(), clientKey.Marshal()) {
+				return nil, nil
+			}
+			return nil, errors.New("unauthorized")
+		},
+		PasswordCallback: func(meta ssh.ConnMetadata, password []byte) (*ssh.Permissions, error) {
+			if meta.User() == "root" && string(password) == rootPassword {
 				return nil, nil
 			}
 			return nil, errors.New("unauthorized")
@@ -193,6 +199,7 @@ func TestServe(t *testing.T) {
 		keys       fakeKeys
 		unitsErr   error
 		passphrase string
+		password   string
 		wantErr    string
 	}{
 		{name: "unencrypted key", serverKey: plainPub, keys: fakeKeys{pem: plainPEM}},
@@ -202,14 +209,16 @@ func TestServe(t *testing.T) {
 		{name: "missing passphrase", serverKey: encPub, keys: fakeKeys{pem: encPEM}, wantErr: ErrPassphraseRequired.Error()},
 		{name: "no key", serverKey: plainPub, keys: fakeKeys{err: ErrNoKey}, wantErr: ErrNoKey.Error()},
 		{name: "key not authorized on unit", serverKey: encPub, keys: fakeKeys{pem: plainPEM}, wantErr: "unable to authenticate"},
+		{name: "root password without key", serverKey: plainPub, keys: fakeKeys{err: ErrNoKey}, password: "rootpw"},
+		{name: "wrong root password", serverKey: plainPub, keys: fakeKeys{pem: plainPEM}, password: "nope", wantErr: ErrWrongPassword.Error()},
 		{name: "unit not connected", serverKey: plainPub, keys: fakeKeys{pem: plainPEM}, unitsErr: ErrUnitNotConnected, wantErr: ErrUnitNotConnected.Error()},
 		{name: "ssh disabled", serverKey: plainPub, keys: fakeKeys{pem: plainPEM}, unitsErr: ErrSSHDisabled, wantErr: ErrSSHDisabled.Error()},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			addr, _ := startSSHServer(t, tt.serverKey)
+			addr, _ := startSSHServer(t, tt.serverKey, "rootpw")
 			h := New(fakeUnits{addr: addr, err: tt.unitsErr}, tt.keys)
-			conn := connect(t, h, initMessage{Passphrase: tt.passphrase, Cols: 80, Rows: 24})
+			conn := connect(t, h, initMessage{Passphrase: tt.passphrase, Password: tt.password, Cols: 80, Rows: 24})
 
 			if tt.wantErr == "" {
 				if err := conn.WriteMessage(websocket.BinaryMessage, []byte("hello")); err != nil {
@@ -244,7 +253,7 @@ func TestServe(t *testing.T) {
 
 func TestServeResize(t *testing.T) {
 	pub, key := newClientKey(t, "")
-	addr, resizes := startSSHServer(t, pub)
+	addr, resizes := startSSHServer(t, pub, "rootpw")
 	conn := connect(t, New(fakeUnits{addr: addr}, fakeKeys{pem: key}), initMessage{Cols: 80, Rows: 24})
 
 	// the echo proves the shell is up before resizing

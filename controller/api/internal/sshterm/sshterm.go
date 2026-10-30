@@ -7,7 +7,7 @@
 
 // Package sshterm bridges a websocket to an SSH shell on a unit.
 //
-// The client sends a JSON init message {"passphrase","cols","rows"} as the first frame.
+// The client sends a JSON init message {"passphrase","password","cols","rows"} as the first frame.
 // After that, binary frames carry terminal input and output, and text frames carry
 // control messages ({"type":"resize","cols","rows"}). The session ends with a close
 // frame: 1000 when the shell exits, 1011 with the error as reason otherwise.
@@ -22,6 +22,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -36,6 +37,7 @@ var (
 	ErrNoKey              = errors.New("no ssh key for user")
 	ErrPassphraseRequired = errors.New("key passphrase required")
 	ErrWrongPassphrase    = errors.New("wrong key passphrase")
+	ErrWrongPassword      = errors.New("wrong root password")
 )
 
 const (
@@ -67,6 +69,7 @@ func New(units UnitResolver, keys KeyLoader) *Handler {
 
 type initMessage struct {
 	Passphrase string `json:"passphrase"`
+	Password   string `json:"password"`
 	Cols       int    `json:"cols"`
 	Rows       int    `json:"rows"`
 }
@@ -77,7 +80,8 @@ type controlMessage struct {
 	Rows int    `json:"rows"`
 }
 
-// Serve upgrades the request and runs a shell on unitID as root, authenticated with user's key.
+// Serve upgrades the request and runs a shell on unitID as root, authenticated with the root
+// password from the init message or else with user's key.
 // Callers must have already authorized user for unitID.
 func (h *Handler) Serve(w http.ResponseWriter, r *http.Request, user, unitID string) {
 	conn, err := h.upgrader.Upgrade(w, r, nil)
@@ -103,22 +107,22 @@ func (h *Handler) run(ctx context.Context, conn *websocket.Conn, user, unitID st
 		return err
 	}
 
-	// Unit address and user's key
+	// Unit address and credentials
 	addr, err := h.units.Resolve(ctx, unitID)
 	if err != nil {
 		return fmt.Errorf("resolve unit %s: %w", unitID, err)
 	}
-	pemBytes, err := h.keys.Load(user)
-	if err != nil {
-		return fmt.Errorf("load key of %s: %w", user, err)
-	}
-	signer, err := parseKey(pemBytes, init.Passphrase)
+	auth, err := h.authMethod(user, init)
 	if err != nil {
 		return err
 	}
 
 	// SSH connection and shell on a pty
-	client, err := dial(ctx, addr, signer)
+	client, err := dial(ctx, addr, auth)
+	// x/crypto/ssh has no typed error for a refused login
+	if err != nil && init.Password != "" && strings.Contains(err.Error(), "unable to authenticate") {
+		return ErrWrongPassword
+	}
 	if err != nil {
 		return err
 	}
@@ -192,6 +196,22 @@ func pump(conn *websocket.Conn, stdin io.Writer, session *ssh.Session) error {
 	}
 }
 
+// authMethod returns the root password when given, user's key otherwise.
+func (h *Handler) authMethod(user string, init initMessage) (ssh.AuthMethod, error) {
+	if init.Password != "" {
+		return ssh.Password(init.Password), nil
+	}
+	pemBytes, err := h.keys.Load(user)
+	if err != nil {
+		return nil, fmt.Errorf("load key of %s: %w", user, err)
+	}
+	signer, err := parseKey(pemBytes, init.Passphrase)
+	if err != nil {
+		return nil, err
+	}
+	return ssh.PublicKeys(signer), nil
+}
+
 func parseKey(pemBytes []byte, passphrase string) (ssh.Signer, error) {
 	signer, err := ssh.ParsePrivateKey(pemBytes)
 	if _, ok := errors.AsType[*ssh.PassphraseMissingError](err); ok {
@@ -209,7 +229,7 @@ func parseKey(pemBytes []byte, passphrase string) (ssh.Signer, error) {
 	return signer, nil
 }
 
-func dial(ctx context.Context, addr string, signer ssh.Signer) (*ssh.Client, error) {
+func dial(ctx context.Context, addr string, auth ssh.AuthMethod) (*ssh.Client, error) {
 	dialer := net.Dialer{Timeout: dialTimeout}
 	nc, err := dialer.DialContext(ctx, "tcp", addr)
 	if err != nil {
@@ -218,7 +238,7 @@ func dial(ctx context.Context, addr string, signer ssh.Signer) (*ssh.Client, err
 
 	config := &ssh.ClientConfig{
 		User: sshUser,
-		Auth: []ssh.AuthMethod{ssh.PublicKeys(signer)},
+		Auth: []ssh.AuthMethod{auth},
 		// Units are already authenticated by their VPN certificate
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
