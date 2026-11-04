@@ -11,7 +11,7 @@ repobase="${REPOBASE:-ghcr.io/nethserver}"
 reponame="nethsecurity-controller"
 promtail_image="docker.io/grafana/promtail:3.6.11"
 loki_image="docker.io/grafana/loki:2.9.17"
-prometheus_image="docker.io/prom/prometheus:v3.15.0"
+prometheus_image="docker.io/prom/prometheus:v3.15.1"
 grafana_image="docker.io/grafana/grafana:13.2.5"
 timescale_image="docker.io/timescale/timescaledb:2.23.1-pg16"
 
