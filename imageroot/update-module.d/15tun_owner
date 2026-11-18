@@ -11,6 +11,7 @@
 
 import ipaddress
 import json
+import os
 import sys
 import agent
 
@@ -21,8 +22,16 @@ except FileNotFoundError:
     sys.exit(0) # Not configured yet: configure-module creates the tun
 
 network = agent.read_envfile('network.env')
+tun = network.get('OVPN_TUN')
+# The core saves the owner of the tun: once it is ours, there is nothing left to do
+try:
+    if agent.read_envfile(f'/etc/nethserver/tun/{tun}.env').get('OWNER') == str(os.getuid()):
+        sys.exit(0)
+except FileNotFoundError:
+    pass
+
 vpn_network = ipaddress.IPv4Network(f"{config['ovpn_network']}/{config['ovpn_netmask']}")
 server_address = config['ovpn_network'].removesuffix('.0') + '.1'
-if not agent.add_tun(network.get('OVPN_TUN'), f'{server_address}/{vpn_network.prefixlen}'):
+if not agent.add_tun(tun, f'{server_address}/{vpn_network.prefixlen}'):
     # The VPN keeps working on kernels without the change: do not stop the update
     print(agent.SD_WARNING + 'add-tun failed, the tun owner is not set', file=sys.stderr)
