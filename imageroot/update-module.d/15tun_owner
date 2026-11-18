@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Recent kernels refuse a rootless container to open a tun without owner.
+# A core with the fix gives the tun to the module at the add_tun() call:
+# do it on update too, not only at the next configure-module.
+
+import ipaddress
+import json
+import sys
+import agent
+
+try:
+    with open('config.json') as fp:
+        config = json.load(fp)
+except FileNotFoundError:
+    sys.exit(0) # Not configured yet: configure-module creates the tun
+
+network = agent.read_envfile('network.env')
+vpn_network = ipaddress.IPv4Network(f"{config['ovpn_network']}/{config['ovpn_netmask']}")
+server_address = config['ovpn_network'].removesuffix('.0') + '.1'
+if not agent.add_tun(network.get('OVPN_TUN'), f'{server_address}/{vpn_network.prefixlen}'):
+    # The VPN keeps working on kernels without the change: do not stop the update
+    print(agent.SD_WARNING + 'add-tun failed, the tun owner is not set', file=sys.stderr)
