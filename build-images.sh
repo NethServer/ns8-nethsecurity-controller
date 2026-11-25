@@ -52,7 +52,7 @@ buildah add "${container}" ui/dist /ui
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm node:tunadm,portsadm" \
-    --label="org.nethserver.min-core=3.20.1" \
+    --label="org.nethserver.min-core=3.26.0" \
     --label="org.nethserver.tcp-ports-demand=11" \
     --label="org.nethserver.images=\
         ghcr.io/nethserver/nethsecurity-vpn:${IMAGETAG:-latest} \
