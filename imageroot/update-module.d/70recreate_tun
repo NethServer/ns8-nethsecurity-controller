@@ -6,16 +6,24 @@
 #
 
 # Recent kernels refuse a rootless container to open a tun without owner.
-# A tun created by an older core has no owner: recreate it so the core
+# A tun created by an older core has none: recreate it so the core
 # gives it to this module.
 
 import os
 import sys
 import json
+import ipaddress
 import subprocess
 import agent
 
-network = agent.read_envfile('network.env')
+try:
+    network = agent.read_envfile('network.env')
+    with open('config.json') as fp:
+        config = json.load(fp)
+except FileNotFoundError:
+    # Module not configured yet
+    sys.exit(0)
+
 tun = network.get('OVPN_TUN')
 if not tun:
     sys.exit(0)
@@ -28,21 +36,27 @@ def read_owner():
         return None
 
 owner = read_owner()
-# No tun yet (module not configured) or already owned by this module
+# No tun yet, or already owned by this module
 if owner is None or owner == os.getuid():
     sys.exit(0)
 
-addr = json.loads(subprocess.run(['ip', '-j', '-4', 'addr', 'show', 'dev', tun], capture_output=True, text=True, check=True).stdout)
-info = addr[0]['addr_info'][0]
-ip = f"{info['local']}/{info['prefixlen']}"
+# Same address as configure-module gives to the tun
+vpn_network = ipaddress.IPv4Network(f"{config['ovpn_network']}/{config['ovpn_netmask']}")
+server_address = config['ovpn_network'].removesuffix('.0') + '.1'
+ip = f'{server_address}/{vpn_network.prefixlen}'
 
 was_active = subprocess.run(['systemctl', '--user', 'is-active', '--quiet', 'controller.service']).returncode == 0
 # The VPN holds the tun, and vpn.service is bound to controller.service
 subprocess.run(['systemctl', '--user', 'stop', 'controller.service'], check=True)
-agent.assert_exp(agent.remove_tun(tun))
-agent.assert_exp(agent.add_tun(tun, ip))
-if was_active:
-    subprocess.run(['systemctl', '--user', 'start', 'controller.service'], check=True)
+try:
+    if not agent.remove_tun(tun):
+        print(agent.SD_ERR + f'Cannot remove the tun {tun}', file=sys.stderr)
+    # Add it in any case: a failed remove can leave the env file deleted
+    if not agent.add_tun(tun, ip):
+        print(agent.SD_ERR + f'Cannot add the tun {tun} with {ip}', file=sys.stderr)
+finally:
+    if was_active:
+        subprocess.run(['systemctl', '--user', 'start', 'controller.service'], check=True)
 
 if read_owner() != os.getuid():
-    print(agent.SD_WARNING + f'The tun {tun} still has no owner: the core is too old to set it', file=sys.stderr)
+    print(agent.SD_WARNING + f'The tun {tun} still has no owner, check the add-tun task log on the node', file=sys.stderr)
