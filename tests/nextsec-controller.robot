@@ -107,6 +107,22 @@ Check admin login
 Check unit creation
     Create Unit
 
+Check if storage usage timer is active
+    ${output}  ${rc} =    Execute Command    runagent -m ${module_id} systemctl --user is-active storage-usage.timer
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    active
+
+Check if storage usage is calculated
+    Wait Until Keyword Succeeds    30 times    5 seconds    Storage Usage Is Calculated
+
+Check storage usage in platform info
+    ${out}  ${err}  ${rc} =    Execute Command    curl -s -k -H "Host: controller.dom.test" -H "Authorization: Bearer ${admin_token}" https://127.0.0.1/api/platform
+    ...    return_rc=True  return_stdout=True  return_stderr=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${out}    "logs_retention_days"
+    Should Match Regexp    ${out}    "total_storage_bytes":[1-9]
+
 Check if nethsecurity-controller is removed correctly
     ${rc} =    Execute Command    remove-module --no-preserve ${module_id}
     ...    return_rc=True  return_stdout=False
@@ -190,6 +206,14 @@ Create Unit
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${out}    "code":200
     Should Contain    ${out}    "join_code"
+
+Storage Usage Is Calculated
+    ${out}  ${rc} =    Execute Command    runagent -m ${module_id} cat storage-usage/storage-usage.json
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    # Timescale files are readable only inside the user namespace: a size above 0 means podman unshare works
+    Should Match Regexp    ${out}    "traffic_metrics_storage_bytes": [1-9]
+    Should Match Regexp    ${out}    "total_storage_bytes": [1-9]
 
 Login to cluster-admin
     New Page    https://${NODE_ADDR}/cluster-admin/

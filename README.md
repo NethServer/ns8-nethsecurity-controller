@@ -199,6 +199,18 @@ runagent -m nethsecurity-controller1
 source db.env; podman exec -it timescale psql -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}"
 ```
 
+### Storage usage
+
+The `storage-usage.timer` systemd unit runs `storage-usage.service` every hour; `configure-module` and `update-module` also start it once.
+The service calculates the disk space used by the volumes of Loki (`loki-data`, logs), Prometheus (`prometheus-data`, system metrics) and Timescale (`timescale-data`, traffic metrics), and writes it to `storage-usage/storage-usage.json` in the module state directory (`~/.config/state`).
+The API server reads this directory, mounted read-only, and returns the values from `GET /platform`.
+
+To calculate the storage usage without waiting for the timer, replace `<instance>` with the module instance name, e.g. `nethsecurity-controller1`:
+```
+runagent -m <instance> systemctl --user start storage-usage.service
+runagent -m <instance> cat storage-usage/storage-usage.json
+```
+
 ## Development mode
 
 You can configure the API server to run in development mode, this will enable the debug mode and allow

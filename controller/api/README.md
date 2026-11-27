@@ -66,6 +66,8 @@ CGO_ENABLED=0 go build
 - `PLATFORM_INFO`: a JSON string with platform information, used to store the controller version and other information. It can be left empty.
   Example: `{"vpn_port":"1194","vpn_network":"192.168.100.0/24", "controller_version":"1.0.0", "metrics_retention_days":30, "logs_retention_days":90}`
 
+- `STORAGE_USAGE_FILE`: JSON file with the storage usage written by the NS8 module, returned by `GET /platform` - _default_: `/nethsecurity-api/storage-usage/storage-usage.json`
+
 - `PROMETHEUS_AUTH_PASSWORD` and `PROMETHEUS_AUTH_USERNAME`: credentials to access the `/prometheus/targets` endpoint for listing connected units
   in Prometheus target format. - _default_: `prometheus:prometheus`
   
@@ -948,11 +950,19 @@ Key design choices include:
           "nethserver_version": "8-23.05.3-ns.1.0.1",
           "nethserver_system_id": "XXXXXXXX-XXXX",
           "metrics_retention_days": 60,
-          "logs_retention_days": 30
+          "logs_retention_days": 30,
+          "logs_storage_bytes": 1073741824,
+          "system_metrics_storage_bytes": 268435456,
+          "traffic_metrics_storage_bytes": 536870912,
+          "total_storage_bytes": 1879048192,
+          "storage_updated_at": 1764240000
       },
       "message": "success"
    }
   ```
+
+  The storage fields come from `STORAGE_USAGE_FILE`: the `*_storage_bytes` fields are the disk space, in bytes, used by logs (Loki), system metrics (Prometheus) and traffic metrics (Timescale), and `storage_updated_at` is the unix timestamp, in seconds, of the last calculation.
+  They are missing when the file does not exist yet or is not valid.
 
 ## Basic authentication API
 

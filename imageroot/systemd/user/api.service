@@ -10,6 +10,7 @@ EnvironmentFile=%E/state/environment
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/api.pid %t/api.ctr-id
+ExecStartPre=/bin/mkdir -p %E/state/storage-usage
 ExecStart=/usr/bin/podman run \
     --conmon-pidfile %t/api.pid \
     --cidfile %t/api.ctr-id \
@@ -19,6 +20,7 @@ ExecStart=/usr/bin/podman run \
     --volume api-credentials:/nethsecurity-api/credentials/:z \
     --volume api-data:/nethsecurity-api/data/:z \
     --volume api-secrets:/nethsecurity-api/secrets/:z \
+    --volume=%E/state/storage-usage:/nethsecurity-api/storage-usage:ro,z \
     --volumes-from=vpn \
     --network=host \
     --env-file=%E/state/network.env \

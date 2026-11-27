@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Enable the storage usage calculation on instances configured before it was introduced
+
+# Skip instances not configured yet: configure-module enables the timer
+systemctl --user -q is-enabled controller.service || exit 0
+
+systemctl --user enable --now storage-usage.timer
+# Calculate the storage usage now, without waiting for the timer
+systemctl --user start --no-block storage-usage.service

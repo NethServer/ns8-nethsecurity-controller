@@ -781,6 +781,45 @@ func TestGetPlatformInfo(t *testing.T) {
 	assert.Equal(t, "1.0.0", data["controller_version"])
 	assert.Equal(t, float64(30), data["metrics_retention_days"])
 	assert.Equal(t, float64(90), data["logs_retention_days"])
+
+	// Step 4: the storage usage is missing until the module calculates it
+	originalStorageUsageFile := configuration.Config.StorageUsageFile
+	defer func() { configuration.Config.StorageUsageFile = originalStorageUsageFile }()
+	configuration.Config.StorageUsageFile = t.TempDir() + "/storage-usage.json"
+	data = getPlatformInfoData(t, token)
+	assert.NotContains(t, data, "total_storage_bytes")
+	assert.Equal(t, "1194", data["vpn_port"])
+
+	// Step 5: the storage usage calculated by the module is added to the platform info
+	err = os.WriteFile(configuration.Config.StorageUsageFile, []byte(`{"logs_storage_bytes":1000,"system_metrics_storage_bytes":200,"traffic_metrics_storage_bytes":30,"total_storage_bytes":1230,"storage_updated_at":1764240000}`), 0644)
+	assert.NoError(t, err)
+	data = getPlatformInfoData(t, token)
+	assert.Equal(t, float64(1000), data["logs_storage_bytes"])
+	assert.Equal(t, float64(200), data["system_metrics_storage_bytes"])
+	assert.Equal(t, float64(30), data["traffic_metrics_storage_bytes"])
+	assert.Equal(t, float64(1230), data["total_storage_bytes"])
+	assert.Equal(t, float64(1764240000), data["storage_updated_at"])
+	assert.Equal(t, "1194", data["vpn_port"])
+
+	// Step 6: an invalid file is ignored, the rest of the platform info is returned
+	err = os.WriteFile(configuration.Config.StorageUsageFile, []byte(`not json`), 0644)
+	assert.NoError(t, err)
+	data = getPlatformInfoData(t, token)
+	assert.NotContains(t, data, "total_storage_bytes")
+	assert.Equal(t, "1194", data["vpn_port"])
+}
+
+func getPlatformInfoData(t *testing.T, token string) map[string]interface{} {
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/platform", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	router.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusOK, w.Code)
+	var resp map[string]interface{}
+	_ = json.NewDecoder(w.Body).Decode(&resp)
+	data, ok := resp["data"].(map[string]interface{})
+	assert.True(t, ok)
+	return data
 }
 
 func TestUnitGroupsAPI(t *testing.T) {

@@ -76,6 +76,9 @@ type Configuration struct {
 
 	PlatformInfo models.PlatformInfo `json:"platform_info"`
 
+	// JSON file with the storage used by logs and metrics, updated by the module
+	StorageUsageFile string `json:"storage_usage_file"`
+
 	// Prometheus basi authenticatin to access target list
 	PrometheusAuthUsername string `json:"prometheus_auth_username"`
 	PrometheusAuthPassword string `json:"prometheus_auth_password"`
@@ -321,6 +324,12 @@ func Init() {
 		Config.PlatformInfo = platformInfo
 	} else {
 		Config.PlatformInfo = models.PlatformInfo{}
+	}
+
+	if os.Getenv("STORAGE_USAGE_FILE") != "" {
+		Config.StorageUsageFile = os.Getenv("STORAGE_USAGE_FILE")
+	} else {
+		Config.StorageUsageFile = "/nethsecurity-api/storage-usage/storage-usage.json"
 	}
 
 	if os.Getenv("PROMETHEUS_AUTH_USERNAME") != "" {

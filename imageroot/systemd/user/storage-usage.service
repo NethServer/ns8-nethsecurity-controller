@@ -1,0 +1,9 @@
+[Unit]
+Description=Calculate the storage used by logs and metrics
+
+[Service]
+Type=oneshot
+WorkingDirectory=%E/state
+Nice=19
+IOSchedulingClass=idle
+ExecStart=runagent update-storage-usage

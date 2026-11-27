@@ -9,3 +9,7 @@
 
 systemctl --user enable controller.service
 systemctl --user restart controller.service
+
+# calculate the storage used by logs and metrics every hour, and now without waiting for the timer
+systemctl --user enable --now storage-usage.timer
+systemctl --user start --no-block storage-usage.service
